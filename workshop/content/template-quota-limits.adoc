@@ -9,7 +9,7 @@ OpenShiftでは、1つの *プロジェクト* 内で使用できるオブジェ
 ユーザーが `oc new-project` コマンドを呼び出すと、新しいプロジェクトのリクエストフローが開始されます。
 このワークフローの中で、新たに要求されたプロジェクトを作成するためにデフォルトのプロジェクト *テンプレート* が処理されます。
 
-#### デフォルトの プロジェクトリクエストテンプレート を見てみる
+#### デフォルトの プロジェクト・リクエスト・テンプレート を見てみる
 
 組み込みのデフォルトの *プロジェクト・リクエスト・テンプレート* を表示するには、以下のコマンドを実行します。
 
@@ -54,7 +54,6 @@ NOTE: *テンプレート* は、ユーザーに再利用可能な OpenShift の
 これらはもっと複雑なで関連性の高いコンポーネントを OpenShift に素早くデプロイする事に使う事ができます。
 また、あたなの組織の Software Development Lifecycle (SDLC)の有用な部品となりうるでしょう。
 詳細な情報は以下で確認できます。
-
 // FIXME: Need 4.0 template doc link here
 link:https://docs.openshift.com/container-platform/3.11/dev_guide/templates.html[template
 documentation^]. このエクササイズでは、 *テンプレート* の詳細については深掘りしません。
@@ -76,14 +75,17 @@ cat {{ HOME_PATH }}/support/project_request_template.yaml
 ### 背景: ResourceQuota
 // FIXME: 4.0 Doc Link Needed
 link:https://docs.openshift.com/container-platform/3.11/admin_guide/quota.html[quota
-documentation^] のリンクが *ResourceQuota*　について詳しいです。:
+documentation^] のリンクが *ResourceQuota*　について詳しいです:
 
 ----
+
 リソースクォータは、ResourceQuotaオブジェクトによって定義され、プロジェクトごとの総リソース消費量を制限する制約を提供します。
-これは、プロジェクト内で作成できるオブジェクトの量をタイプ別に制限したり、そのプロジェクト内のリソースが消費する計算リソースとストレージの総量を制限したりすることができます。
+これは、プロジェクト内で作成できるオブジェクトの量をタイプ別に制限したり、そのプロジェクト内のリソースが消費する計算リソースと
+ストレージの総量を制限したりすることができます。
+
 ----
 
-私たちの場合は、CPU, memory, storage, volume claims と *Pods* に特定のクォータを設定しています。
+私たちの場合は、CPU, memory, storage, volume クレームと *Pods* に特定のクォータを設定しています。
 `project_request_template.yaml` ファイルの `ResourceQuota` セクションを見てみましょう。
 
 [source,yaml]
@@ -104,19 +106,19 @@ documentation^] のリンクが *ResourceQuota*　について詳しいです。
       {{ CNS_BLOCK_STORAGECLASS }}.storageclass.storage.k8s.io/persistentvolumeclaims: 0 <8>
 ----
 
-<1> プロジェクト*には1つのクォータしか定義できませんが、そのクォータには一意の name/id が必要です。
+<1> *プロジェクト* には1つのクォータしか定義できませんが、そのクォータには一意の name/id が必要です。
 <2> プロジェクト内に存在しうる non-terminal 状態のポッドの総数。
-<3> CPUは「ミリコア」で計測されます。どのように Kubernetes/OpenShift がコアを計算するかは以下で確認できます。
+<3> CPUは「ミリコア」で計測されます。どのように Kubernetes/OpenShift がコアを計算するかは次のリンクで確認できます。
 link:https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/[upstream
 documentation^].
-<4> LIMITITS` と `REQUEST` の両方のシステムがありますが、これについては *LimitRange* オブジェクトを見てから詳しく説明します。
-<5> プロジェクト内のすべての永続的なボリュームクレームにおいて、要求されたストレージの合計がこの値を超えることはできません。
-<6> プロジェクト内の Persistent Volume クレームの総数。
+<4> `LIMITITS` と `REQUEST` の両方のシステムがありますが、これについては *LimitRange* オブジェクトを見てから詳しく説明します。
+<5> プロジェクト内のすべてのPersistentVolumeClaimにおいて、要求されたストレージの合計がこの値を超えることはできません。
+<6> プロジェクト内の PersistentVolumeClaim の総数。
 <7> この設定は、`glusterfs-storage` *StorageClass* を使用してプロビジョニングできるストレージの量を制限します。
-<8> この設定は、`{ CNS_BLOCK_STORAGECLASS }}`という **StorageClass** の **PersistentVolumeClaims** の数を制限します。
+<8> この設定は、`{ CNS_BLOCK_STORAGECLASS }}` という **StorageClass** の **PersistentVolumeClaims** の数を制限します。
 値が0の場合、このプロジェクトではこのストレージクラスから **PersistentVolumeClaims** を作成することはできません。
 
-利用可能なクォータオプションの詳細については、以下を参照してください。
+利用可能なクォータオプションの詳細については、次を参照してください。
 // FIXME: 4.0 Doc Link Needed
 link:https://docs.openshift.com/container-platform/3.11/admin_guide/quota.html[quota
 documentation^].
@@ -127,7 +129,8 @@ link:https://docs.openshift.com/container-platform/3.11/admin_guide/limits.html[
 range documentation^] のリンクに背景についての良い情報があります。:
 
 ----
-LimitRangeオブジェクトで定義された制限範囲は、ポッド、コンテナ、イメージ、イメージストリーム、永続ボリューム クレームのレベルでプロジェクト内の計算リソース制約を列挙し、ポッド、コンテナ、イメージ、イメージストリーム、永続ボリューム クレームが消費できるリソースの量を指定します。
+LimitRangeオブジェクトで定義された制限範囲は、ポッド、コンテナ、イメージ、イメージストリーム、PersistentVolumeClaim のレベルで
+プロジェクト内の計算リソース制約を列挙し、ポッド、コンテナ、イメージ、イメージストリーム、PersistentVolumeClaim が消費できるリソースの量を指定します。
 
 ----
 
