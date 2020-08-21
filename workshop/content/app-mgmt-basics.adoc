@@ -1,44 +1,32 @@
-## Application Management Basics
-In this module, you will deploy a sample application using the `oc` tool and
-learn about some of the core concepts, fundamental objects, and basics of
-application management on OpenShift Container Platform.
+## アプリケーション管理の基本
+このモジュールでは、`oc` ツールを使用してサンプルアプリケーションをデプロイし、OpenShift Container Platform上での中心概念、基本オブジェクト、アプリケーション管理の基本について学習します。
 
-### Core OpenShift Concepts
-As a future administrator of OpenShift, it is important to understand several
-core building blocks as it relates to applications. Understanding these building
-blocks will help you better see the big picture of application management on the
-platform.
+### OpenShiftの中心概念
+OpenShiftの管理者として、アプリケーションに関連するいくつかのコアとなるビルディングブロックを理解することは重要です。これらのビルディングブロックを理解することで、プラットフォーム上でのアプリケーション管理の全体像をよりよく理解することができます。
 
 ### Projects
-A *Project* is a "bucket" of sorts. It's a meta construct where all of a
-user's resources live. From an administrative perspective, each *Project* can
-be thought of like a tenant. *Projects* may have multiple users who can
-access them, and users may be able to access multiple *Projects*. Technically
-speaking, a user doesn't own the resources, the *Project* does. Deleting the
-user doesn't affect any of the created resources.
+*Project* は一種の「バケツ」です。これは、ゆべてのユーザーのリソースが存在するメタ構造です。管理の観点からは、各Projectはテナントのように考えることができます。Projectにはアクセスできる複数のユーザーがいるかもしれませんし、ユーザーは複数のProjectにアクセスできるかもしれません。技術的に言えば、リソースはユーザーが所有しているのではなく、Projectが所有しています。ユーザーを削除しても、作成されたリソースには影響しません。
 
-For this exercise, first create a *Project* to hold some resources:
+この演習では、まず、いくつかのリソースを保持するProjectを作成します。
 
 [source,bash,role="execute"]
 ----
 oc new-project app-management
 ----
 
-### Deploy a Sample Application
-The `new-app` command provides a very simple way to tell OpenShift to run
-things. You simply provide it with one of a wide array of inputs, and it figures
-out what to do. Users will commonly use this command to get OpenShift to launch
-existing images, to create builds of source code and ultimately deploy them, to
-instantiate templates, and so on.
+### サンプルアプリケーションのデプロイ
+`new-app` コマンドは、OpenShiftに物事を実行するよう指示するシンプルな方法です。
+このコマンドに幅拾い入力事項のうちのひとつを与えるだけで、OpenShiftは何をすべきかを判断します。
+ユーザーはこのコマンドを使ってOpenShiftで既存のイメージを起動させたり、ソースコードをビルドしてデプロイしたり、テンプレートをインスタンス化したりするのが一般的です。
 
-You will now launch a specific image that exists on Dockerhub
+次のようにDockerhub上に存在する特定のイメージを起動します。
 
 [source,bash,role="execute"]
 ----
 oc new-app quay.io/thoraxe/mapit
 ----
 
-The output will look like:
+出力は以下のようになります。
 
 ----
 --> Found Docker image 7ce7ade (20 months old) from quay.io for "quay.io/thoraxe/mapit"
@@ -58,34 +46,28 @@ The output will look like:
     Run 'oc status' to view your app.
 ----
 
-You can see that OpenShift automatically created several resources as the output
-of this command. We will take some time to explore the resources that were
-created.
+このコマンドの出力でOpenShiftがいくつかのリソースを自動的に作成したことがわかります。作成されたリソースを少し時間をかけて調べてみましょう。
 
-For more information on the capabilities of `new-app`, take a look at its help
-message by running `oc new-app -h`.
+`new-app` の機能の詳細については、 `oc new-app -h` を実行してそのヘルプメッセージを見てください。
 
 ### Pods
 
 .OpenShift Pods
 image::images/openshift_pod.png[]
 
-Pods are one or more containers deployed together on a host. A pod is the
-smallest compute unit you can define, deploy and manage in OpenShift. Each pod is allocated
-its own internal IP address on the SDN and owns the entire port range. The
-containers within pods can share local storage space and networking resources.
+Podとは、ホスト上に一緒にデプロイされた1つまたは複数のコンテナのことです。Pod
+OpenShiftで定義、デプロイ、管理できるコンピュートリソースの最小の単位です。各PodはSDN上で独自の内部IPアドレスを割り当てられ、ポート範囲全体を所有します。Pod内のコンテナはローカルストレージ領域とネットワークリソースを共有できます。
 
-Pods are treated as **static** objects by OpenShift, i.e., one cannot change the
-pod definition while running.
+PodはOpenShiftでは **静的な** オブジェクトとして扱われ、実行中にPodの定義を変更することはできません。
 
-You can get a list of pods:
+Podの一覧は次のように取得できます。
 
 [source,bash,role="execute"]
 ----
 oc get pods
 ----
 
-And you will see something like the following:
+以下のように出力されます。
 
 ----
 NAME             READY   STATUS      RESTARTS   AGE
@@ -93,20 +75,18 @@ mapit-1-5qmgw    1/1     Running     0          24s
 mapit-1-deploy   0/1     Completed   0          32s
 ----
 
-NOTE: Pod names are dynamically generated as part of the deployment process,
-which you will learn about shortly. Your name will be slightly different.
+NOTE: Pod名はデプロイプロセスの一部として動的に生成されますが、これについては後ほど説明します。あなたの環境とは名前は若干異なります。
 
-NOTE: The `-deploy` pod is related to the `DeploymentConfig` which will be discussed later.
+NOTE: `-deploy` Podは後述する `DeploymentConfig` に関連しています。
 
-The `describe` command will give you more information on the details of a pod.
-In the case of the pod name above:
+`describe` コマンドを使うと、ポッドの詳細を知ることができます。上記のPod名の場合、
 
 [source,bash,role="copypaste copypaste-warning"]
 ----
 oc describe pod mapit-1-5qmgw
 ----
 
-And you will see output similar to the following:
+と実行すると、以下のような出力が表示されます。
 
 ----
 Name:               mapit-1-5qmgw
@@ -175,64 +155,47 @@ Events:
   Normal  Started    118s   kubelet, ip-10-0-139-135.ec2.internal  Started container mapit
 ----
 
-This is a more detailed description of the pod that is running. You can see what
-node the pod is running on, the internal IP address of the pod, various labels,
-and other information about what is going on.
+これは、実行しているPodの詳細な説明です。Podがどのノードで動いているか、ポッドの内部IPアドレス、各種ラベル、その他何が起こっているかについての情報を見ることができます。
 
 ### Services
 .OpenShift Service
 image::images/openshift_service.png[]
 
-*Services* provide a convenient abstraction layer inside OpenShift to find a
-group of like *Pods*. They also act as an internal proxy/load balancer between
-those *Pods* and anything else that needs to access them from inside the
-OpenShift environment. For example, if you needed more `mapit` instances to
-handle the load, you could spin up more *Pods*. OpenShift automatically maps
-them as endpoints to the *Service*, and the incoming requests would not notice
-anything different except that the *Service* was now doing a better job handling
-the requests.
+*Services* はOpenShift内部でPodのようなグループを見つけるのに便利な抽象化レイヤーを提供します。サービスはまた、それらのPodとOpenShift環境内からPodにアクセスする必要のある他の何かとの間の内部プロキシ/ロードバランサーとしても機能します。
+例えば、負荷を処理するためにより多くの `mapit` インスタンスが必要な場合、より多くのPodを立ち上げることができますが、OpenShiftは自動的にそれらのPodを *Service* へのエンドポイントとしてマップします。入ってくるリクエストはこれまでと変わらず処理され、*Service* がリクエストを処理するために良い仕事をするようになったということ以外は、何も変わったことに気づかないでしょう。
 
-When you asked OpenShift to run the image, the `new-app` command
-automatically created a *Service* for you. Remember that services are an
-internal construct. They are not available to the "outside world", or
-anything that is outside the OpenShift environment. That's OK, as you will
-learn later.
+OpenShiftにイメージの実行を依頼すると、`new-app` コマンドが自動的に *Service* を作成しました。ここで覚えていただきたいことは、ServiceはOpenShift内部のためのものであるということです。「外の世界」から利用することはできません。これについてはあとで学習します。
 
-The way that a *Service* maps to a set of *Pods* is via a system of *Labels* and
-*Selectors*. *Services* are assigned a fixed IP address and many ports and
-protocols can be mapped.
+*Service* が一連のPodにマップされる方法は、 *Labels* と *Selectors* を介して行われます。 *Services* には固定IPアドレスが割り当てられ、多くのポートやプロトコルをマッピングすることができます。
 
-There is a lot more information about
-https://docs.openshift.com/container-platform/3.11/architecture/core_concepts/pods_and_services.html#services[Services],
-including the YAML format to make one by hand, in the official documentation.
+手作業で作成するためのYAML形式など、
+https://docs.openshift.com/container-platform/3.11/architecture/core_concepts/pods_and_services.html#services[Services]
+については公式ドキュメントに多くの情報があります。
 
-You can see the current list of services in a project with:
+次のようにProject内のServiceのリストを見ることができます。
 
 [source,bash,role="execute"]
 ----
 oc get services
 ----
 
-You will see something like the following:
+下記のように表示されます。
 
 ----
 NAME      TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
 mapit     ClusterIP   172.30.48.204   <none>        8080/TCP,8778/TCP,9779/TCP   3m
 ----
 
-NOTE: Service IP addresses are dynamically assigned on creation and are
-immutable. The IP of a service will never change, and the IP is reserved until
-the service is deleted. Your service IP will likely be different.
+NOTE: ServiceのIPアドレスは、作成時に動的に割り当てられ、不変です。ServiceのIPアドレスはは変更されることはなく、Serviceが削除されるまで予約されます。あなたのIPアドレスは異なる可能性があります。
 
-Just like with pods, you can `describe` services, too. In fact, you can
-`describe` most objects in OpenShift:
+Podと同じように、Serviceも `describe` できます。OpenShiftではほとんどのオブジェクトを `describe` することができます。
 
 [source,bash,role="execute"]
 ----
 oc describe service mapit
 ----
 
-You will see something like the following:
+以下のようなものが表示されます。
 
 ----
 Name:              mapit
@@ -255,18 +218,16 @@ Session Affinity:  None
 Events:            <none>
 ----
 
-Information about all objects (their definition, their state, and so forth) is
-stored in the etcd datastore. etcd stores data as key/value pairs, and all of
-this data can be represented as serializable data objects (JSON, YAML).
+すべてのオブジェクトに関する情報(それらの定義、オブジェクトの状態など)は、etcdデータストアに格納されます。etcdはデータをKeyとValueのペアとして格納し、このデータはすべてシリアライズ可能なデータオブジェクト（JSON、YAML）として表すことができます。
 
-Take a look at the YAML output for the service:
+ServiceのYAML出力を見てみましょう。
 
 [source,bash,role="execute"]
 ----
 oc get service mapit -o yaml
 ----
 
-You will see something like the following:
+以下のようなものが表示されます。
 
 ----
 apiVersion: v1
@@ -306,18 +267,16 @@ status:
   loadBalancer: {}
 ----
 
-Take note of the `selector` stanza. Remember it.
+`selector` スタンザに注目し、これを覚えておきましょう。
 
-It is also of interest to view the YAML of the *Pod* to understand how OpenShift
-wires components together. Go back and find the name of your `mapit` *Pod*, and
-then execute the following:
+また、`Pod` のYAMLを見て、OpenShiftがコンポーネントをどのように繋いでいるかを理解するのも面白いことです。戻って `mapit` Podの名前を探して、以下を実行します。
 
 [source,bash,role="copypaste copypaste-warning"]
 ----
 oc get pod mapit-1-5qmgw -o yaml
 ----
 
-Under the `metadata` section you should see the following:
+`metadata` セクションの下に、以下のように表示されているはずです。
 
 ----
   labels:
@@ -327,34 +286,21 @@ Under the `metadata` section you should see the following:
   name: mapit-1-5qmgw
 ----
 
-* The *Service* has a `selector` stanza that refers to `app: mapit` and
-  `deploymentconfig: mapit`.
-* The *Pod* has multiple *Labels*:
+* *Service* には `app:mapit` と `deploymentconfig: mapit` を参照する `selector` スタンザがあります。
+* *Pod* には複数の *Label* があります。
 ** `deploymentconfig: mapit`
 ** `app: mapit`
 ** `deployment: mapit-1`
 
-*Labels* are just key/value pairs. Any *Pod* in this *Project* that has a *Label* that
-matches the *Selector* will be associated with the *Service*. If you look at the
-`describe` output again, you will see that there is one endpoint for the
-service: the existing `mapit` *Pod*.
+*Labels* は単なるkey/valueのペアです。この *Project* 内で *Selector* に一致する *Label* 持つ *Pod* はすべて、 *Service* 関連付けられます。もう一度 `describe` の出力を見てみると、Serviceのエンドポイントが1つあります。これはつまり、既存の `mapit` *Pod* であることがわかります。
 
-The default behavior of `new-app` is to create just one instance of the item
-requested. We will see how to modify/adjust this in a moment, but there are a
-few more concepts to learn first.
+`new-app` のデフォルトの動作は、リクエストされたアイテムのインスタンスを1つだけ作成することです。これを修正/調整する方法を見ていきますが、その前にいくつかの概念を学んでおきましょう。
 
-### Background: Deployment Configurations and Replication Controllers
+### 背景: Deployment Configuration と Replication Controllers
 
-While *Services* provide routing and load balancing for *Pods*, which may go in
-and out of existence, *ReplicationControllers* (RC) are used to specify and then
-ensure the desired number of *Pods* (replicas) are in existence. For example, if
-you always want an application to be scaled to 3 *Pods* (instances), a
-*ReplicationController* is needed. Without an RC, any *Pods* that are killed or
-somehow die/exit are not automatically restarted. *ReplicationControllers* are
-how OpenShift "self heals".
+*Service* が *Pod* のルーティングとロードバランシングを提供するのに対し、 *ReplicationControllers* (RC) は、必要な数の *Pod* (レプリカ) を確実に存在させるために使用されます。例えば、アプリケーションを常に3つの *Pod* (インスタンス) にスケールしたい場合、*ReplicationController* が必要になります。RCがないと、何らかの理由で終了した *Pod* は自動的に再起動されません。 *ReplicationController* はOpenShiftが「自己修復」する方法です。
 
-A *DeploymentConfiguration* (DC) defines how something in OpenShift should be
-deployed. From the https://docs.openshift.com/container-platform/3.11/architecture/core_concepts/deployments.html[deployments documentation^]:
+*DeploymentConfiguration* (DC) はOpenShift内の何かをどのようにデプロイするかを定義します。From the https://docs.openshift.com/container-platform/3.11/architecture/core_concepts/deployments.html[deployments documentation^]:
 
 ----
 Building on replication controllers, OpenShift adds expanded support for the
@@ -365,53 +311,43 @@ to transition from an existing deployment of an image to a new one and also
 define hooks to be run before or after creating the replication controller.
 ----
 
-In almost all cases, you will end up using the *Pod*, *Service*,
-*ReplicationController* and *DeploymentConfiguration* resources together. And, in
-almost all of those cases, OpenShift will create all of them for you.
+ほとんどの場合、*Pod* , *Service* , *ReplicationController* , *DeploymentConfiguration* リソースを一緒に使用することになります。そして、ほとんどの場合、OpenShiftがすべてのリソースを作成してくれます。
 
-There are some edge cases where you might want some *Pods* and an *RC* without a *DC*
-or a *Service*, and others, but these are advanced topics not covered in these
-exercises.
+*DC* や *Service* がない *Pod* や *RC* が求められるエッジケースもありますが、これらはこの演習では説明しない高度なトピックです。
 
-### Exploring Deployment-related Objects
+### Deploymentに関連するオブジェクトの探索
 
-Now that we know the background of what a *ReplicatonController* and
-*DeploymentConfig* are, we can explore how they work and are related. Take a
-look at the *DeploymentConfig* (DC) that was created for you when you told
-OpenShift to stand up the `mapit` image:
+*ReplicatonController* と *DeploymentConfig* が何であるかの背景が分かったので、それらがどのように動作し、どのように関連しているかを探ってみましょう。OpenShiftに `mapit` イメージを立ち上げるように指示したときに作成された *DeploymentConfig* (DC) を見てみましょう。
 
 [source,bash,role="execute"]
 ----
 oc get dc
 ----
 
-You will see something like the following:
+以下のように表示されます。
 
 ----
 NAME      REVISION   DESIRED   CURRENT   TRIGGERED BY
 mapit     1          1         1         config,image(mapit:latest)
 ----
 
-To get more details, we can look into the *ReplicationController* (*RC*).
+より詳しく知るために、*ReplicationController* (RC) について調べることができます。
 
-Take a look at the *ReplicationController* (RC) that was created for you when
-you told OpenShift to stand up the `mapit` image:
+OpenShiftに `mapit` イメージを立ち上げるように指示したときに作成された *ReplicationController* (RC) を見てみましょう。
 
 [source,bash,role="execute"]
 ----
 oc get rc
 ----
 
-You will see something like the following:
+以下のようなものが表示されます。
 
 ----
 NAME      DESIRED   CURRENT   READY     AGE
 mapit-1   1         1         1         4h
 ----
 
-This lets us know that, right now, we expect one *Pod* to be deployed
-(`Desired`), and we have one *Pod* actually deployed (`Current`). By changing
-the desired number, we can tell OpenShift that we want more or less *Pods*.
+これより、1つの *Pod* がデプロイされることが希望され (Desired)、実際にデプロイされた *Pod* が1つあることがわかります (Current)。希望の数を変更することで、OpenShiftに *Pod* の数を増やしたいか減らしたいかを伝えることができます。
 
 ### Scaling the Application
 
