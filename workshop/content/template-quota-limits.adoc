@@ -111,7 +111,7 @@ documentation^] のリンクが *ResourceQuota*　について詳しいです:
 <3> CPUは「ミリコア」で計測されます。どのように Kubernetes/OpenShift がコアを計算するかは次のリンクで確認できます。
 link:https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/[upstream
 documentation^].
-<4> `LIMITITS` と `REQUEST` の両方のシステムがありますが、これについては *LimitRange* オブジェクトを見てから詳しく説明します。
+<4> `limits` と `requests` の両方がありますが、これについては *LimitRange* オブジェクトを見てから詳しく説明します。
 <5> プロジェクト内のすべてのPersistentVolumeClaimにおいて、要求されたストレージの合計がこの値を超えることはできません。
 <6> プロジェクト内の PersistentVolumeClaim の総数。
 <7> この設定は、`glusterfs-storage` *StorageClass* を使用してプロビジョニングできるストレージの量を制限します。
