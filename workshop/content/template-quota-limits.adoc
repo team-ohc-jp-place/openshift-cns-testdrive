@@ -60,8 +60,8 @@ documentation^]. このエクササイズでは、 *テンプレート* の詳�
 
 
 #### プロジェクト・リクエスト・テンプレート を編集する
-このラボでは実際にテンプレートの変更を行う必要はありません。-- 変更したものを既に作成済みです。
-`cat`,`less`もしくは、好きなエディターを使って、変更を確認します。
+このラボでは実際にテンプレートの変更を行う必要はありません。- 変更したものを既に作成済みです。
+`cat`、`less` もしくは、好きなエディターを使って、変更を確認します。
 
 *プロジェクト・リクエスト・テンプレート* :
 
@@ -85,7 +85,7 @@ documentation^] のリンクが *ResourceQuota*　について詳しいです:
 
 ----
 
-私たちの場合は、CPU, memory, storage, volume クレームと *Pods* に特定のクォータを設定しています。
+私たちの場合は、CPU, memory, storage, persistentvolumeclaims と *Pods* に特定のクォータを設定しています。
 `project_request_template.yaml` ファイルの `ResourceQuota` セクションを見てみましょう。
 
 [source,yaml]
@@ -106,8 +106,8 @@ documentation^] のリンクが *ResourceQuota*　について詳しいです:
       {{ CNS_BLOCK_STORAGECLASS }}.storageclass.storage.k8s.io/persistentvolumeclaims: 0 <8>
 ----
 
-<1> *プロジェクト* には1つのクォータしか定義できませんが、そのクォータには一意の name/id が必要です。
-<2> プロジェクト内に存在しうる non-terminal 状態のポッドの総数。
+<1> *プロジェクト* には1つのクォータしか定義できませんが、そのクォータには一意の名前が必要です。
+<2> プロジェクト内に作成可能なポッドの数。
 <3> CPUは「ミリコア」で計測されます。どのように Kubernetes/OpenShift がコアを計算するかは次のリンクで確認できます。
 link:https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/[upstream
 documentation^].
@@ -129,12 +129,14 @@ link:https://docs.openshift.com/container-platform/3.11/admin_guide/limits.html[
 range documentation^] のリンクに背景についての良い情報があります。:
 
 ----
-LimitRangeオブジェクトで定義された制限範囲は、ポッド、コンテナ、イメージ、イメージストリーム、PersistentVolumeClaim のレベルで
-プロジェクト内の計算リソース制約を列挙し、ポッド、コンテナ、イメージ、イメージストリーム、PersistentVolumeClaim が消費できるリソースの量を指定します。
+
+LimitRangeオブジェクトで定義された制限範囲は、pod、 container、 image、 image stream、PersistentVolumeClaim のレベルで
+プロジェクト内の計算リソース制約を列挙し、pod、 container、 image、 image stream、PersistentVolumeClaim が消費
+できるリソースの量を指定します。
 
 ----
 
-クォータはプロジェクト内の総資源消費量の上限を設定しますが、`LimitRange`は一般的に個々の資源に適用されます。
+クォータはプロジェクト内の総資源消費量の上限を設定しますが、`LimitRange` は一般的に個々のリソースに適用されます。
 例えば、個々の *Pod* やコンテナがどれだけの CPU を使用できるかを設定することができます。
 
 サンプルの `LimitRange` 定義を見てみましょう。
@@ -166,19 +168,21 @@ LimitRangeオブジェクトで定義された制限範囲は、ポッド、コ�
           memory: 512Mi
 ----
 
-リクエストとデフォルトの制限値の違いは重要で、それについてはこの中で説明しています。
+リクエストとデフォルトの制限値の違いは重要で、それについては次のリンク中で説明しています。
 link:https://docs.openshift.com/container-platform/3.11/admin_guide/limits.html[limit
-range documentation^]. ですが、一般的には:
+range documentation^]. 
 
-<1> `max`は制限やリクエストに指定できる最高の値である。
-<2> `min`はリミットとリクエストに指定できる最低の値です。
+一般的には:
+
+<1> `max` は limits や requests に指定できる最高の値です。
+<2> `min` は limits と requests に指定できる最低の値です。
 <3> `default` は、何も指定されていない場合に、コンテナが消費できる最大量（制限）です。
 <4> `defaultRequest` は何も指定されてない場合に、コンテナが消費する最小量です。
 
-これらのトピックに加えて、 *Quality of Service Tiers* や *Limit* : *リクエスト* の比率 のようなものがあります。
-以下のリンクにはさらに多くの情報があります。
+これらのトピックに加えて、 *Quality of Service Tiers* や *Limit* : *Request* の比率 のようなものがあります。
+以下のリンク先にはさらに多くの情報があります。
 link:https://docs.openshift.com/container-platform/3.11/dev_guide/compute_resources.html[compute
-resources^] section of the documentation.
+resources^] 
 
 簡潔に言うと、OpenShiftにはサービス品質とリソース管理の複雑で強力なシステムが存在します。
 クラスタで実行されるワークロードの種類を理解することは、これらすべての設定に賢明な値を設定するために重要です。
@@ -190,27 +194,27 @@ resources^] section of the documentation.
 *** 4 core かそれ未満を使わないといけない
 *** 10 milicore 未満の定義は持つ事ができない
 *** 100 milicore のリクエストがデフォルト(もし指定されなければ)
-*** may burst up to a limit of 4 cores (もし指定されなければ)
+*** 4 core までバーストが可能 (もし指定されなければ)
 * 合計メモリが 8 Gibibyte (8192 Megabytes)で
 ** 個々のコンテナーは
 *** 1 Gi かそれ未満の使用量でなければならない
 *** 5 Mi 未満の定義は持つ事ができない
 *** デフォルトで 512 Mi をリクエストする
-*** may burst up to a limit of 1024 Mi
+*** 1024 Mi までバーストが可能
 * 合計のストレージのクレームが、25 Gi かそれ未満
-* A total number of 5 volume claims
-* 10 or less *Pods*
+* 合計で 5 つの volume のクレームまで。
+* 10 以下の *Pods*
 
 クォータと組み合わせることで、ユーザーが OpenShift の様々なリソースを要求し、利用する方法について、プロジェクト間でも非常に細かいコントロールを作成することができます。
 
-NOTE: クォータと制限は、*プロジェクト* レベルで適用されることを覚えておいてください。
-*ユーザー* は複数の *プロジェクト* にアクセスすることができますが、クォータと制限は *ユーザー* には直接適用されません。
-複数の *プロジェクト* に1つのクォータを適用したい場合は、以下を見て下さい。
+NOTE: Quota と Limits は、*プロジェクト* レベルで適用されることを覚えておいてください。
+*ユーザー* は複数の *プロジェクト* にアクセスすることができますが、Quota と Limits は *ユーザー* には直接適用されません。
+複数の *プロジェクト* に1つの Quota を適用したい場合は、次を見て下さい。
 link:https://docs.openshift.com/container-platform/3.11/admin_guide/multiproject_quota.html[multi-project
 quota^] documentation. これらの演習では、複数プロジェクトのクォータをカバーすることはありません。
 
-### プロジェクトリクエストテンプレート をインストールする。
-この背景を踏まえて、実際に OpenShift にこの新しい *プロジェクトリクエストテンプレート* を使用するように指示してみましょう。
+### プロジェクト・リクエスト・テンプレート をインストールする。
+この背景を踏まえて、実際に OpenShift にこの新しい *プロジェクト・リクエスト・テンプレート* を使用するように指示してみましょう。
 
 #### Template を作成する
 先ほど説明したように、 *テンプレート* はOpenShiftオブジェクトの別のタイプにすぎません。　
@@ -312,7 +316,7 @@ oc get cm config -n openshift-apiserver -o jsonpath --template="{.data.config\.y
 oc new-project template-test
 ----
 
-そして、`describe`を使って、この*プロジェクトの*詳細を見てください:
+そして、`describe`を使って、この *プロジェクトの* 詳細を見てください:
 
 [source,bash,role="execute"]
 ----
@@ -356,7 +360,7 @@ Resource limits:
 
 [NOTE]
 ====
-クォータとリソース制限のセクションが表示されていない場合は、あなたが早すぎた可能性があります。
+Quota と Resource limits のセクションが表示されていない場合は、あなたが早すぎた可能性があります。
 オペレータは必要なことをすべて実行するのに時間がかかることを覚えておいてください。
 マスターが新しい設定を読み込む前にプロジェクトを作成した可能性があります。
 先に `oc delete project template-test` を削除して、しばらくしてから再作成してください。
