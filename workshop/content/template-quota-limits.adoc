@@ -1,17 +1,17 @@
-## プロジェクトリクエストテンプレート、 クォータ、Limits
+## プロジェクト・リクエスト・テンプレート、 クォータ、Limits
 アプリケーション管理のベーシックラボでは、OpenShiftの基本的なビルディングブロックを扱いましたが、これらはすべて *プロジェクト* 内に含まれています。
 
 OpenShiftでは、1つの *プロジェクト* 内で使用できるオブジェクトの数やリソース（CPU、メモリなど）を制限しません。
 さらに、ユーザーは無制限に *プロジェクト* を作成することができます。制約のない世界やPOC型の環境では、それはそれでいいでしょう。
 しかし、現実には少し制約をつける必要があります。
 
-### 背景: プロジェクトリクエストテンプレート
+### 背景: プロジェクト・リクエスト・テンプレート
 ユーザーが `oc new-project` コマンドを呼び出すと、新しいプロジェクトのリクエストフローが開始されます。
 このワークフローの中で、新たに要求されたプロジェクトを作成するためにデフォルトのプロジェクト *テンプレート* が処理されます。
 
 #### デフォルトの プロジェクトリクエストテンプレート を見てみる
 
-組み込みのデフォルトの *プロジェクトリクエストテンプレート* を表示するには、以下のコマンドを実行します。
+組み込みのデフォルトの *プロジェクト・リクエスト・テンプレート* を表示するには、以下のコマンドを実行します。
 
 [source,bash,role="execute"]
 ----
@@ -60,11 +60,11 @@ link:https://docs.openshift.com/container-platform/3.11/dev_guide/templates.html
 documentation^]. このエクササイズでは、 *テンプレート* の詳細については深掘りしません。
 
 
-#### プロジェクトリクエストテンプレート を編集する
+#### プロジェクト・リクエスト・テンプレート を編集する
 このラボでは実際にテンプレートの変更を行う必要はありません。-- 変更したものを既に作成済みです。
 `cat`,`less`もしくは、好きなエディターを使って、変更を確認します。
 
-*プロジェクトリクエストテンプレート* :
+*プロジェクト・リクエスト・テンプレート* :
 
 [source,bash,role="execute"]
 ----
@@ -73,11 +73,10 @@ cat {{ HOME_PATH }}/support/project_request_template.yaml
 
 新たに2つのセクションが追加されましたので、注意してください。 *ResourceQuota* と *LimitRange* です。
 
-### Background: ResourceQuota
-The
+### 背景: ResourceQuota
 // FIXME: 4.0 Doc Link Needed
 link:https://docs.openshift.com/container-platform/3.11/admin_guide/quota.html[quota
-documentation^] provides a great description of *ResourceQuota*:
+documentation^] のリンクが *ResourceQuota*　について詳しいです。:
 
 ----
 リソースクォータは、ResourceQuotaオブジェクトによって定義され、プロジェクトごとの総リソース消費量を制限する制約を提供します。
@@ -122,11 +121,10 @@ documentation^].
 link:https://docs.openshift.com/container-platform/3.11/admin_guide/quota.html[quota
 documentation^].
 
-### Background: LimitRange
-The
+### 背景 : LimitRange
 // FIXME: 4.0 Doc Link Needed
 link:https://docs.openshift.com/container-platform/3.11/admin_guide/limits.html[limit
-range documentation^] provides some good background:
+range documentation^] のリンクに背景についての良い情報があります。:
 
 ----
 LimitRangeオブジェクトで定義された制限範囲は、ポッド、コンテナ、イメージ、イメージストリーム、永続ボリューム クレームのレベルでプロジェクト内の計算リソース制約を列挙し、ポッド、コンテナ、イメージ、イメージストリーム、永続ボリューム クレームが消費できるリソースの量を指定します。
@@ -184,19 +182,19 @@ resources^] section of the documentation.
 
 これらの例で提供している設定は、一般的に以下ようにプロジェクトを制限しています。：
 
-* A total CPU quota of 4 cores (`4000m`) where
-** Individual containers
-*** must use 4 cores or less
-*** cannot be defined with less than 10 milicores
-*** will default to a request of 100 milicores (if not specified)
-*** may burst up to a limit of 4 cores (if not specified)
-* A total memory usage of 8 Gibibyte (8192 Megabytes) where
-** Individual containers
-*** must use 1 Gi or less
-*** cannot be defined with less than 5 Mi
-*** will default to a request of 512 Mi
+* 合計の CPU が4 core (`4000m`) のクォータで
+** 個々のコンテナーは、
+*** 4 core かそれ未満を使わないといけない
+*** 10 milicore 未満の定義は持つ事ができない
+*** 100 milicore のリクエストがデフォルト(もし指定されなければ)
+*** may burst up to a limit of 4 cores (もし指定されなければ)
+* 合計メモリが 8 Gibibyte (8192 Megabytes)で
+** 個々のコンテナーは
+*** 1 Gi かそれ未満の使用量でなければならない
+*** 5 Mi 未満の定義は持つ事ができない
+*** デフォルトで 512 Mi をリクエストする
 *** may burst up to a limit of 1024 Mi
-* Total storage claims of 25 Gi or less
+* 合計のストレージのクレームが、25 Gi かそれ未満
 * A total number of 5 volume claims
 * 10 or less *Pods*
 
