@@ -75,7 +75,7 @@ cat {{ HOME_PATH }}/support/project_request_template.yaml
 ### 背景: ResourceQuota
 // FIXME: 4.0 Doc Link Needed
 link:https://docs.openshift.com/container-platform/3.11/admin_guide/quota.html[quota
-documentation^] のリンクが *ResourceQuota*　について詳しいです:
+documentation^] のリンク先に *ResourceQuota* について詳しくかかれています。:
 
 ----
 
