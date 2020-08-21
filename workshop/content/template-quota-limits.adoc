@@ -180,9 +180,8 @@ range documentation^].
 <4> `defaultRequest` は何も指定されてない場合に、コンテナが消費する最小量です。
 
 これらのトピックに加えて、 *Quality of Service* や *Limit* : *Request* の比率 のようなものがあります。
-以下のリンク先にはさらに多くの情報があります。
 link:https://docs.openshift.com/container-platform/3.11/dev_guide/compute_resources.html[compute
-resources^] 
+resources^] にはさらに多くの情報があります。
 
 簡潔に言うと、OpenShiftにはサービス品質とリソース管理の複雑で強力なシステムが存在します。
 クラスタで実行されるワークロードの種類を理解することは、これらすべての設定に賢明な値を設定するために重要です。
