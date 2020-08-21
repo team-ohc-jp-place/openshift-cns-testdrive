@@ -85,7 +85,7 @@ documentation^] のリンクが *ResourceQuota*　について詳しいです:
 
 ----
 
-私たちの場合は、CPU, memory, storage, persistentvolumeclaims と *Pods* に特定のクォータを設定しています。
+私たちの場合は、CPU, memory, storage, persistentvolumeclaims と Pods に特定のクォータを設定しています。
 `project_request_template.yaml` ファイルの `ResourceQuota` セクションを見てみましょう。
 
 [source,yaml]
