@@ -1,13 +1,15 @@
-## Project Request Template, Quotas, Limits
-In the Application Management Basics lab, you dealt with the fundamental
-building blocks of OpenShift, all contained within a *Project*.
+## プロジェクトリクエストテンプレート、 Quotas、Limits
+アプリケーション管理の基礎ラボでは、OpenShiftの基本的なビルディングブロックを扱いましたが、これらはすべて*Project*内に含まれています。
 
-OpenShiftでは、1つのプロジェクト*内で使用できるオブジェクトの数やリソース（CPU、メモリなど）を制限しません。さらに、ユーザーは無制限に*プロジェクト*を作成することができます。制約のない世界やPOC型の環境では、それはそれでいいでしょう。しかし、現実には少し制約をつける必要があります。
+OpenShiftでは、1つのプロジェクト*内で使用できるオブジェクトの数やリソース（CPU、メモリなど）を制限しません。
+さらに、ユーザーは無制限に*プロジェクト*を作成することができます。制約のない世界やPOC型の環境では、それはそれでいいでしょう。
+しかし、現実には少し制約をつける必要があります。
 
-### Background: Project Request Template
-ユーザーが `oc new-project` コマンドを呼び出すと、新しいプロジェクトのリクエストフローが開始されます。このワークフローの中で、新たに要求されたプロジェクトを作成するためにデフォルトのプロジェクト*Template*が処理されます。
+### 背景: プロジェクトリクエストテンプレート
+ユーザーが `oc new-project` コマンドを呼び出すと、新しいプロジェクトのリクエストフローが開始されます。
+このワークフローの中で、新たに要求されたプロジェクトを作成するためにデフォルトのプロジェクト*Template*が処理されます。
 
-#### View the Default Project Request Template
+#### デフォルトの プロジェクトリクエストテンプレート を見てみる
 
 組み込みのデフォルトの *プロジェクトリクエストテンプレート* を表示するには、以下のコマンドを実行します。
 
@@ -58,14 +60,11 @@ link:https://docs.openshift.com/container-platform/3.11/dev_guide/templates.html
 documentation^]. このエクササイズでは、 *Templates* の詳細については深掘りしません。
 
 
-#### Modify the Project Request Template
-You won't actually have to make template changes in this lab -- we've made them
-for you already. Use `cat`, `less`, or your favorite editor to view the modified
-
+#### プロジェクトリクエストテンプレート を編集する
 このラボでは実際にテンプレートの変更を行う必要はありません。-- 変更したものを既に作成済みです。
-`cat`、`less`もしくは、好きなエディターを使って、変更を確認します。
+`cat`,`less`もしくは、好きなエディターを使って、変更を確認します。
 
-*Project Request Template*:
+*プロジェクトリクエストテンプレート*:
 
 [source,bash,role="execute"]
 ----
@@ -130,18 +129,16 @@ link:https://docs.openshift.com/container-platform/3.11/admin_guide/limits.html[
 range documentation^] provides some good background:
 
 ----
-A limit range, defined by a LimitRange object, enumerates compute resource
-constraints in a project at the pod, container, image, image stream, and
-persistent volume claim level, and specifies the amount of resources that a pod,
-container, image, image stream, or persistent volume claim can consume.
+LimitRangeオブジェクトで定義された制限範囲は、ポッド、コンテナ、イメージ、イメージストリーム、永続ボリューム クレームのレベルでプロジェクト内の計算リソース制約を列挙し、ポッド、コンテナ、イメージ、イメージストリーム、永続ボリューム クレームが消費できるリソースの量を指定します。
+
 ----
 
-While the quota sets an upper bound on the total resource consumption within a
-project, the `LimitRange` generally applies to individual resources. For
-example, setting how much CPU an individual *Pod* or container can use.
+クォータはプロジェクト内の総資源消費量の上限を設定しますが、`LimitRange`は一般的に個々の資源に適用されます。
+例えば、個々の *Pod* やコンテナがどれだけの CPU を使用できるかを設定することができます。
 
-Take a look at the sample `LimitRange` definition that we have provided in the
-`project_request_template.yaml` file:
+サンプルの `LimitRange` 定義を見てみましょう。
+
+`project_request_template.yaml` ファイル:
 
 [source,yaml]
 ----
@@ -168,29 +165,24 @@ Take a look at the sample `LimitRange` definition that we have provided in the
           memory: 512Mi
 ----
 
-The difference between requests and default limits is important, and is covered
-in the link:https://docs.openshift.com/container-platform/3.11/admin_guide/limits.html[limit
-range documentation^]. But, generally speaking:
+リクエストとデフォルトの制限値の違いは重要で、それについてはこの中で説明しています。
+link:https://docs.openshift.com/container-platform/3.11/admin_guide/limits.html[limit
+range documentation^]. ですが、一般的には:
 
-<1> `max` is the highest value that may be specified for limits and requests
-<2> `min` is the lowest value that may be specified for limits and requests
-<3> `default` is the maximum amount (limit) that the container may consume, when
-nothing is specified
-<4> `defaultRequest` is the minimum amount that the container may consume, when
-nothing is specified
+<1> `max`は制限やリクエストに指定できる最高の値である。
+<2> `min`はリミットとリクエストに指定できる最低の値です。
+<3> `default` は、何も指定されていない場合に、コンテナが消費できる最大量（制限）です。
+<4> `defaultRequest` は何も指定されてない場合に、コンテナが消費する最小量です。
 
-In addition to these topics, there are things like *Quality of Service Tiers* as
-well as a *Limit* : *Request* ratio. There is additionally more information in
-the
+これらのトピックに加えて、*Quality of Service Tiers*や*Limit* : *リクエスト*の比率 のようなものがあります。
+以下のリンクにはさらに多くの情報があります。
 link:https://docs.openshift.com/container-platform/3.11/dev_guide/compute_resources.html[compute
 resources^] section of the documentation.
 
-For the sake of brevity, suffice it to say that there is a complex and powerful
-system of Quality of Service and resource management in OpenShift. Understanding
-the types of workloads that will be run in your cluster will be important to
-coming up with sensible values for all of these settings.
+簡潔に言うと、OpenShiftにはサービス品質とリソース管理の複雑で強力なシステムが存在します。
+クラスタで実行されるワークロードの種類を理解することは、これらすべての設定に賢明な値を設定するために重要です。
 
-The settings we provide for you in these examples generally restrict projects to:
+これらの例で提供している設定は、一般的に以下ようにプロジェクトを制限しています。：
 
 * A total CPU quota of 4 cores (`4000m`) where
 ** Individual containers
@@ -208,43 +200,37 @@ The settings we provide for you in these examples generally restrict projects to
 * A total number of 5 volume claims
 * 10 or less *Pods*
 
-In combination with quota, you can create very fine-grained controls, even
-across projects, for how users are allowed to request and utilize OpenShift's
-various resources.
+クォータと組み合わせることで、ユーザーが OpenShift の様々なリソースを要求し、利用する方法について、プロジェクト間でも非常に細かいコントロールを作成することができます。
 
-NOTE: Remember that quotas and limits are applied at the *Project* level. *Users*
-may have access to multiple *Projects*, but quotas and limits do not apply
-directly to *Users*. If you want to apply one quota across multiple *Projects*,
-then you should look at the
+NOTE: クォータと制限は、*プロジェクト*レベルで適用されることを覚えておいてください。
+*ユーザー*は複数の*プロジェクト*にアクセスすることができますが、クォータと制限は*ユーザー*には直接適用されません。
+複数の*Project*に1つのクォータを適用したい場合は、以下を見て下さい。
 link:https://docs.openshift.com/container-platform/3.11/admin_guide/multiproject_quota.html[multi-project
-quota^] documentation. We will not cover multi-project quota in these exercises.
+quota^] documentation. これらの演習では、複数プロジェクトのクォータをカバーすることはありません。
 
-### Installing the Project Request Template
-With this background in place, let's go ahead and actually tell OpenShift to
-use this new *Project Request Template*.
+### プロジェクトリクエストテンプレート をインストールする。
+この背景を踏まえて、実際に OpenShift にこの新しい*プロジェクトリクエストテンプレート*を使用するように指示してみましょう。
 
-#### Create the Template
-As we discussed earlier, a *Template* is just another type of OpenShift object.
-The `oc` command provides a `create` function that will take YAML/JSON as input
-and simply instantiate the objects provided.
+#### Template を作成する
+先ほど説明したように、*Template*はOpenShiftオブジェクトの別のタイプにすぎません。　
+oc` コマンドは `create` 関数を提供し、YAML/JSON を入力として受け取り、提供されたオブジェクトを単純にインスタンス化します。
 
-Go ahead and execute the following:
+次に以下を実行します。:
 
 [source,bash,role="execute"]
 ----
 oc create -f {{ HOME_PATH }}/support/project_request_template.yaml -n openshift-config
 ----
 
-This will create the *Template* object in the `openshift-config` *Project*.
-You can now see the *Templates* in the `openshift-config` project with the
-following:
+これで、`openshift-config` *Project*内に*Template*オブジェクトが作成されます。
+これで、`openshift-config` プロジェクト内の *Templates* が以下のように表示されるようになりました。:
 
 [source,bash,role="execute"]
 ----
 oc get template -n openshift-config
 ----
 
-You will see something like the following:
+以下のようなものが表示されます。:
 
 ----
 NAME              DESCRIPTION   PARAMETERS    OBJECTS
@@ -252,25 +238,24 @@ project-request                 5 (5 blank)   7
 ----
 
 #### Setting the Default ProjectRequestTemplate
-The default *projectRequestTemplate* is part of the OpenShift API Server
-configuration. This configuration is ultimately stored in a *ConfigMap* in
-the `openshift-apiserver` project. You can view the API Server configuration
-with the following command:
+デフォルトの*projectRequestTemplate*はOpenShift API Serverの設定の一部です。
+この設定は最終的に `openshift-apiserver` プロジェクト内の *ConfigMap* に格納されます。
+API Serverの構成は、以下のコマンドで表示できます。:
 
 [source,bash,role="execute"]
 ----
 oc get cm config -n openshift-apiserver -o jsonpath --template="{.data.config\.yaml}" | jq
 ----
 
-There is an OpenShift operator that looks at various *CustomResource* (CR)
-instances and ensures that the configurations they define are implemented in
-the cluster. In other words, the operator is ultimately responsible for
-creating/modifying the *ConfigMap*. You can see in the `jq` output that there
-is a `projectRequestMessage` but no `projectRequestTemplate` defined. There
-is currently no CR specifying anything, so the operator has configured the
-cluster with the "stock" settings. To add the default project request
-tempalate configuration, a CR needs to be created. The
-*CustomResource* will look like:
+様々な*CustomResource*（CR）インスタンスを見て、定義したコンフィグレーションがクラスタに実装されていることを確認する OpenShift オペレーター があります。
+
+言い換えれば、 オペレーターは最終的に*ConfigMap*の作成/変更を担当します。
+
+jq`の出力を見ると、`projectRequestMessage`はありますが、`projectRequestTemplate`は定義されていません。
+
+現在のところCRには何も指定されていないので、オペレータはクラスタを "標準(stock) "の設定で設定しています。
+
+デフォルトのプロジェクトリクエストテンプレートの設定を追加するには、CRを作成する必要があります。CustomResource*は次のようになります。:
 
 [source,yaml]
 ----
@@ -285,28 +270,26 @@ spec:
     name: "openshift-config/project-request"
 ----
 
-Notice the *projectRequestTemplate* name matches the name of the template we
-created earlier in the `openshift-config` project.
+*projectRequestTemplate* の名前が、以前に `openshift-config` プロジェクトで作成したテンプレートの名前と一致していることに注意してください。
 
-The next step is to create this *CustomResource*. Once this *CR* is created,
-the OpenShift operator will notice the *CR*, and apply the configuration
-changes. To create the *CustomResource*, issue this command:
+次にこの *CustomResource* を作成します。
+この *CR* が作成されると、OpenShiftのオペレータは *CR* に気付き、構成の変更を適用します。
+この *CustomResource* を作成するには、次のコマンドを発行します。:
 
 [source,bash,role="execute"]
 ----
 oc apply -f {{ HOME_PATH }}/support/cr_project_request.yaml -n openshift-config
 ----
 
-Once this command is run, the OpenShift API Server configurations will be
-updated by the operator. This can be verified by viewing the implemented
-configuration:
+このコマンドを実行すると、OpenShift API Server の設定が運営者によって更新されます。
+これは実装された構成を見ることで確認できます。:
 
 [source,bash,role="execute"]
 ----
 oc get cm config -n openshift-apiserver -o jsonpath --template="{.data.config\.yaml}" | jq
 ----
 
-Notice the new *projectConfig* section:
+新しい *projectConfig* セクションに注目してください。:
 
 [source,json]
 ----
@@ -319,23 +302,23 @@ Notice the new *projectConfig* section:
 ...
 ----
 
-#### Create a New Project
-When creating a new project, you should see that a *Quota* and a *LimitRange*
-are created with it. First, create a new project called `template-test`:
+#### 新しいプロジェクトを作成する
+新しいプロジェクトを作成する際に、*Quota* と *LimitRange* が作成されているのがわかるはずです。
+まず、`template-test`という新しいプロジェクトを作成します。:
 
 [source,bash,role="execute"]
 ----
 oc new-project template-test
 ----
 
-Then, use `describe` to look at some of this *Project's* details:
+そして、`describe`を使って、この*プロジェクトの*詳細を見てください:
 
 [source,bash,role="execute"]
 ----
 oc describe project template-test
 ----
 
-The output will look something like:
+出力は以下のような感じになります:
 
 ----
 Name:		template-test
@@ -372,53 +355,48 @@ Resource limits:
 
 [NOTE]
 ====
-If you don't see the Quota and Resource limits sections, you may have been
-too quick. Remember that the operator takes a moment to do everything it
-needs to, so it's possible you created your project before the masters picked
-up the new configs. Go ahead and `oc delete project template-test` and then
-re-create it after a few moments.
+クォータとリソース制限のセクションが表示されていない場合は、あなたが早すぎた可能性があります。
+オペレータは必要なことをすべて実行するのに時間がかかることを覚えておいてください。
+マスターが新しい設定を読み込む前にプロジェクトを作成した可能性があります。
+先に `oc delete project template-test` を削除して、しばらくしてから再作成してください。
 ====
 
-You can also see that the *Quota* and *LimitRange* objects were created:
+また、*Quota*と*LimitRange*オブジェクトが作成されたことがわかります：
 
 [source,bash,role="execute"]
 ----
 oc get quota -n template-test
 ----
 
-You will see:
+以下のようなものが見えるはずです:
 
 ----
 NAME                  CREATED AT
 template-test-quota   2019-03-30T14:26:43Z
 ----
 
-And:
+そして:
 
 [source,bash,role="execute"]
 ----
 oc get limitrange -n template-test
 ----
 
-You will see:
+以下のようなものが見えるはずです:
 
 ----
 NAME                   CREATED AT
 template-test-limits   2018-10-24T19:19:40Z
 ----
 
-NOTE: Please make sure that the `project-request` template is created in the
-`openshift-config` project. Defining it in the OpenShift API server
-configurion without having the template in place will cause new projects to
-fail to create.
+注意: `project-request` テンプレートが `openshift-config` プロジェクト内に作成されていることを確認してください。
+テンプレートを作成せずに OpenShift API サーバー設定で定義すると、新規プロジェクトの作成に失敗します。
 
-### Clean Up
-If you wish, you can deploy the application from the Application Management
-Basics lab again inside this `template-test` project to observe how the *Quota*
-and *LimitRange* are applied. If you do, be sure to look at the JSON/YAML output
-(`oc get ... -o yaml`) for things like the *DeploymentConfig* and the *Pod*.
+### クリーンナップ
+必要であれば、アプリケーション管理の基礎ラボのアプリケーションをこの `template-test` プロジェクトの中にデプロイして、*Quota* と *LimitRange* がどのように適用されているかを観察することができます。
+その際には、*DeploymentConfig* や *Pod* などの JSON/YAML 出力 (`oc get ... -o yaml`) を必ず見てください。
 
-Before you continue, you may wish to delete the *Project* you just created:
+続ける前に、先ほど作成した*プロジェクト*を削除してください:
 
 [source,bash,role="execute"]
 ----
