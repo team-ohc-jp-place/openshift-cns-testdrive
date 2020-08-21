@@ -2,28 +2,21 @@
 In the Application Management Basics lab, you dealt with the fundamental
 building blocks of OpenShift, all contained within a *Project*.
 
-Out of the box, OpenShift does not restrict the quantity of objects or amount of
-resources (eg: CPU, memory) that they can consume within a *Project*. Further,
-users may create an unlimited number of *Projects*. In a world with no
-constraints, or in a POC-type environment, that would be fine. But reality calls
-for a little restraint.
+OpenShiftでは、1つのプロジェクト*内で使用できるオブジェクトの数やリソース（CPU、メモリなど）を制限しません。さらに、ユーザーは無制限に*プロジェクト*を作成することができます。制約のない世界やPOC型の環境では、それはそれでいいでしょう。しかし、現実には少し制約をつける必要があります。
 
 ### Background: Project Request Template
-When users invoke the `oc new-project` command, a new project request flow is
-initiated. During part of this this workflow, a default project *Template* is
-processed to create the newly requested project.
+ユーザーが `oc new-project` コマンドを呼び出すと、新しいプロジェクトのリクエストフローが開始されます。このワークフローの中で、新たに要求されたプロジェクトを作成するためにデフォルトのプロジェクト*Template*が処理されます。
 
 #### View the Default Project Request Template
-To view the built-in default *Project Request Template*, execute the
-following command:
+
+組み込みのデフォルトの *プロジェクトリクエストテンプレート* を表示するには、以下のコマンドを実行します。
 
 [source,bash,role="execute"]
 ----
 oc adm create-bootstrap-project-template -o yaml
 ----
 
-Inspecting the the YAML output of this command, you will notice that there are
-various parameters associated with this *Template* displayed towards the bottom.
+このコマンドのYAML出力を調べると、下の方に表示されているこの*Template*に関連した様々なパラメータがあることに気づくでしょう。
 
 [source,bash]
 ----
@@ -38,34 +31,29 @@ parameters:
 ----
 
 
- Next, let's take a look at the help output for the `oc new-project` command:
+次に、`oc new-project`コマンドのヘルプ出力を見てみましょう:
 
 [source,bash,role="execute"]
 ----
 oc new-project -h
 ----
 
-Notice there is a `--display-name` directive on `oc new-project`? This option
-corresponds to the `PROJECT_DISPLAYNAME` parameter we saw in the output of
-the default *Template*.
+`oc new-project` に `--display-name` ディレクティブがあることに注意してください。このオプションはデフォルトの*Template*の出力で見た `PROJECT_DISPLAYNAME` パラメータに対応します。
 
-The `new-project` workflow involves the user providing information to fulfill the
-project request. OpenShift decides if this request should be allowed (for
+The `new-project` workflow involves the user providing information to fulfill the project request. OpenShift decides if this request should be allowed (for
 example, are users allowed to create *Projects*? Does this user have too many
 *Projects*?) and, if so, processes the *Template*.
 
-If you look at the objects defined in the *Template*, you will notice that
-there's no mention of quota or limits. You'll change that now.
+`new-project`ワークフローでは、ユーザーがプロジェクト要求を満たすための情報を提供します。OpenShiftはこの要求を許可すべきかどうかを決定します。（例えば、ユーザーは*Projects*を作成する許可を持っているのか？このユーザーは*Project*を作りすぎてないか？)もし、要求が許可できる場合は、*Template* を処理します。　
 
-NOTE: *Templates* are a powerful tool that enable the user to easily create reusable
-sets of OpenShift objects with powerful parameterization. They can be used to
-quickly deploy more complicated and related components into OpenShift, and can be a
-useful part of your organization's software development lifecycle (SDLC). More
-information can be found in the
+*Template* で定義されているオブジェクトを見てみると、クォータや制限についての言及がないことに気づくでしょう。今すぐ変えましょう。
+
+NOTE: *Templates* は、ユーザーに再利用可能な OpenSHift のセットを強力なパラメーターで作成できるようにする強力なツールです。
+これらはもっと複雑なで関連性の高いコンポーネントを OpenShift に素早くデプロイする事に使う事ができます。また、あたなの組織の Software Development Lifecycle (SDLC)の有用な部品となりうるでしょう。詳細な情報は以下で確認できます。
+
 // FIXME: Need 4.0 template doc link here
 link:https://docs.openshift.com/container-platform/3.11/dev_guide/templates.html[template
-documentation^]. We will not go into more detail on *Templates* in these
-exercises.
+documentation^]. このエクササイズでは、 *Templates* の詳細については深掘りしません。
 
 
 #### Modify the Project Request Template
