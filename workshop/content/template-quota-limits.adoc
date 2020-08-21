@@ -52,15 +52,15 @@ OpenShiftはこの要求を許可すべきかどうかを決定します。（�
 
 NOTE: *テンプレート* は、ユーザーに再利用可能な OpenShift のセットを強力なパラメーターで作成できるようにする強力なツールです。
 これらはもっと複雑なで関連性の高いコンポーネントを OpenShift に素早くデプロイする事に使う事ができます。
-また、あたなの組織の Software Development Lifecycle (SDLC)の有用な部品となりうるでしょう。
-詳細な情報は次で確認できます。
+また、あなたの組織の Software Development Lifecycle (SDLC)の有用な部品となりうるでしょう。
+詳細な情報は次のリンク先で確認できます。
 // FIXME: Need 4.0 template doc link here
 link:https://docs.openshift.com/container-platform/3.11/dev_guide/templates.html[template
 documentation^]. このエクササイズでは、 *テンプレート* の詳細については深掘りしません。
 
 
 #### プロジェクト・リクエスト・テンプレート を編集する
-このラボでは実際にテンプレートの変更を行う必要はありません。- 変更したものを既に作成済みです。
+このラボでは実際にテンプレートの変更を行う必要はありません。変更したものを既に作成済みです。
 `cat`、`less` もしくは、好きなエディターを使って、変更を確認します。
 
 *プロジェクト・リクエスト・テンプレート* :
