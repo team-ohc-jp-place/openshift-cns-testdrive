@@ -38,18 +38,20 @@ parameters:
 oc new-project -h
 ----
 
-`oc new-project` に `--display-name` ディレクティブがあることに注意してください。このオプションはデフォルトの*Template*の出力で見た `PROJECT_DISPLAYNAME` パラメータに対応します。
+`oc new-project` に `--display-name` ディレクティブがあることに注意してください。
+このオプションはデフォルトの*Template*の出力で見た `PROJECT_DISPLAYNAME` パラメータに対応します。
 
-The `new-project` workflow involves the user providing information to fulfill the project request. OpenShift decides if this request should be allowed (for
-example, are users allowed to create *Projects*? Does this user have too many
-*Projects*?) and, if so, processes the *Template*.
+`new-project`ワークフローでは、ユーザーがプロジェクト要求を満たすための情報を提供します。
+OpenShiftはこの要求を許可すべきかどうかを決定します。（例えば、ユーザーは*Projects*を作成する許可を持っているのか？このユーザーは*Project*を作りすぎてないか？)
+もし、要求が許可できる場合は、*Template* を処理します。　
 
-`new-project`ワークフローでは、ユーザーがプロジェクト要求を満たすための情報を提供します。OpenShiftはこの要求を許可すべきかどうかを決定します。（例えば、ユーザーは*Projects*を作成する許可を持っているのか？このユーザーは*Project*を作りすぎてないか？)もし、要求が許可できる場合は、*Template* を処理します。　
-
-*Template* で定義されているオブジェクトを見てみると、クォータや制限についての言及がないことに気づくでしょう。今すぐ変えましょう。
+*Template* で定義されているオブジェクトを見てみると、クォータや制限についての言及がないことに気づくでしょう。
+今すぐ変更しましょう。
 
 NOTE: *Templates* は、ユーザーに再利用可能な OpenSHift のセットを強力なパラメーターで作成できるようにする強力なツールです。
-これらはもっと複雑なで関連性の高いコンポーネントを OpenShift に素早くデプロイする事に使う事ができます。また、あたなの組織の Software Development Lifecycle (SDLC)の有用な部品となりうるでしょう。詳細な情報は以下で確認できます。
+これらはもっと複雑なで関連性の高いコンポーネントを OpenShift に素早くデプロイする事に使う事ができます。
+また、あたなの組織の Software Development Lifecycle (SDLC)の有用な部品となりうるでしょう。
+詳細な情報は以下で確認できます。
 
 // FIXME: Need 4.0 template doc link here
 link:https://docs.openshift.com/container-platform/3.11/dev_guide/templates.html[template
@@ -59,6 +61,10 @@ documentation^]. このエクササイズでは、 *Templates* の詳細につ�
 #### Modify the Project Request Template
 You won't actually have to make template changes in this lab -- we've made them
 for you already. Use `cat`, `less`, or your favorite editor to view the modified
+
+このラボでは実際にテンプレートの変更を行う必要はありません。-- 変更したものを既に作成済みです。
+`cat`、`less`もしくは、好きなエディターを使って、変更を確認します。
+
 *Project Request Template*:
 
 [source,bash,role="execute"]
@@ -66,8 +72,7 @@ for you already. Use `cat`, `less`, or your favorite editor to view the modified
 cat {{ HOME_PATH }}/support/project_request_template.yaml
 ----
 
-Please take note that there are two new sections added: *ResourceQuota* and
-*LimitRange*.
+新たに2つのセクションが追加されましたので、注意してください。*ResourceQuota*とLimitRange*です。
 
 ### Background: ResourceQuota
 The
@@ -76,16 +81,12 @@ link:https://docs.openshift.com/container-platform/3.11/admin_guide/quota.html[q
 documentation^] provides a great description of *ResourceQuota*:
 
 ----
-A resource quota, defined by a ResourceQuota object, provides constraints that
-limit aggregate resource consumption per project. It can limit the quantity of
-objects that can be created in a project by type, as well as the total amount of
-compute resources and storage that may be consumed by resources in that
-project.
+リソースクォータは、ResourceQuotaオブジェクトによって定義され、プロジェクトごとの総リソース消費量を制限する制約を提供します。
+これは、プロジェクト内で作成できるオブジェクトの量をタイプ別に制限したり、そのプロジェクト内のリソースが消費する計算リソースとストレージの総量を制限したりすることができます。
 ----
 
-In our case, we are setting a specific set of quota for CPU, memory, storage,
-volume claims, and *Pods*. Take a look at the `ResourceQuota` section from the
-`project_request_template.yaml` file:
+私たちの場合は、CPU, memory, storage, volume claims と *Pods* に特定のクォータを設定しています。
+`project_request_template.yaml` ファイルの `ResourceQuota` セクションを見てみましょう。
 
 [source,yaml]
 ----
@@ -105,21 +106,19 @@ volume claims, and *Pods*. Take a look at the `ResourceQuota` section from the
       {{ CNS_BLOCK_STORAGECLASS }}.storageclass.storage.k8s.io/persistentvolumeclaims: 0 <8>
 ----
 
-<1> While only one quota can be defined in a *Project*, it still needs a unique
-name/id.
-<2> The total number of pods in a non-terminal state that can exist in the project.
-<3> CPUs are measured in "milicores". More information on how
-Kubernetes/OpenShift calculates cores can be found in the
+<1> プロジェクト*には1つのクォータしか定義できませんが、そのクォータには一意の name/id が必要です。
+<2> プロジェクト内に存在しうる non-terminal 状態のポッドの総数。
+<3> CPUは「ミリコア」で計測されます。どのように Kubernetes/OpenShift がコアを計算するかは以下で確認できます。
 link:https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/[upstream
 documentation^].
-<4> There is a system of both `limits` and `requests` that we will discuss more
-when we get to the *LimitRange* object.
-<5> Across all persistent volume claims in a project, the sum of storage requested cannot exceed this value.
-<6> The total number of persistent volume claims in a project.
-<7> This setting limits the amount of storage that can be provisioned using the `glusterfs-storage` *StorageClass*.
-<8> This setting limits the number of **PersistentVolumeClaims** for a **StorageClass** called `{{ CNS_BLOCK_STORAGECLASS }}`. A value of 0 means that creating **PersistentVolumeClaims** from this storage class is not allowed in this project.
+<4> LIMITITS` と `REQUEST` の両方のシステムがありますが、これについては *LimitRange* オブジェクトを見てから詳しく説明します。
+<5> プロジェクト内のすべての永続的なボリュームクレームにおいて、要求されたストレージの合計がこの値を超えることはできません。
+<6> プロジェクト内の Persistent Volume クレームの総数。
+<7> この設定は、`glusterfs-storage` *StorageClass* を使用してプロビジョニングできるストレージの量を制限します。
+<8> この設定は、`{ CNS_BLOCK_STORAGECLASS }}`という**StorageClass**の**PersistentVolumeClaims**の数を制限します。
+値が0の場合、このプロジェクトではこのストレージクラスから**PersistentVolumeClaims**を作成することはできません。
 
-For more details on the available quota options, refer back to the
+利用可能なクォータオプションの詳細については、以下を参照してください。
 // FIXME: 4.0 Doc Link Needed
 link:https://docs.openshift.com/container-platform/3.11/admin_guide/quota.html[quota
 documentation^].
