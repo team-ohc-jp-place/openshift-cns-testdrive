@@ -107,16 +107,16 @@ documentation^] のリンクが *ResourceQuota*　について詳しいです:
 ----
 
 <1> *プロジェクト* には1つのクォータしか定義できませんが、そのクォータには一意の名前が必要です。
-<2> プロジェクト内に作成可能なポッドの数。
+<2> プロジェクト内に作成可能なポッドの数です。
 <3> CPUは「ミリコア」で計測されます。どのように Kubernetes/OpenShift がコアを計算するかは次のリンクで確認できます。
 link:https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/[upstream
 documentation^].
 <4> `limits` と `requests` の両方がありますが、これについては *LimitRange* オブジェクトを見てから詳しく説明します。
-<5> プロジェクト内のすべてのPersistentVolumeClaimにおいて、要求されたストレージの合計がこの値を超えることはできません。
-<6> プロジェクト内の PersistentVolumeClaim の総数。
+<5> プロジェクト内のすべてのpersistentvolumeclaimsにおいて、要求されたストレージの合計がこの値を超えることはできません。
+<6> プロジェクト内の persistentvolumeclaim の総数。
 <7> この設定は、`glusterfs-storage` *StorageClass* を使用してプロビジョニングできるストレージの量を制限します。
-<8> この設定は、`{ CNS_BLOCK_STORAGECLASS }}` という **StorageClass** の **PersistentVolumeClaims** の数を制限します。
-値が0の場合、このプロジェクトではこのストレージクラスから **PersistentVolumeClaims** を作成することはできません。
+<8> この設定は、`{ CNS_BLOCK_STORAGECLASS }}` という **StorageClass** の **persistentvolumeclaims** の数を制限します。
+値が0の場合、このプロジェクトではこのストレージクラスから **persistentvolumeclaims** を作成することはできません。
 
 利用可能なクォータオプションの詳細については、次を参照してください。
 // FIXME: 4.0 Doc Link Needed
@@ -130,8 +130,8 @@ range documentation^] のリンクに背景についての良い情報があり�
 
 ----
 
-LimitRangeオブジェクトで定義された制限範囲は、pod、 container、 image、 image stream、PersistentVolumeClaim のレベルで
-プロジェクト内の計算リソース制約を列挙し、pod、 container、 image、 image stream、PersistentVolumeClaim が消費
+LimitRangeオブジェクトで定義された制限範囲は、pod、 container、 image、 image stream、persistentvolumeclaim のレベルで
+プロジェクト内の計算リソース制約を列挙し、pod、 container、 image、 image stream、persistentvolumeclaims が消費
 できるリソースの量を指定します。
 
 ----
@@ -179,7 +179,7 @@ range documentation^].
 <3> `default` は、何も指定されていない場合に、コンテナが消費できる最大量（制限）です。
 <4> `defaultRequest` は何も指定されてない場合に、コンテナが消費する最小量です。
 
-これらのトピックに加えて、 *Quality of Service Tiers* や *Limit* : *Request* の比率 のようなものがあります。
+これらのトピックに加えて、 *Quality of Service* や *Limit* : *Request* の比率 のようなものがあります。
 以下のリンク先にはさらに多くの情報があります。
 link:https://docs.openshift.com/container-platform/3.11/dev_guide/compute_resources.html[compute
 resources^] 
