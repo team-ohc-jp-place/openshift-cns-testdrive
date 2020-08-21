@@ -107,7 +107,7 @@ documentation^] のリンクが *ResourceQuota*　について詳しいです:
 ----
 
 <1> *プロジェクト* には1つのクォータしか定義できませんが、そのクォータには一意の名前が必要です。
-<2> プロジェクト内に作成可能なポッドの数です。
+<2> プロジェクト内に作成可能な Podの数です。
 <3> CPUは「ミリコア」で計測されます。どのように Kubernetes/OpenShift がコアを計算するかは次のリンクで確認できます。
 link:https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/[upstream
 documentation^].
@@ -136,8 +136,8 @@ LimitRangeオブジェクトで定義された制限範囲は、pod、 container
 
 ----
 
-クォータはプロジェクト内の総資源消費量の上限を設定しますが、`LimitRange` は一般的に個々のリソースに適用されます。
-例えば、個々の *Pod* やコンテナがどれだけの CPU を使用できるかを設定することができます。
+ResourceQuota はプロジェクト内の総リソース消費量の上限を設定しますが、`LimitRange` は個々のリソースに適用されます。
+例えば、個々の Pod やコンテナがどれだけの CPU を使用できるかを設定することができます。
 
 サンプルの `LimitRange` 定義を見てみましょう。
 
@@ -209,9 +209,9 @@ resources^]
 
 NOTE: Quota と Limits は、*プロジェクト* レベルで適用されることを覚えておいてください。
 *ユーザー* は複数の *プロジェクト* にアクセスすることができますが、Quota と Limits は *ユーザー* には直接適用されません。
-複数の *プロジェクト* に1つの Quota を適用したい場合は、次を見て下さい。
+複数の *プロジェクト* に1つの Quota を適用したい場合は、
 link:https://docs.openshift.com/container-platform/3.11/admin_guide/multiproject_quota.html[multi-project
-quota^] documentation. これらの演習では、複数プロジェクトのクォータをカバーすることはありません。
+quota^] を見て下さい。これらの演習では、複数プロジェクトのクォータをカバーすることはありません。
 
 ### プロジェクト・リクエスト・テンプレート をインストールする。
 この背景を踏まえて、実際に OpenShift にこの新しい *プロジェクト・リクエスト・テンプレート* を使用するように指示してみましょう。
