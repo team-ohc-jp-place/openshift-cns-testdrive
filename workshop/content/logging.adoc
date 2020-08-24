@@ -1,69 +1,53 @@
-## OpenShift Log Aggregation
-In this lab you will explore the logging aggregation capabilities of
-OpenShift.
+## OpenShift ログ集約
+このラボでは、OpenShiftのログ集約機能を触ってみます。
 
-An extremely important function of OpenShift is collecting and aggregating
-logs from the environments and the application pods it is running. OpenShift
-ships with an elastic log aggregation solution: *EFK*. (**E**lasticSearch,
-**F**luentd and **K**ibana)
+OpenShift の非常に重要な機能は、実行中の環境とアプリケーションポッドからログを収集して集約することです。
+OpenShift には柔軟性のある *EFK* によるログ集約ソリューションが同梱されています。
+*EFK* は、それぞれのソリューションの頭文字を集めたものです。( *E* lasticSearch、*F* luentd、*K* ibana)
 
-The cluster logging components are based upon Elasticsearch, Fluentd, and
-Kibana (EFK). The collector, Fluentd, is deployed to each node in the
-OpenShift cluster. It collects all node and container logs and writes them to
-Elasticsearch (ES). Kibana is the centralized, web UI where users and
-administrators can create rich visualizations and dashboards with the
-aggregated data. Administrators can see and search through all logs.
-Application owners and developers can allow access to logs that belong to
-their projects. The EFK stack runs on top of OpenShift.
+クラスタの Logging コンポーネントは、Elasticsearch、Fluentd、Kibana（EFK）をベースにしています。
+コレクターである Fluentd は、OpenShift クラスタ内の各ノードにデプロイされています。
+これはすべてのノードとコンテナのログを収集し、Elasticsearch（ES）に書き込みます。
+Kibana は一元化された Web UI で、ユーザーや管理者は集約されたデータを使ってリッチなビジュアライゼーションやダッシュボードを作成することができます。
+管理者は、すべてのログを検索することができます。
+アプリケーションの所有者や開発者は、プロジェクトに属するログへのアクセスを許可することができます。
+EFK スタックは OpenShift の上で動作します。
 
 [WARNING]
 ====
-This lab requires that you have completed the infra-nodes lab. The logging
-stack will be installed on the `infra` nodes that were created in that lab.
+このラボでは、infra-nodes ラボを完了していることが必要です。
+Logging スタックはそのラボで作成された `infra` ノードにインストールされます。
 ====
 
 [NOTE]
 ====
-More information may be found on the official OpenShift documentation site
-found here:
-
+詳細は、以下にあるOpenShiftの公式ドキュメントサイトに記載されています。:
  https://docs.openshift.com/container-platform/4.1/logging/efk-logging.html
 ====
 
 [NOTE]
 ====
-This exercise is done almost entirely using the OpenShift web console. All of
-the interactions with the web console are effectively creating or
-manipulating API objects in the background. It is possible to fully automate
-the process and/or do it using the CLI or other tools, but these methods are
-not covered in the exercise or documentation at this time.
+この演習は、ほぼすべて OpenShift の Web コンソールを使用して行われます。
+ウェブコンソールとのやりとりはすべて、事実上バックグラウンドで API オブジェクトを作成または操作しています。
+プロセスを完全に自動化したり、CLIや他のツールを使用して行うことも可能ですが、これらの方法は現時点では、この演習やドキュメントではカバーされていません。
 ====
 
-### Deploying OpenShift Logging
+### OpenShift Logging をデプロイする
 
-OpenShift Container Platform cluster logging is designed to be used with the
-default configuration, which is tuned for small to medium sized OpenShift
-Container Platform clusters. The installation instructions that follow
-include a sample Cluster Logging Custom Resource (CR), which you can use to
-create a cluster logging instance and configure your cluster logging
-deployment.
+OpenShift Container Platform Cluster Logging は、デフォルト構成で使用するように設計されており、中小規模の OpenShift Container Platform クラスタ向けに調整されています。
+以降のインストール手順には、サンプルの Cluster Logging Custom Resource（CR）が含まれており、これを使用して Cluster Logging インスタンスを作成し、Cluster Logging の導入を構成することができます。
 
-If you want to use the default cluster logging install, you can use the
-sample CR directly.
+デフォルトの Cluster Logging インストールを使用する場合は、サンプルCRを直接使用できます。
 
-If you want to customize your deployment, make changes to the sample CR as
-needed. The following describes the configurations you can make when
-installing your cluster logging instance or modify after installtion. See the
-Configuring sections for more information on working with each component,
-including modifications you can make outside of the Cluster Logging Custom
-Resource.
+配置をカスタマイズしたい場合は、必要に応じてサンプル CR に変更を加えます。
+以下では、Cluster Logging インスタンスのインストール時に行うことができる構成、またはインストール後に変更することができる構成について説明します。
+Cluster Logging Custom Resource の外でできる変更を含め、各コンポーネントでの作業の詳細については、「構成」のセクションを参照してください。
 
-#### Create the `openshift-logging` namespace
+#### `openshift-logging` namespace を作成する
 
-OpenShift Logging will be run from within its own namespace
-`openshift-logging`. This namespace does not exist by default, and needs to
-be created before logging may be installed. The namespace is represented in
-yaml format as:
+OpenShift Logging は、独自の名前空間 `openshift-logging` 内で実行されます。
+この名前空間はデフォルトでは存在せず、Logging をインストールする前に作成する必要があります。
+名前空間は yaml 形式で以下のように表されます。:
 
 [source,yaml]
 .openshift_logging_namespace.yaml
@@ -79,7 +63,7 @@ metadata:
     openshift.io/cluster-monitoring: "true"
 ----
 
-To create the namespace, run the following command:
+ネームスペースを作成するには、以下のコマンドを実行します。:
 
 [source,bash,role="execute"]
 ----
@@ -87,121 +71,101 @@ oc create -f {{ HOME_PATH }}/support/openshift_logging_namespace.yaml
 ----
 
 
-#### Install the `Elasticsearch` and  `Cluster Logging` Operators in the cluster
+#### `Elasticsearch` と `Cluster Logging` Operator をクラスターにインストールする
 
-In order to install and configure the `EFK` stack into the cluster,
-additional operators need to be installed. These can be installed from the
-`Operator Hub` from within the cluster via the GUI.
+`EFK` スタックをクラスタにインストールして設定するには、追加の Operator をインストールする必要があります。
+これらは、クラスタ内から `Operator Hub` から GUI を介してインストールすることができます。
 
-When using operators in OpenShift, it is important to understand the basics
-of some of the underlying principles that make up the Operators.
-`CustomResourceDefinion (CRD)` and `CustomResource (CR)` are two Kubernetes
-objects that we will briefly describe.`CRDs` are generic pre-defined
-structures of data. The operator understands how to apply the data that is
-defined by the `CRD`. In terms of programming, `CRDs` can be thought as being
-similar to a class. `CustomResource (CR)` is an actual implementations of the
-`CRD`, where the structured data has actual values. These values are what the
-operator will use when configuring it's service. Again, in programming terms,
-`CRs` would be similar to an instantiated object of the class.
+OpenShift で Operator を使用する際には、Operator を構成するいくつかの基本的な原理を理解しておくことが重要です。
+`CustomResourceDefinion (CRD)` と `CustomResource (CR)` は、簡単に説明する 2 つの Kubernetes オブジェクトです。
+`CRD` は、ジェネリックな事前定義された、データの構造体です。
+Operator は、`CRD` で定義されたデータをどのように適用するかを理解します。
+プログラミング的には、`CRD` はクラスに似ていると考えることができます。
+`CustomResource (CR)` は、構造化されたデータが実際の値を持つ `CRD` の実際の実装です。
+これらの値は、Operator がサービスを設定するときに使用するものです。
+繰り返しになりますが、プログラミング用語では、`CR` はクラスのインスタンス化されたオブジェクトに似ています。
 
-The general pattern for using Operators is first, install the Operator, which
-will create the necessary `CRDs`. After the `CRDs` have been created, we can
-create the `CR` which will tell the operator how to act, what to install,
-and/or what to configure. For installing `openshift-logging`, we will follow
-this pattern.
+Operator を使用するための一般的なパターンは、まず Operator をインストールし、必要な `CRD` を作成します。
+`CRD` が作成された後、どのように動作するか、何をインストールするか、何を設定するかを Operator に伝える `CR` を作成します。
+openshift-logging　をインストールするには、このパターンに従います。
 
-To begin, log-in to the OpenShift Cluster's GUI.
+まず、OpenShift ClusterのGUIにログインします。
 `{{ MASTER_URL }}`
 
-Then follow the following steps:
+その後、以下の手順に従ってください。:
 
-1. Install the Elasticsearch Operator:
-  a. In the OpenShift console, click `Operators` → `OperatorHub`.
-  b. Choose `Elasticsearch Operator` from the list of available Operators,
-    and click `Install`.
-  c. On the `Create Operator Subscription` page, *select Update Channel 4.2*, leave all other defaults
-     and then click `Subscribe`.
+1. Elasticsearch Operator のインストール:
+  a. OpenShift コンソールから、 `Operators` → `OperatorHub` をクリックします。
+  b. `Elasticsearch Operator` を、Operator リストから選択し、 `Install` をクリックします。
+  c. `Create Operator Subscription` ページで、*Update Channel 4.2* を選択し、他のすべてのデフォルト設定をそのままに、`Subscribe`　をクリックします。
 +
-This makes the Operator available to all users and projects that use this
-OpenShift Container Platform cluster.
+これにより、この OpenShift Container Platform クラスタを使用するすべてのユーザーとプロジェクトがこの Operator を利用できるようになります。
 
-2. Install the Cluster Logging Operator:
+2. Cluster Logging Operator のインストール:
 +
 [NOTE]
 ====
-The `Cluster Logging` operator needs to be installed in the
-`openshift-logging` namespace. Please ensure that the `openshift-logging`
-namespace was created from the previous steps
+`Cluster Logging` Operator を  `openshift-logging` ネームスペースにインストールする必要があります。
+`openshift-logging` ネームスペースが前の手順で作成されたことを確認してください。
 ====
 
-  a. In the OpenShift console, click `Operators` → `OperatorHub`.
-  b. Choose `Cluster Logging` from the list of available Operators, and click
-    `Install`.
-  c. On the `Create Operator Subscription` page, Under ensure `Installation
-     Mode` that `A specific namespace on the cluster` is selected, and choose
-     `openshift-logging`. In addition, *select Update Channel 4.2* and leave all other defaults
-     and then click `Subscribe`.
+  a. OpenShift コンソールで、`Operators` → `OperatorHub` をクリックします。
+  b. 利用可能な Operator のリストから `Cluster Logging` を選択し、`Install` をクリックする。
+  c. `Create Operator Subscription` ページで、`Installation Mode` で、クラスタ上の特定の名前空間が選択されていることを確認し、`openshift-logging` を選択します。
+     さらに、*select Update Channel 4.2* を選択し、他のすべてのデフォルトを残してから `Subscribe` をクリックします。
 
-3. Verify the operator installations:
+3. Operator のインストールを確認する。:
 
-  a. Switch to the `Operators` → `Installed Operators` page.
+  a. `Operators` → `Installed Operators` のページに切り替える。
 
-  b. Make sure the `openshift-logging` project is selected.
+  b. `openshift-logging` プロジェクトが選択されていることを確認する。
 
-  c. In the _Status_ column you should see green checks with either
-     `InstallSucceeded` or `Copied` and the text _Up to date_.
+  c. _Status_ 列で、緑色のチェックで、 `InstallSucceeded` もしくは `Copied` そして _Up to date_ のテキストが見えるはずです。
 +
 [NOTE]
 ====
-During installation an operator might display a `Failed` status. If the
-operator then installs with an `InstallSucceeded` message, you can safely
-ignore the `Failed` message.
+インストール中に Operator が `Failed` ステータスを表示することがあります。
+Operator が  `InstallSucceeded` メッセージを表示してインストールが完了した場合、`Failed` メッセージを無視しても問題ありません。
 ====
 
-4. Troubleshooting (optional)
+4. トラブルシューティング (オプショナル)
 +
-If either operator does not appear as installed, to troubleshoot further:
+どちらかの Operator がインストールされているように表示されない場合は、さらにトラブルシューティングを行います。:
 +
-* On the Copied tab of the Installed Operators page, if an operator show a
-  Status of Copied, this indicates the installation is in process and is
-  expected behavior.
+* Installed Operators ページの Copied タブで、Operator に Status of Copied が表示されている場合、これはインストールが進行中であり、期待される動作であることを示しています。
 +
-* Switch to the Catalog → Operator Management page and inspect the Operator
-  Subscriptions and Install Plans tabs for any failure or errors under Status.
+* Catalog → Operator Management ページに切り替え、Operator Subscriptions and Install Plans のタブで、ステータスの下に障害やエラーがないかどうかを確認します。
 +
-* Switch to the Workloads → Pods page and check the logs in any Pods in the
-  openshift-logging and openshift-operators projects that are reporting issues.
+* Workloads → Pods のページに切り替えて、openshift-logging と openshift-operators プロジェクトで問題を報告している任意の Pod のログを確認します。
 
 
-#### Create the Loggging `CustomResource (CR)` instance
+#### Logging `CustomResource (CR)` インスタンスを作成する
 
-Now that we have the operators installed, along with the `CRDs`, we can now
-kick off the logging install by creating a Logging `CR`. This will define how
-we want to install and configure logging.
+Operator を `CRD` と一緒にインストールしたので、Logging `CR` を作成して、Logging のインストールを開始します。
+これは、Logging をインストールして設定する方法を定義します。
 
+1. OpenShift Consoleで、`Administration` → `Custom Resource Definitions` ページに切り替えます。
 
-1. In the OpenShift Console, switch to the the `Administration` → `Custom Resource Definitions` page.
+2. `Custom Resource Definitions` のページで、 `ClusterLogging` をクリックする。
 
-2. On the `Custom Resource Definitions` page, click `ClusterLogging`.
-
-3. On the `Custom Resource Definition Overview` page, select `View Instances` from the `Actions` menu.
+3. `Custom Resource Definition Overview` ページで、`Actions` メニューから `View Instances` を選択する。
 +
 [NOTE]
 ====
-If you see a `404` error, don't panic. While the operator installation
-succeeded, the operator itself has not finished installing and the
-`CustomResourceDefinition` may not have been created yet. Wait a few moments
-and then refresh the page.
+`404` のエラーが表示されても、慌てないでください。
+Operator のインストールは成功したものの、Operator 自体のインストールが完了しておらず、 `CustomResourceDefinition` がまだ作成されていない可能性があります。
+しばらく待ってからページを更新してください。
 ====
 +
-4. On the `Cluster Loggings` page, click `Create Cluster Logging`.
+4. `Cluster Loggings` ページで、 `Create Cluster Logging` をクリックします。
 +
 [WARNING]
 ====
-This step requires that you have completed the `Deploying and Managing OpenShift Container Storage` Module. If you have not completed the `OCS` module, you will need to substitute `storageClassName: ocs-storagecluster-ceph-rbd` with `storageClassName: gp2` in the `YAML` below before copying to the editor. 
+このステップに入る前に、`Deploying and Managing OpenShift Container Storage` モジュールを完了している必要があります。
+`OCS` モジュールが完了していない場合は、エディタにコピーする前に、以下の `YAML` の `storageClassName: ocs-storagecluster-ceph-rbd` を `storageClassName: gp2` で置き換える必要があります。
 ====
 
-5. In the `YAML` editor, replace the code with the following:
+5. `YAML` エディタで、コードを以下で置き換えます。:
 
 [source,yaml]
 .openshift_logging_cr.yaml
@@ -246,27 +210,26 @@ spec:
         node-role.kubernetes.io/infra: ""
 ----
 
-Then click `Create`.
+そして `Create` をクリックします。
 
-#### Verify the Loggging install
+#### Logging インストールを確認する
 
-Now that Logging has been created, let's verify that things are working.
+Logging が作成されたので、動作しているかどうかを確認してみましょう。
 
-1. Switch to the `Workloads` → `Pods` page.
+1. `Workloads` → `Pods` ページに移動します。
 
-2. Select the `openshift-logging` project.
+2. `openshift-logging` プロジェクトを選択します。
 
-You should see pods for cluster logging (the operator itself), Elasticsearch,
-and Fluentd, and Kibana.
+クラスタ Logging （Operator 自身）、Elasticsearch、Fluentd、Kibana　のポッドが表示されているはずです。
 
-Alternatively, you can verify from the command line by using the following command:
+または、次のコマンドを使用してコマンドラインから検証することもできます。:
 
 [source,bash,role="execute"]
 ----
 oc get pods -n openshift-logging
 ----
 
-You should eventually see something like:
+最終的には、次のようなものが表示されるはずです。:
 
 ----
 NAME                                            READY   STATUS    RESTARTS   AGE
@@ -283,35 +246,33 @@ fluentd-zqgqx                                   1/1     Running   0          14m
 kibana-7fb4fd4cc9-bvt4p                         2/2     Running   0          14m
 ----
 
-The _Fluentd_ *Pods* are deployed as part of a *DaemonSet*, which is a mechanism
-to ensure that specific *Pods* run on specific *Nodes* in the cluster at all
-times:
+_Fluentd_ *Pods* は、 *DaemonSet* としてデプロイされます。*DaemonSet* は、特定の *Pods* が、クラスタ内の特定の *Nodes* で常に実行されるための仕組みです。:
+
 
 [source,bash,role="execute"]
 ----
 oc get daemonset -n openshift-logging
 ----
 
-You will see something like:
+以下のようなものを見ることができます。:
 
 ----
 NAME      DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
 fluentd   9         9         9       9            9           kubernetes.io/os=linux   94s
 ----
 
-You should expect 1 `fluentd` *Pod* for every *Node* in your cluster.
-Remember that *Masters* are still *Nodes* and `fluentd` will run there, too,
-to slurp the various logs.
+クラスタ内の *Node* ごとに1つの `fluentd` *Pod* が必要です。
+*Master* も *Node* であり、`fluentd` はそこでも様々なログを読み取るために実行されることを覚えておいてください。
 
-You will also see the storage for ElasticSearch has been automatically
-provisioned. If you query the *PersistentVolumeClaim* objects in this project you will see the new storage.
+また、ElasticSearch 用のストレージが自動的にプロビジョニングされていることがわかります。
+このプロジェクトの *PersistentVolumeClaim* オブジェクトにクエリを実行すると、新しいストレージが表示されます。
 
 [source,bash,role="execute"]
 ----
 oc get pvc -n openshift-logging
 ----
 
-You will see something like:
+以下のようなものが見えるはずです。:
 
 ----
 NAME                                         STATUS   VOLUME                                     CAPACITY   ACCESS
@@ -326,116 +287,99 @@ elasticsearch-elasticsearch-cdm-ggzilasv-3   Bound    pvc-f326aa7d-389c-11ea-bab
 
 [NOTE]
 ====
-Much like with the Metrics solution, we defined the appropriate
-`NodeSelector` in the Logging configuration (`CR`) to ensure that the Logging
-components only landed on the infra nodes. That being said, the `DaemonSet`
-ensures FluentD runs on *all* nodes. Otherwise we would not capture all of
-the container logs.
+Metrics ソリューションの場合と同様に、Logging の構成( `CR` )で適切な `NodeSelector` を定義して、Logging コンポーネントが infra ノードにしかデプロイされないようにしています。
+つまり、`DaemonSet` は FluentD が *すべての* ノードで実行されることを保証しています。
+そうでなければ、すべてのコンテナログをキャプチャすることはできません。
 ====
 
-#### Accessing _Kibana_
+#### _Kibana_ にアクセスする
 
-As mentioned before, _Kibana_ is the front end and the way that users and
-admins may access the OpenShift Logging stack. To reach the _Kibana_ user
-interface, first determine its public access URL by querying the *Route* that
-got set up to expose Kibana's *Service*:
+前述の通り、_Kibana_ はフロントエンドであり、ユーザーや管理者が OpenShift Logging スタックにアクセスするためのインターフェイスです。
+_Kibana_ ユーザーインターフェースにアクセスするには、まず Kibana の *Service* を公開するために設定された *Route* を見て、そのパブリックアクセス URL を調べます。:
 
-To find and access the _Kibana_ route:
+_Kibana_ route を見つけてアクセスするには:
 
-1. In the OpenShift console, click on the `Networking` → `Routes` page.
+1. OpenShift console から、 `Networking` → `Routes` ページをクリックします。
 
-2. Select the `openshift-logging` project.
+2. `openshift-logging` プロジェクトを選択します。
 
-3. Click on the `Kibana` route.
+3. `Kibana` route をクリックします。
 
-4. In the `Location` field, click on the URL presented.
+4. `Location` フィールドで、表示されている URL をクリックします。
 
-5. Click through and accept the SSL certificates
+5.  SSL 証明書をアクセプトします。
 
-Alternatively, this can be obtained from the command line:
+あるいは、コマンドラインから取得することもできます。:
 
 [source,bash,role="execute"]
 ----
 oc get route -n openshift-logging
 ----
 
-You will see something like:
+以下のようなものが見えるはずです。:
 
 ----
 NAME     HOST/PORT                                                           PATH   SERVICES   PORT    TERMINATION          WILDCARD
 kibana   kibana-openshift-logging.{{ ROUTE_SUBDOMAIN }}          kibana     <all>   reencrypt/Redirect   None
 ----
 
-Or, you can control+click the link:
+または、control+click  をクリックすることができます。:
 
 https://kibana-openshift-logging.{{ ROUTE_SUBDOMAIN }}
 
-There is a special authentication proxy that is configured as part of the EFK
-installation that results in Kibana requiring OpenShift credentials for
-access.
+EFK インストールの一部として設定されている特別な認証プロキシがあり、その結果、Kibana はアクセスに OpenShift の資格情報を必要とします。
 
-Because you've already authenticated to the OpenShift Console as a
-cluster-admin user, you will see an administrative view of what Kibana has to
-show you (which you authorized by clicking the button).
+OpenShift Console に cluster-admin ユーザーとして認証済みのため、Kibana の管理画面が表示されます。
 
-#### Queries with _Kibana_
+#### _Kibana_ を使ってクエリを行う
 
-Once the _Kibana_ web interface is up, we are now able to do queries.
-_Kibana_ offers a the user a powerful interface to query all logs that come
-from the cluster.
+_Kibana_ の Web インターフェースが立ち上がったら、クエリを実行できるようになります。
+_Kibana_ は、クラスタから送られてくるすべてのログを問い合わせるための強力なインターフェイスをユーザに提供します
 
-By default, _Kibana_ will show all logs that have been received within the
-the last 15 minutes. This time interval may be changed in the upper right
-hand corner. The log messages are shown in the middle of the page. All log
-messages that are received are indexed based on the log message content. Each
-message will have fields associated that are associated to that log message.
-To see the fields that make up an individual message, click on the arrow on
-the side of each message located in the center of the page. This will show
-the message fields that are contained.
+デフォルトでは、_Kibana_　は過去15分以内に受信したすべてのログを表示します。
+この時間間隔は右上で変更できます。
+ログメッセージはページの中央に表示されます。
+受信したすべてのログメッセージは、ログメッセージの内容に基づいてインデックス化されます。
+各メッセージには、そのログメッセージに関連付けられたフィールドがあります。
+個々のメッセージを構成するフィールドを見るには、ページの中央にある各メッセージの側面にある矢印をクリックします。
+これにより、含まれているメッセージ フィールドが表示されます。
 
-First, set the default index pattern to `.all`. On the left hand side towards
-the top, in the drop down menu select the `.all` index pattern.
+まず、デフォルトのインデックスパターンを `.all` に設定します。
+左側から上に向かって、ドロップダウンメニューで `.all` のインデックスパターンを選択します。
 
-To select fields to show for messages, look on left hand side fore the
-`Available Fields` label. Below this are fields that can be selected and
-shown in the middle of the screen. Find the `hostname` field below the
-`Available Fields` and click `add`. Notice now, in the message pain, each
-message's hostname is displayed. More fields may be added. Click the `add`
-button for `kubernetes.pod_name` and also for `message`.
+メッセージに表示するフィールドを選択するには、左側の `Available Fields` ラベルの手前を見てください。
+その下には選択可能なフィールドがあり、画面の中央に表示されます。
+利用可能なフィールド `Available Fields` の下にある `hostname` フィールドを見つけて、 `add` をクリックします。
+これで、メッセージペインに各メッセージのホスト名が表示されることに気づくでしょう。
+これ以外にもフィールドを追加することができます。 `kubernetes.pod_name` と `message` の `add` ボタンをクリックします。
 
-To create a query for logs, the `Add a filter +` link right below the search
-box may be used. This will allow us to build queries using the fields of the
-messages. For example, if we wanted to see all log messages from the
-`openshift-logging` namespace, we can do the following:
+ログに対するクエリを作成するには、検索ボックスの右下にある `Add a filter +` リンクを使用することができます。
+これにより、メッセージのフィールドを使ってクエリを作成することができます。
+例えば、 `openshift-logging` namespace のすべてのログメッセージを見たい場合、以下のようにします。:
 
-1. Click on `Add a filter +`.
+1. `Add a filter +` をクリックします。
 
-2. In the `Fields` input box, start typing `kubernetes.namespace_name`.
-Notice all of the available fields that we can use to build the query
+2. `Fields` インプットボックスで、 `kubernetes.namespace_name` とタイプします。
+クエリをビルドするための全ての可能なフィールドがある事に注目してください。
 
-3. Next, select `is`.
+3. 次に、 `is` を選択します。
 
-4. In the `Value` field, type in `openshift-logging`
+4. `Value` フィールドで、 `openshift-logging`　とタイプします。
 
-5. Click the "Save" button
+5. "Save" ボタンをクリックします。
 
-Now, in the center of the screen you will see all of the logs from all the
-pods in the `openshift-logging` namespace.
+さて、画面の中央には `openshift-logging` namespace にあるすべてのポッドからのログが表示されているはずです。
 
-Of course, you may add more filters to refine the query.
+もちろん、さらにフィルタを追加してクエリを絞り込むこともできます。
 
-One other neat option that Kibana allows you to do is save queries to use for
-later. To save a query do the following:
+Kibanaでは、クエリを保存して後で使えるようにすることができます。クエリを保存するには、以下のようにします。:
 
-1. click on `Save` at the top of the screen.
+1. 画面上部の `Save` をクリックする。
 
-2. Type in the name you would like to save it as. In this case, let's type in
-`openshift-logging Namespace`
+2. 保存したい名前を入力します。ここでは、`openshift-logging Namespace` と入力します。
 
-Once this has been saved, it can be used at a later time by hitting the
-`Open` button and selecting this query.
+一度保存しておけば、後で `Open` ボタンを押してこのクエリを選択することで利用することができます。
 
-Please take time to explore the _Kibana_ page and get experience by adding
-and doing more queries. This will be helpful when using a production cluster,
-you will be able to get the exact logs that you are looking for in a single
-place.
+時間をかけて _Kibana_ のページを探索し、より多くのクエリを追加したり実行したりして経験を積んでください。
+これは本番環境のクラスタを使用する際に役立つでしょう。
+探しているログをこのコンソールから取得することができるようになります。
