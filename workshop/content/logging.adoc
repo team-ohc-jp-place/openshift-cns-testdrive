@@ -34,10 +34,10 @@ EFK スタックは OpenShift の上で動作します。
 
 ### OpenShift ロギングをデプロイする
 
-OpenShift Container Platform クラスタロギングは、デフォルト構成で使用するように設計されており、中小規模の OpenShift Container Platform クラスタ向けに調整されています。
-以降のインストール手順には、サンプルの Cluster Logging Custom Resource（CR）が含まれており、これを使用してクラスタロギングインスタンスを作成し、クラスタロギングの導入を構成することができます。
+OpenShift Container Platform Cluster Logging は、デフォルト構成で使用するように設計されており、中小規模の OpenShift Container Platform クラスタ向けに調整されています。
+以降のインストール手順には、サンプルの Cluster Logging Custom Resource（CR）が含まれており、これを使用して Cluster Logging インスタンスを作成し、Cluster Logging の導入を構成することができます。
 
-デフォルトのクラスタロギングインストールを使用する場合は、サンプルCRを直接使用できます。
+デフォルトの Cluster Logging インストールを使用する場合は、サンプルCRを直接使用できます。
 
 配置をカスタマイズしたい場合は、必要に応じてサンプル CR に変更を加えます。
 以下では、Cluster Logging インスタンスのインストール時に行うことができる構成、またはインストール後に変更することができる構成について説明します。
@@ -379,8 +379,6 @@ Kibanaでは、クエリを保存して後で使えるようにすることが�
 2. 保存したい名前を入力します。ここでは、`openshift-logging Namespace` と入力します。
 
 一度保存しておけば、後で `Open` ボタンを押してこのクエリを選択することで利用することができます。
-
-Please take time to explore the _Kibana_ page and get experience by adding and doing more queries. This will be helpful when using a production cluster, you will be able to get the exact logs that you are looking for in a single place.
 
 時間をかけて _Kibana_ のページを探索し、より多くのクエリを追加したり実行したりして経験を積んでください。
 これは本番環境のクラスタを使用する際に役立つでしょう。
