@@ -142,7 +142,7 @@ Checking connectivity between Pod A and Pod B............ FAILED!
 これは、`netproj-a` プロジェクトの Pod が `netproj-b` プロジェクトの　Pod に接続できなかったことを意味します (期待通りの動作です)。
 
 ### アクセス許可
-Network Policy ベースの SDN では、複数の `NetworkPolicy` CR を作成することで、プロジェクト内の個々の Pod や*Pod のグループへのアクセスを許可することができる。
+Network Policy ベースの SDN では、複数の `NetworkPolicy` CR を作成することで、プロジェクト内の個々の Pod や　Pod のグループへのアクセスを許可することができます。
 
 以下は、`run: ose` というラベルを持つ プロジェクト 内のすべての Pod に対して、TCP 上の 5000 番ポートへのアクセスを許可します。
 `netproj-b` プロジェクトの Pod はこのラベルを持っています。
