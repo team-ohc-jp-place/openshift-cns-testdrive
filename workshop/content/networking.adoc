@@ -7,16 +7,6 @@ OpenShift は Open vSwitch をベースにしたプラットフォーム内部�
 OpenShift Network Policy SDN プラグインを使用すると、プロジェクトは OpenShift の SDN 内のネットワークインフラストラクチャを完全に分離することができます。
 OpenShift の *プロジェクト* は、 RBAC を通じてリソースを分離しているのを見たことがあると思いますが、ネットワークポリシー SDN プラグインは、ポッドとネームスペースのラベルセレクターを使ってプロジェクト内のポッドを分離することができます。
 
-
-The network policy SDN plugin was introduced in OpenShift 3.7, and more
-information about it and its configuration can be found in the
-link:https://docs.openshift.com/container-platform/3.11/architecture/networking/sdn.html[networking
-documentation^]. Additionally, other vendors are working with the upstream
-Kubernetes community to implement their own SDN plugins, and several of these
-are supported by the vendors for use with OpenShift. These plugin
-implementations make use of appc/CNI, which is outside the scope of this lab.
-
-
 OpenShift 3.7でネットワークポリシーSDNプラグインが導入され、さらにその設定に関する情報は
 link:https://docs.openshift.com/container-platform/3.11/architecture/networking/sdn.html[networking documentation^]で見る事ができます。
 さらに、他のベンダーは、アップストリームの Kubernetes コミュニティと強力して、独自の SDN プラグインを実装し、ベンダーのサポートが提供されています。
@@ -76,7 +66,7 @@ ose-1-vj2gn    1/1     Running     0          30s
 
 `netproj-b` *Project* 内の Pod の TCP ポート 5000 に接続するために、`netproj-a` *Project* 内のポッド内でコマンドを実行します。
 
-### Test Connectivity (should work)
+### 接続性のテスト #1 (should work)
 いくつかの *プロジェクト* と *Pod* ができたので、`netproj-a` *Project* の *Pod* と `netproj-b` *Project* の *Pod* の接続性をテストしてみましょう。
 
 2つの Pod 間の接続性をテストするには、次のコマンドを実行します。:
@@ -129,7 +119,7 @@ spec:
 oc create -n netproj-b -f {{ HOME_PATH }}/support/network-policy-block-all.yaml
 ----
 
-### 接続性8のテスト #2 (should fail)
+### 接続性のテスト #2 (should fail)
 "block all by default" `NetworkPolicy` CR が適用されたため、`netproj-a` *Project* の *Pod* と`netproj-b` *Project*の *Pod* 間の接続がブロックされるようになりました。
 
 次のコマンドでテストを行います。:
