@@ -2,7 +2,7 @@
 
 以前のラボでは、インフラノードを作成し、 https://docs.openshift.com/container-platform/4.3/nodes/scheduling/nodes-scheduler-node-selectors.html[nodeSelector] を使用して、ワークロードを配置する場所を制御しました。
 あるタスクを実行するために、どのようにノードをセットするかを見てきました。
- `nodePlacement` 内の `nodeSelector` は、あるノードのセットに Pod を引き寄せ居ます。
+ `nodePlacement` 内の `nodeSelector` は、あるノードのセットに Pod を引き寄せます。
 しかし、反対に、Pod をなるノードから遠ざけたい場合は、どうすればいいでしょう？
 
 Taint された(汚された)ノード上でポッドが動作しないようにする方法があります。
