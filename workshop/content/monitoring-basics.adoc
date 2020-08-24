@@ -1,23 +1,16 @@
 ## OpenShift Monitoring
-In this lab you will explore various aspects of the builtin OpenShift
-Monitoring. This includes an overview of the OpenShift Alertmanager UI,
-accessing the Prometheus web console, running PromQL (Prometheuses Query
-Language) queries to inspect the cluster and finally looking at Grafana
-dashboards.
+このラボでは、OpenShift Monitoring　機能のさまざまな側面を探ります。
+これには、OpenShift Alertmanager UI の概要、Prometheus ウェブコンソールへのアクセス、PromQL (Prometheuses Query Language) クエリの実行によるクラスタの検査、最後に Grafana ダッシュボードの確認が含まれます。
 
 ### OpenShift Monitoring
 
-OpenShift Container Platform includes a pre-configured, pre-installed, and
-self-updating monitoring stack that is based on the Prometheus open source
-project and its wider eco-system. It provides monitoring of cluster
-components and includes a set of alerts to immediately notify the cluster
-administrator about any occurring problems and a set of Grafana dashboards.
-The cluster monitoring stack is only supported for monitoring OpenShift
-Container Platform clusters.
+OpenShift Container Platformには、Prometheusオープンソースプロジェクトとその広範なエコシステムをベースにした、設定済み、プリインストール済み、自己更新型の監視スタックが含まれています。
+これはクラスタコンポーネントの監視を提供し、発生した問題をクラスタ管理者に即座に通知する一連のアラートと一連の Grafana ダッシュボードが含まれています。
+クラスタ監視スタックは、OpenShift Container Platform クラスタの監視にのみサポートされています。
 
 #### Examine Alerting Configuration
 
-1. Login to the link:{{ MASTER_URL }}[OpenShift Web Console] with the kubeadmin credentials.
+1. リンク先:{{MASTER_URL }}[OpenShift Web Console]にkubeadminの資格情報でログインします。
 +
 [source,role="copypaste"]
 ----
@@ -31,53 +24,51 @@ kubeadmin
 +
 [WARNING]
 ====
-You will receive a self-signed certificate error in your browser when you
-first visit the OpenShift Web console. When OpenShift is installed, by default, a CA
-and SSL certificates are generated for all inter-component communication
-within OpenShift, including the web console.
+OpenShift の Web コンソールに最初にアクセスすると、ブラウザに自己署名証明書のエラーが表示されます。
+OpenShift をインストールすると、デフォルトでは、Web コンソールを含む OpenShift 内のすべてのコンポーネント間通信に対して CA 証明書と SSL 証明書が生成されます。
 ====
 +
-1. On the left hand side, click on the "Monitoring" drop down.
-1. Click on "Alerting". This is the OpenShift console's view of the alert configuration.
+1. 左側の「Monitoring」ドロップダウンをクリックします。
+1. 「Alerting」をクリックします。OpenShift コンソールのアラート設定の表示です。
 
-The Alerting tab shows you information about currently configured and/or
-active alerts. You can see and do several things:
+「Alerting」タブには、現在設定されているアラートおよび/またはアクティブなアラートに関する情報が表示されます。
+を見たり、いくつかのことをすることができます。:
 
-1. Filter alerts by their names.
-1. Filter the alerts by their states. To fire, some alerts need a certain
-  condition to be true for the duration of a timeout. If a condition of an
-  alert is currently true, but the timeout has not been reached, such an alert
-  is in the Pending state.
-1. Alert name.
-1. Description of an alert.
-1. Current state of the alert and when the alert went into this state.
-1. Value of the Severity label of the alert.
-1. Actions you can do with the alert.
+1. アラートを名前でフィルタリングします。
+1. 状態によってアラートをフィルタリングします。発火するためには、いくつかのアラートはタイムアウトの間、特定の条件が true である必要があります。アラートの条件が現在 true であるが、タイムアウトに達していない場合、そのようなアラートは保留状態になります。
+1. アラート名。
+1. アラートの内容。
+1. 現在のアラートの状態とアラートがいつこの状態になったか。
+1. アラートの深刻度ラベルの値。
+1. アラートでできるアクション。
 
-You'll also note that you can click directly into the Alertmanager UI with a
-link that's at the top of this page.
+また、このページの上部にあるリンクをクリックして、直接 Alertmanager UI に入ることもできます。
 
 ##### Metrics UI (Prometheus Console)
-In addition to the Alerting screen, OpenShift's built-in monitoring provides
-an interface to access metrics collected by Prometheus using the link:https://prometheus.io/docs/prometheus/latest/querying/basics/[Prometheus
-Query Language (PromQL)].
+アラート画面に加えて、OpenShift のビルトインモニタリングでは、Prometheus が収集したメトリクスにアクセスするためのインターフェイスを提供しています:https://prometheus.io/docs/prometheus/latest/querying/basics/[Prometheus
+クエリ言語（PromQL）].
 
-1. On the left hand side of the OpenShift Console, under the "Monitoring" section, click the link for "Metrics".
+1.OpenShift Console の左側の「Monitoring」セクションで、「Metrics」のリンクをクリックします。
 
 ##### Running Prometheus Queries
-Let's run a query to see the resources memory limit all pod definitions have defined.
+クエリを実行して、すべてのポッド定義で定義されているリソースのメモリ制限を確認してみましょう。
 
-1. Copy and paste the following query into the expression text box:
+1. 次のクエリをコピーして、式のテキストボックスに貼り付けます。:
 +
 [source,role="copypaste"]
 ----
 sum(kube_pod_container_resource_limits_memory_bytes)/(1024^3)
 ----
 +
-1. Click the "Run Queries" button
+1. "Run Queries" をクリックします。
 1. You should now see a timeseries with a value in the list. This value is
   the latest gathered value for the timeseries as defined by this query.
   You will also see a graph showing the value over the last time period (defaults to 30m).
+
+これで、リストの中に値を持つ時系列が表示されるはずです。この値は、このクエリで定義された時系列の最新の値です。
+  また、過去の期間の値を示すグラフも表示されます（デフォルトは30m）。
+
+
 
 Now let's run a query to see the cpu usage for the entire cluster.
 
