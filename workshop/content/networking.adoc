@@ -64,10 +64,10 @@ ose-1-deploy   0/1     Completed   0          38s
 ose-1-vj2gn    1/1     Running     0          30s
 ```
 
-`netproj-b` プロジェクト内の Pod の TCP ポート 5000 に接続するために、`netproj-a` プロジェクト内のポッド内でコマンドを実行します。
+`netproj-b` プロジェクト内の Pod の TCP ポート 5000 に接続するために、`netproj-a` プロジェクト内の Pod 内でコマンドを実行します。
 
 ### 接続性のテスト #1 (should work)
-いくつかのプロジェクトと Pod ができたので、`netproj-a` *Project* の *Pod* と `netproj-b` プロジェクトの Pod の接続性をテストしてみましょう。
+いくつかのプロジェクトと Pod ができたので、`netproj-a` プロジェクトの Pod と `netproj-b` プロジェクトの Pod の接続性をテストしてみましょう。
 
 2つの Pod 間の接続性をテストするには、次のコマンドを実行します。:
 
