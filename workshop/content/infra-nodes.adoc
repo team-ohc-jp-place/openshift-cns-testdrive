@@ -1,12 +1,11 @@
 ## OpenShift Infrastructure Nodes
-The OpenShift subscription model allows customers to run various core
-infrastructure components at no additional charge. In other words, a node
-that is only running core OpenShift infrastructure components is not counted
-in terms of the total number of subscriptions required to cover the
-environment.
+OpenShiftのサブスクリプションモデルでは、顧客はさまざまなコアを実行することができます。
+インフラストラクチャコンポーネントを追加料金なしで利用できます。つまり、ノード
+コアのOpenShiftインフラストラクチャコンポーネントのみを実行している場合はカウントされません。
+をカバーするのに必要な総加入者数に換算すると
+の環境のことを指します。
 
-OpenShift components that fall into the infrastructure categorization
-include:
+インフラストラクチャの分類に該当するOpenShiftコンポーネント
 
 * kubernetes and OpenShift control plane services ("masters")
 * router
@@ -15,33 +14,33 @@ include:
 * cluster aggregated logging
 * service brokers
 
-Any node running a container/pod/component not described above is considered
-a worker and must be covered by a subscription.
+上記に記載されていないコンテナ/ポッド/コンポーネントを実行しているノードはすべて
+ワーカーノードであり、サブスクリプションでカバーされている必要があります。
 
-### More MachineSet Details
-In the `MachineSets` exercises you explored using `MachineSets` and scaling
-the cluster by changing their replica count. In the case of an infrastructure
-node, we want to create additional `Machines` that have specific Kubernetes
-labels. Then, we can configure the various infrastructure components to run
-specifically on nodes with those labels.
+### 機械セットの詳細
+`MachineSets`の演習では、`MachineSets`を使用して、スケーリングを検討しました。
+のレプリカ数を変更することで、クラスタを変更することができます。インフラストラクチャの場合
+ノードを使用して、特定の Kubernetes
+のラベルを使用しています。そして、さまざまなインフラストラクチャコンポーネントを設定して、以下のように実行するようにします。
+は、これらのラベルを持つノードに特化しています。
 
 [NOTE]
 ====
-Currently the operators that are used to control infrastructure components do
-not all support the use of taints and tolerations. This means that
-infrastructure workload will go onto the infrastructure nodes, but other
-workload is not specifically prevented from running on the infrastructure
-nodes. In other words, user workload may commingle with infrastructure
-workload until full taint/toleration support is implemented in all operators.
+現在、インフラストラクチャコンポーネントを制御するために使用される演算子は、以下のようなことを行います。
+テインツやトレラントの使用をすべてが支持しているわけではありません。これは、以下のことを意味します。
+インフラストラクチャのワークロードはインフラストラクチャノードに移行しますが、他の
+ワークロードがインフラストラクチャ上で実行されることが特に妨げられているわけではありません。
+ノードを使用しています。言い換えれば、ユーザーのワークロードはインフラストラクチャと混ざり合う可能性があります。
+テイン/トレレーションのサポートがすべてのオペレータに完全に実装されるまでの間、作業負荷を軽減することができます。
 
-The use of taints/tolerations is not covered in any of these exercises.
+テインツ/トレレーションの使用は、これらの演習ではカバーされていません。
 ====
 
-To accomplish this, you will create additional `MachineSets`.
+これを実現するために、`MachineSets`を追加で作成します。
 
-In order to understand how `MachineSets` work, run the following.
+`MachineSets`がどのように動作するかを理解するためには、以下を実行してください。
 
-This will allow you to follow along with some of the following discussion.
+これにより、以下の議論の一部をフォローすることができます。
 
 [source,bash,role="copypaste copypaste-warning"]
 ----
@@ -49,8 +48,8 @@ oc get machineset -n openshift-machine-api -o yaml cluster-5fa6-hx2ml-worker-us-
 ----
 
 #### Metadata
-The `metadata` on the `MachineSet` itself includes information like the name
-of the `MachineSet` and various labels.
+MachineSet`の`metadata`自体には、名前のような情報が含まれています。
+の`MachineSet`と様々なラベルの
 
 ```YAML
 metadata:
