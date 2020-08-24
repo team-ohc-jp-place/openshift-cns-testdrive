@@ -61,53 +61,42 @@ sum(kube_pod_container_resource_limits_memory_bytes)/(1024^3)
 ----
 +
 1. "Run Queries" をクリックします。
-1. You should now see a timeseries with a value in the list. This value is
-  the latest gathered value for the timeseries as defined by this query.
-  You will also see a graph showing the value over the last time period (defaults to 30m).
+1. これで、リストの中に値を持つ時系列が表示されるはずです。この値は、このクエリで定義された時系列の最新の値です。
+また、過去の期間の値を示すグラフも表示されます（デフォルトは30m）。
 
-これで、リストの中に値を持つ時系列が表示されるはずです。この値は、このクエリで定義された時系列の最新の値です。
-  また、過去の期間の値を示すグラフも表示されます（デフォルトは30m）。
+それでは、クラスタ全体の CPU 使用量を確認するためのクエリを実行してみましょう。
 
-
-
-Now let's run a query to see the cpu usage for the entire cluster.
-
-1. Click "Add Query"
-1. Copy and paste the following query into the query text box:
+1. "Add Query"をクリックします。
+1. 次のクエリをコピーして、クエリテキストボックスに貼り付けます。:
 +
 [source,role="copypaste"]
 ----
 cluster:cpu_usage_cores:sum
 ----
 +
-1. Click the "Run Queries" button
-1. You should now see a timeseries with a value in the list. This value is
-  the latest gathered value for the timeseries as defined by this query.
-  You'll also see that your new query got plotted on the same graph.
+1."Run Queries" をクリックします。
+1. これで、リストの中に値を持つ時系列が表示されるはずです。
+この値は、このクエリで定義された時系列の最新の値です。
+また、新しいクエリが同じグラフにプロットされていることがわかります。
+ 
+Metrics UI を使用すると、クラスタについて収集した情報に対して、強力なクエリを実行することができます。
 
-The metrics interface lets you run powerful queries on the information
-collected about your cluster.
-
-You'll also note that you can click directly into the Prometheus UI with a
-link that's at the top of this page.
+また、このページの上部にあるリンクをクリックすると、Prometheus の UI に直接入ることができることにも注意してください。
 
 ##### Dashboards UI (Grafana)
-In addition to the Metrics UI, OpenShift monitoring provides a preconfigured
-"Dashboards" UI (aka "Grafana"). The purpose of these Dashboards is to show
-multiple metrics in easy to consume form graphed over time.
+Metrics UI 加えて、OpenShift モニタリングにはあらかじめ設定された「Dashboards」UI（別名「Grafana」）が用意されています。
+これらのダッシュボードの目的は、複数のメトリクスを経時的にグラフ化して見やすい形で表示することです。
 
-1. Click the "Dashboards" link under the "Monitoring" section on the left hand side.
+1. 左側の「Monitoring」セクションの下にある「Dashboards」リンクをクリックします。
 +
 [WARNING]
 ====
-You will receive a self-signed certificate error in your browser when you
-first visit the Dashboards UI console. When OpenShift is installed, by default, a CA
-and SSL certificates are generated for all inter-component communication
-within OpenShift, including the Grafana dashboard.
+最初に Dashboards UIコ ンソールにアクセスすると、ブラウザに自己署名証明書のエラーが表示されます。
+OpenShiftをインストールすると、デフォルトでは、Grafana ダッシュボードを含む OpenShift 内のすべてのコンポーネント間通信に対して CA 証明書と SSL 証明書が生成されます。
 ====
 +
-1. Click "Log in with OpenShift" button.
-1. Click "kube:admin" if the option is provided.
+1. "Log in with OpenShift" をクリックします。
+1. もし "kube:admin" がある場合は、クリックします。
 +
 [source,role="copypaste"]
 ----
@@ -119,13 +108,10 @@ kubeadmin
 {{ KUBEADMIN_PASSWORD }}
 ----
 +
-1. On the "Authorize Access" page, click the "Allow selected permissions" button.
-1. This is the Grafana "Home Dashboard" page.
-1. Click on the "Home" dropdown at the top of the page
-1. Select the "Kubernetes / Compute Resources / Cluster" dashboard.
-  The "Kubernetes / Compute Resources / Cluster" dashbard shows an overview
-  of the resources currently committed and actively being used by the
-  cluster.
-+
+1. 「Authorize Access」ページで、「Allow selected permissions」ボタンをクリックします。
+1. これが Grafana の 「Home Dashboard」 ページです。
+1. ページトップの「Home」ドロップダウンをクリックします。
+1.「Kubernetes / Compute Resources / Cluster」 ダッシュボードを選択します。
+  「Kubernetes / Compute Resources / Cluster」ダッシュボードは、現在、クラスターにより、コミットされ使用されているリソースの概要を表示します。+
 .Dashboards UI (Grafana)
 image::images/grafana_dashboard.png[]
