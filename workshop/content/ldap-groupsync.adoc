@@ -1,43 +1,35 @@
 ## 外部認証プロバイダの設定
+OpenShiftは多くの異なる認証プロバイダをサポートしています。完全なリストは link:https://docs.openshift.com/container-platform/4.5/authentication/understanding-identity-provider.html[understanding
+identity provider configuration] に記載されています。最も一般的に使用されている認証プロバイダの1つはLDAPです。Microsoft Active Directoryによって提供されているか、他のソースから提供されているかにはよりません。
 
-OpenShift supports a number of different authentication providers, and you can
-find the complete list in the
-link:https://docs.openshift.com/container-platform/4.0/authentication/understanding-identity-provider.html[understanding
-identity provider configuration]. One of the most commonly used authentication
-providers is LDAP, whether provided by Microsoft Active Directory or by other
-sources.
+OpenShiftはLDAPサーバーに対してユーザ認証を実行することができます。LDAPのグループメンバーシップに基づいて、グループメンバーシップと特定のRBAC属性を設定することもできます。
 
-OpenShift can perform user authentication against an LDAP server, and can also
-configure group membership and certain RBAC attributes based on LDAP group
-membership.
+### 前提知識: LDAPの構造
 
-### Background: LDAP Structure
+この環境では、以下のユーザグループでLDAPを提供しています。
 
-In this environment we are providing LDAP with the following user groups:
+* `ose-user`: OpenShiftにアクセスできるユーザ
+** OpenShiftにログインできるユーザは、このグループのメンバーでなければなりません。
+** 以下のユーザはすべてこのグループに属しています。
+* `ose-normal-dev`: 通常のOpenShiftユーザ
+** 特別な権限を持たない正規のOpenShiftユーザ
+** 例: `normaluser1`, `teamuser1`, `teamuser2`
+* `ose-fancy-dev`: 特殊なOpenShiftユーザ
+** いくつかの特別な権限が付与されているOpenShiftのユーザ
+** 例: `fancyuser1`, `fancyuser2`
+* `ose-teamed-app`: チームに属するアプリケーションユーザ
+** 同じOpenShift *Project* にアクセスできるユーザのグループ
+** 例: `teamuser1`, `teamuser2`
 
-* `ose-user`: Users with OpenShift access
-** Any users who should be able to log-in to OpenShift must be members of this
-group
-** All of the below mentioned users are in this group
-* `ose-normal-dev`: Normal OpenShift users
-** Regular users of OpenShift without special permissions
-** Contains: `normaluser1`, `teamuser1`, `teamuser2`
-* `ose-fancy-dev`: Fancy OpenShift users
-** Users of OpenShift that are granted some special privileges
-** Contains: `fancyuser1`, `fancyuser2`
-* `ose-teamed-app`: Teamed app users
-** A group of users that will have access to the same OpenShift *Project*
-** Contains: `teamuser1`, `teamuser2`
-
-#### Examine the OAuth configuration
-Since this is a pure, vanilla OpenShift 4 installation, it has the default OAuth resource. You can examine that OAuth configuration with the following:
+#### OAuth の設定を調べる
+この環境は何も手を加えていない「バニラ」なOpenShift 4のインストールなので、デフォルトのOAuthリソースを持っています。そのOAuth設定を以下で調べることができます。
 
 [source,bash,role="execute"]
 ----
 oc get oauth cluster -o yaml
 ----
 
-You will see something like:
+以下のように表示されます。
 
 ```YAML
 apiVersion: config.openshift.io/v1
@@ -54,17 +46,14 @@ metadata:
 spec: {}
 ```
 
-There are a few things to note here. Firstly, there's basically nothing here!
-How does the `kubeadmin` user work, then? The OpenShift OAuth system knows to
-look for a `kubeadmin` *Secret* in the `kube-system` *Namespace*. You can
-examine it with the following:
+ここで注意すべきことがいくつかあります。まず、ここには基本的に何もありません!では、`kubeadmin` ユーザはどのように動作するのでしょうか?OpenShift OAuthシステムは、`kube-system` *Namespace* にある`kubeadmin` *Secret* を探すことができます。次のように調べることができます。
 
 [source,bash,role="execute"]
 ----
 oc get secret -n kube-system kubeadmin -o yaml
 ----
 
-You will see something like:
+以下のように表示されます。
 
 ```YAML
 apiVersion: v1
@@ -81,14 +70,9 @@ metadata:
 type: Opaque
 ```
 
-That *Secret* contains the encoded hash of the `kubeadmin` password. This
-account will continue to work even after we configure a new `OAuth`. If you
-want to disable it, you would need to delete the secret.
+この `Secret` には、`kubeadmin` パスワードがエンコードされたハッシュが含まれています。このアカウントは、新しい `OAuth` を設定した後も動作します。このアカウントを無効にしたい場合は、Secretを削除する必要があります。
 
-In a real-world environment, you will likely want to integrate with your
-existing identity management solution. For this lab we are configuring LDAP
-as our `identityProvider`. Here's an example of the OAuth configuration. Look
-for the element in `identityProviders` with `type: LDAP` like the following:
+現実世界の環境では、既存のID管理ソリューションがあり、これと統合したいと思うでしょう。このラボでは、`identityProvider` としてLDAPを構成しています。以下はOAuth構成の例です。`identityProviders` で `type.LDAP` の要素に注目してみましょう。
 
 [source,yaml]
 ----
@@ -124,45 +108,32 @@ spec:
     accessTokenMaxAgeSeconds: 86400
 ----
 
-Some notable fields under `identityProviders:`:
+`identityProviders:` 下にあるいくつかの注目すべきフィールド
 
-<1> `name`: The unique ID of the identity provider. It is possible to have
-multiple authentication providers in an OpenShift environment, and OpenShift is
-able to distinguish between them.
+<1> `name`: プロバイダの一意のID。OpenShift環境では複数の認証プロバイダを持つことが可能で、OpenShiftはそれらを区別することができます。
 
-<2> `mappingMethod: claim`: This section has to do with how usernames are
-assigned within an OpenShift cluster when multiple providers are configured. See
-the
-link:https://docs.openshift.com/container-platform/4.0/authentication/understanding-identity-provider.html#identity-provider-parameters-understanding-identity-provider[Identity provider parameters] section for more information.
+<2> `mappingMethod: claim`: このセクションは、複数のプロバイダが構成されている場合に、OpenShiftクラスタ内でユーザ名がどのように割り当てられるかに関係しています。詳細については、link:https://docs.openshift.com/container-platform/4.5/authentication/understanding-identity-provider.html#identity-provider-parameters-understanding-identity-provider[Identity provider parameters] のセクションを参照してください。
 
-<3> `attributes`: This section defines the LDAP fields to iterate over and
-assign to the fields in the OpenShift user's "account". If any attributes are
-not found / not populated when searching through the list, the entire
-authentication fails. In this case we are creating an identity that is
-associated with the LDAP `dn`, an email address from the LDAP `mail`, a name from
-the LDAP `cn`, and a username from the LDAP `uid`.
+<3> `attributes`: このセクションでは、OpenShiftユーザの「アカウント」のフィールドに反復して割り当てるLDAPフィールドを定義します。リストを検索する際に属性が見つからない場合や、属性が入力されていない場合は認証全体が失敗します。上の例の場合は、LDAP `dn` からidを、LDAP `mail` からemailアドレスを、LDAP `cn` からの名前を、LDAP `uid` からユーザ名を、それぞれ関連付けます。
 
-<4> `bindDN`: When searching LDAP, bind to the server as this user.
+<4> `bindDN`: LDAPを検索する際に、このユーザとしてサーバーにバインドします。
 
-<5> `bindPassword`: Reference to the Secret that has the password to use when binding for searching.
+<5> `bindPassword`: 検索時にバインドする際に使用するパスワードを持つSecretを参照します。
 
-<6> `ca`: Reference to the ConfigMap that contains the CA certificate to use for
-validating the SSL certificate of the LDAP server.
+<6> `ca`: LDAPサーバーのSSL証明書を検証するために使用するCA証明書を含むConfigMapの参照。
 
-<7> `url`: Identifies the LDAP server and the search to perform.
+<7> `url`: LDAPサーバーと実行する検索。
 
-For more information on the specific details of LDAP authentication in
-OpenShift you can refer to the
-link:https://docs.openshift.com/container-platform/4.1/authentication/identity_providers/configuring-ldap-identity-provider.html[Configuring
-an LDAP identity provider^] documentation.
+OpenShiftにおけるLDAP認証の具体的な詳細については、link:https://docs.openshift.com/container-platform/4.5/authentication/identity_providers/configuring-ldap-identity-provider.html[Configuring
+an LDAP identity provider]のドキュメントを参照してください。
 
-To setup the LDAP identity provider we must:
+LDAP IDプロバイダを設定するには、以下を行う必要があります。
 
-1. Create a `Secret` with the bind password.
-2. Create a `ConfigMap` with the CA certificate.
-3. Update the `cluster` `OAuth` object with the LDAP identity provider.
+1. バインドパスワードを使用して `Secret` を作成します。
+2. CA 証明書を使用して `ConfigMap` を作成します。
+3. `cluster` `OAuth` オブジェクトを LDAP IDプロバイダで更新します。
 
-As the `kubeadmin` user apply the OAuth configuration with `oc`.
+`kubeadmin` ユーザとして `oc` で OAuth 設定を適用します。
 
 [source,bash,role="execute"]
 ----
@@ -174,47 +145,36 @@ oc apply -f {{ HOME_PATH }}/support/oauth-cluster.yaml
 
 [NOTE]
 ====
-We use `apply` because there is an existing `OAuth` object. If you used
-`create` you would get an outright error that the object already exists. You
-still get a warning, but that's OK.
+`apply` を使うのは既存の `OAuth` オブジェクトがあるためです。もし `create` を使用した場合、オブジェクトが既に存在しているというエラーが発生するでしょう。`apply` でも警告が表示されますが、それは問題ありません。
 ====
 
-#### Syncing LDAP Groups to OpenShift Groups
-In OpenShift, groups can be used to manage users and control permissions for
-multiple users at once. There is a section in the documentation on how to
-link:https://docs.openshift.com/container-platform/3.11/install_config/syncing_groups_with_ldap.html[sync
-groups with LDAP^]. Syncing groups involves running a program called `groupsync`
-when logged into OpenShift as a user with `cluster-admin` privileges, and using
-a configuration file that tells OpenShift what to do with the users it finds in
-the various groups.
+#### LDAPグループをOpenShiftグループに同期する
+OpenShiftでは、グループを使用してユーザを管理し、複数のユーザの権限を一度に制御することができます。LDAPでグループを同期する方法については、link:https://docs.openshift.com/container-platform/3.11/install_config/syncing_groups_with_ldap.html[sync
+groups with LDAP]の中にセクションがあります。グループを同期するには、`cluster-admin` 権限を持つユーザとしてOpenShiftにログインした状態で `groupsync` というプログラムを実行し、OpenShiftが様々なグループ内で見つけたユーザをどうするかを指示する設定ファイルを使う必要があります。
 
-We have provided a `groupsync` configuration file for you:
+このラボでは次のような `groupsync` の設定ファイルを提供しています。
 
-View configuration file
 [source,bash,role="execute"]
 ----
 cat {{ HOME_PATH }}/support/groupsync.yaml
 ----
 
-Without going into too much detail (you can look at the documentation), the
-`groupsync` config file does the following:
+あまり詳細には触れませんが (ドキュメントを見ることができます)、`groupsync` 設定ファイルは以下のようなことをします。
 
-* searches LDAP using the specified bind user and password
-* queries for any LDAP groups whose name begins with `ose-`
-* creates OpenShift groups with a name from the `cn` of the LDAP group
-* finds the members of the LDAP group and then puts them into the created
-  OpenShift group
-* uses the `dn` and `uid` as the UID and name attributes, respectively, in
-  OpenShift
+* 指定されたバインドユーザとパスワードを使って LDAPを検索する。
+* 名前が `ose-` で始まるLDAPグループに対してクエリを実行する。
+* LDAPグループの `cn` からとった名前を持つOpenShiftグループを作成する。
+* LDAPグループのメンバーを見つけ、作成されたOpenShiftグループに入れる。
+* OpenShiftでは `dn` と `uid` をそれぞれUIDとname属性として使用します。
 
-Execute the `groupsync`:
+`groupsync` を実行します。
 
 [source,bash,role="execute"]
 ----
 oc adm groups sync --sync-config={{ HOME_PATH }}/support/groupsync.yaml --confirm
 ----
 
-You will see output like the following:
+以下のような出力になります。
 
 ----
 group/ose-fancy-dev
@@ -223,18 +183,16 @@ group/ose-normal-dev
 group/ose-teamed-app
 ----
 
-What you are seeing is the *Group* objects that have been created by the
-`groupsync` command. If you are curious about the `--confirm` flag, check the
-output of the help with `oc adm groups sync -h`.
+今見ているのは、`groupsync` コマンドで作成された *Group* オブジェクトです。もし `--confirm` フラグが気になる場合は、`oc adm groups sync -h` でヘルプの出力を確認してください。
 
-If you want to see the *Groups* that were created, execute the following:
+作成された *Groups* を見たい場合は、以下を実行して下さい。
 
 [source,bash,role="execute"]
 ----
 oc get groups
 ----
 
-You will see output like the following:
+以下のような出力が表示されます。
 
 ----
 NAME             USERS
@@ -244,14 +202,14 @@ ose-teamed-app   teamuser1, teamuser2
 ose-user         fancyuser1, fancyuser2, normaluser1, teamuser1, teamuser2
 ----
 
-Take a look at a specific group in YAML:
+YAMLで特定のグループを見てみましょう。
 
 [source,bash,role="execute"]
 ----
 oc get group ose-fancy-dev -o yaml
 ----
 
-The YAML looks like:
+YAMLは以下のようになっています。
 
 [source,yaml]
 ----
@@ -274,37 +232,29 @@ users:
 - fancyuser2
 ----
 
-OpenShift has automatically associated some LDAP metadata with the *Group*, and
-has listed the users who are in the group.
+OpenShiftは自動的にいくつかのLDAPメタデータを *Group* に関連付け、グループ内のユーザをリストアップしました。
 
-What happens if you list the *Users*?
+*Users* をリストアップするとどうなるでしょうか?
 
 [source,bash,role="execute"]
 ----
 oc get user
 ----
 
-You will get:
+以下のように出てきます。
 
 ----
 No resources found.
 ----
 
-Why would there be no *Users* found? They are clearly listed in the *Group*
-definition.
+*Users* は *Group* の定義に明確にリストされているのに、なぜ *Users* が見つからないのでしょうか? 
 
-*Users* are not actually created until the first time they try to log in. What
-you are seeing in the *Group* definition is simply a placeholder telling
-OpenShift that, if it encounters a *User* with that specific ID, that it should
-be associated with the *Group*.
+*Users* は、最初にログインしようとするまで実際には作成されません。*Group* の定義に表示されているのは、OpenShiftがその特定のIDを持つ *User* に遭遇した場合、その *User* を *Group* に関連付けるべきであるとOpenShiftに伝えているだけのプレースホルダーです。
 
-#### Change Group Policy
-In your environment, there is a special group of super developers called
-_ose-fancy-dev_ who should have special `cluster-reader` privileges. This is a role
-that allows a user to view administrative-level information about the cluster.
-For example, they can see the list of all *Projects* in the cluster.
+#### グループポリシーの変更
+あなたの環境では、`cluster-reader` という特別な権限を持つ _ose-fancy-dev_ と呼ばれる特別なグループがあります。これは、ユーザがクラスタに関する管理者レベルの情報を閲覧できるようにする役割です。例えば、クラスタ内のすべての *Projects* のリストを見ることができます。
 
-Change the policy for the `ose-fancy-dev` *Group*:
+`ose-fancy-dev` *Group* のポリシーを変更します。
 
 [source,bash,role="execute"]
 ----
@@ -313,41 +263,38 @@ oc adm policy add-cluster-role-to-group cluster-reader ose-fancy-dev
 
 [NOTE]
 ====
-If you are interested in the different roles that come with OpenShift, you can
-learn more about them in the
-link:https://docs.openshift.com/container-platform/4.1/authentication/using-rbac.html[role-based access control (RBAC)^] documentation.
+OpenShiftに付属するさまざまなロールに興味がある方は、link:https://docs.openshift.com/container-platform/4.5/authentication/using-rbac.html[Role-Based Access Control (RBAC)^] のドキュメントを参照してください。
 ====
 
-#### Examine `cluster-reader` policy
-Go ahead and login as a regular user:
+#### `cluster-reader` ポリシーを調べる
+通常のユーザでログインしてみましょう。
 
 [source,bash,role="execute"]
 ----
 oc login -u normaluser1 -p Op#nSh1ft
 ----
 
-Then, try to list *Projects*:
+*Projects* をリストしてみると、
 
 [source,bash,role="execute"]
 ----
 oc get projects
 ----
 
-You will see:
+この通り何も見えません。
 
 ----
 No resources found.
 ----
 
-Now, login as a member of `ose-fancy-dev`:
+次に `ose-fancy-dev` のメンバーとしてログインします。
 
 [source,bash,role="execute"]
 ----
 oc login -u fancyuser1 -p Op#nSh1ft
 ----
 
-And then perform the same `oc get projects` and you will now see the list of all
-of the projects in the cluster:
+同じ `oc get projects` を実行すると、クラスタ内のすべての *Projects* のリストが表示されます。
 
 ----
 NAME                                                    DISPLAY NAME                        STATUS
@@ -361,18 +308,17 @@ NAME                                                    DISPLAY NAME            
 ...
 ----
 
-You should now be starting to understand how RBAC in OpenShift Container
-Platform can work.
+これで、OpenShift Container PlatformのRBACがどのように機能するか理解し始めているはずです。
 
-#### Create Projects for Collaboration
-Make sure you login as the cluster administrator:
+#### コラボレーションのためのProjectの作成
+cluster-admin としてログインしてください。
 
 [source,bash,role="execute"]
 ----
 oc login -u system:serviceaccount:lab-ocp-cns:dashboard-user
 ----
 
-Then, create several *Projects* for people to collaborate:
+そして、複数の人で共同作業を行うためにいくつかの *Project* を作成してください。
 
 [source,bash,role="execute"]
 ----
@@ -381,34 +327,21 @@ oc adm new-project app-test --display-name="Application Testing"
 oc adm new-project app-prod --display-name="Application Production"
 ----
 
-You have now created several *Projects* that represent a typical Software
-Development Lifecycle setup. Next, you will configure *Groups* to grant
-collaborative access to these projects.
+これで、典型的なソフトウェア開発ライフサイクルを表す複数の *Project* が作成されました。次に、これらのProjectへの共同アクセスを許可するための *Group* を構成します。
+
 
 [NOTE]
 ====
-Creating projects with `oc adm new-project` does *not* use the project request
-process or the project request template. These projects will not have quotas or
-limitranges applied by default. A cluster administrator can "impersonate" other
-users, so there are several options if you wanted these projects to get
-quotas/limit ranges:
+`oc adm new-project` でProjectを作成しても、Project requestプロセスやProject requestテンプレートは使われません。これらのProjectには、デフォルトではクォータや制限範囲が適用されません。クラスタ管理者は他のユーザに「なりすます」ことで、これらのProjectにクォータや制限範囲を適用したい場合には、いくつかのオプションがあります。
 
-. use `--as` to specify impersonating a regular user with `oc new-project`
-. use `oc process` and provide values for the project request template, piping
-  into create (eg: `oc process ... | oc create -f -`). This will create all of
-  the objects in the project request template, which would include the quota and
-  limit range.
-. manually create/define the quota and limit ranges after creating the projects.
+. 通常のユーザになりすますことを指定するために `--as` を使用して `oc new-project` を指定します。
+. `oc process` を使用して、Project requestテンプレートの値を指定し、createにパイプします(例: `oc process ... | oc create -f -)。これにより、Project requestテンプレート内のすべてのオブジェクトが作成され、その中にはクォータと制限範囲が含まれます。
 
-For these exercises it is not important to have quotas or limit ranges on these
-projects.
+これらの演習では、Projectにクォータや制限範囲を設定することは重要ではありません。
 ====
 
-#### Map Groups to Projects
-As you saw earlier, there are several roles within OpenShift that are
-preconfigured. When it comes to *Projects*, you similarly can grant view, edit,
-or administrative access. Let's give our `ose-teamed-app` users access to edit the
-development and testing projects:
+#### GroupsをProjectにマップする
+先ほど見たように、OpenShift内にはいくつかのロールがあらかじめ設定されています。*Project*に関しても同様に、閲覧(View)、編集(Edit)、管理者アクセスを付与することができます。`ose-teamed-app` のユーザにDevelopment ProjectとTest Projectを編集するためのアクセス権を与えてみましょう。
 
 [source,bash,role="execute"]
 ----
@@ -416,14 +349,14 @@ oc adm policy add-role-to-group edit ose-teamed-app -n app-dev
 oc adm policy add-role-to-group edit ose-teamed-app -n app-test
 ----
 
-And then give them access to view production:
+そして、Productionを閲覧するためのアクセス権を与えます。
 
 [source,bash,role="execute"]
 ----
 oc adm policy add-role-to-group view ose-teamed-app -n app-prod
 ----
 
-Now, give the `ose-fancy-dev` group edit access to the production project:
+次に、`ose-fancy-dev` グループにProduction Projectの編集アクセス権を与えます。
 
 [source,bash,role="execute"]
 ----
@@ -431,7 +364,7 @@ oc adm policy add-role-to-group edit ose-fancy-dev -n app-prod
 ----
 
 #### Examine Group Access
-Log in as `normaluser1` and see what *Projects* you can see:
+`normaluser1` としてログインし、どのような *Projects* が表示されるか確認します。
 
 [source,bash,role="execute"]
 ----
@@ -439,13 +372,13 @@ oc login -u normaluser1 -p Op#nSh1ft
 oc get projects
 ----
 
-You should get:
+このようになるはずです。
 
 ----
 No resources found.
 ----
 
-Then, try `teamuser1` from the `ose-teamed-app` group:
+次に `ose-teamed-app` グループの `teamuser1` で試してみます。
 
 [source,bash,role="execute"]
 ----
@@ -453,7 +386,7 @@ oc login -u teamuser1 -p Op#nSh1ft
 oc get projects
 ----
 
-You should get:
+このようになるはずです。
 
 ----
 NAME       DISPLAY NAME              STATUS
@@ -462,8 +395,7 @@ app-prod   Application Production    Active
 app-test   Application Testing       Active
 ----
 
-You did not grant the team users edit access to the production project. Go ahead
-and try to create something in the production project as `teamuser1`:
+チームユーザにはProduction Projectへの編集アクセス権が付与されていません。次に、Production Projectに `teamuser1` として何かを作成してみてください。
 
 [source,bash,role="execute"]
 ----
@@ -471,7 +403,7 @@ oc project app-prod
 oc new-app docker.io/siamaksade/mapit
 ----
 
-You will see that it will not work:
+以下のようにうまくいかないことが分かります。
 
 ----
 error: can't lookup images: imagestreamimports.image.openshift.io is forbidden: User "teamuser1" cannot create resource "imagestreamimports" in API group "image.openshift.io" in the namespace "app-prod"
@@ -493,7 +425,7 @@ The 'oc new-app' command will match arguments to the following types:
 See 'oc new-app -h' for examples.
 ----
 
-This failure is exactly what we wanted to see.
+このエラーは想定通りのものです。
 
 #### Prometheus
 Now that you have a user with `cluster-reader` privileges (one that can see
