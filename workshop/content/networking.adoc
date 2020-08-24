@@ -1,4 +1,4 @@
-                          ## OpenShift の Network Policy ベースの SDN
+## OpenShift の Network Policy ベースの SDN
 
 OpenShift は Open vSwitch をベースにしたプラットフォーム内部に SDN（Software Defined Network）を持っています。
 この SDN は OpenShift 環境内のアプリケーションコンポーネント間の接続性を提供するために使用されます。
