@@ -9,7 +9,7 @@ OpenShift Container Platformには、Prometheusオープンソースプロジェ
 
 #### Alerting の構成を見てみる
 
-1. リンク先:{{MASTER_URL }}[OpenShift Web Console]にkubeadminの資格情報でログインします。
+1. link:{{MASTER_URL}}[OpenShift Web Console] にkubeadminの資格情報でログインします。
 +
 [source,role="copypaste"]
 ----
