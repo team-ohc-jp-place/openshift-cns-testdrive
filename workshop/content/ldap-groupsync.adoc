@@ -1,4 +1,4 @@
-## Configuring External Authentication Providers
+## 外部認証プロバイダの設定
 
 OpenShift supports a number of different authentication providers, and you can
 find the complete list in the

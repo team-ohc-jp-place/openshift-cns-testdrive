@@ -1,32 +1,32 @@
-## Cluster resource quotas
+## クラスタリソースのクォータ
 
 [WARNING]
 ====
-Before continuing, make sure you've done the LDAP lab.
+続ける前に、LDAPのラボ(「外部認証プロバイダの設定」)を終了して下さい。
 ====
 
-In a previous lab, you worked with quotas and saw how they could be applied to projects. You also set up default quotas, so anytime someone requests a new project; they get assigned the default quota. These project quotas are great for maintaining control over the resources in your cluster.
+前のラボでは、Projectにクォータを適用する方法を見ました。デフォルトのクォータを設定したので、誰かが新しいProjectをリクエストしたときにはいつでもデフォルトのクォータが割り当てられます。このようなProjectクォータは、クラスタ内のリソースを制御するのに最適です。
 
-But what if you want to apply a quota not to individual projects, but accross projects?
+しかし、クォータを個々のProjectではなく、クラスタ全体に適用したい場合はどうでしょうか？
 
-### Use cases
+### ユースケース
 
-There are two primary usecases where you would use `clusterresourcequota` instead of a project based `quota`. One of which, is when you want to set quotas on a specific user. This is useful when you want users to create as much projects as they need (thus achiving great multitenancy), but you want to limit the amount of resource they can consume.
+Projectベースの `quota` の代わりに `clusterresourcequota` を使用する主なユースケースは2つあります。そのうちの一つは、特定のユーザにクォータを設定したい場合です。これは、ユーザに必要なだけのProjectを作成させたい場合に便利(これによりマルチテナンシーを実現します)で、ユーザが消費できるリソースの量を制限したいケースです。
 
-The other use case is if you want to set a quota by application vertical. In this case, you want to set the quota on an application stack wholistically; as an application stack can span multiple OpenShift Projects.
+もう一つのユースケースは、アプリケーションごとにクォータを設定したい場合です。この場合、アプリケーションスタックは複数のOpenShift Projectにまたがっている可能性があります。
 
-In this lab, we will be exploring both use cases.
+このラボでは、両方のユースケースを調査します。
 
-#### Setting quota per user
+#### ユーザーごとのクォータの設定
 
-In order to set a `clusterresourcequota` to a user you need to be `kubeadmin`
+`clusterresourcequota` をユーザに設定するには、`kubeadmin` である必要があります。
 
 [source,bash,role="execute"]
 ----
 oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
 ----
 
-Now, set a quota for the `normaluser1`. We will be using the `annotation` key of `openshift.io/requester=` to identify the projects that will have these quotas assigned to. For this exercise, we will set a hard quota against creating more than 10 pods.
+では、`normaluser1` にクォータを設定します。`openshift.io/requester=` の `annotation` キーを使用して、これらのクォータが適用されるProjectを特定します。この演習では、10個より多くのPodを作成することを禁止するハードクォータを設定します。
 
 [source,bash,role="execute"]
 ----
@@ -37,17 +37,17 @@ oc create clusterquota for-user-normaluser1 \
 
 [NOTE]
 ====
-The syntax is `openshift.io/requester=<username>`.
+構文は `openshift.io/requester=<username>` です。
 ====
 
-View the configuration.
+設定を表示します。
 
 [source,bash,role="execute"]
 ----
 oc get clusterresourcequotas for-user-normaluser1 -o yaml
 ----
 
-The configuration should look something like this:
+設定は以下のようになっているはずです。
 
 [source,yaml]
 ----
@@ -69,29 +69,29 @@ spec:
       openshift.io/requester: normaluser1
 ----
 
-This user, `normaluser1`, can create no more than 10 pods accross all the projects he creates. This applies only to projects that he as created (based on the `openshift.io/requester: normaluser1` annotation), not any projects he has access to. More on this later.
+ユーザ `normaluser1` は、作成したすべてのProjectで10個以下のPodを作成することができます。これはこのユーザが作成したProject (`openshift.io/requester: normaluser1` annotationに基づく) にのみ適用され、ユーザがアクセスできるプロジェクトには適用されません。これについては後ほど説明します。
 
-Now, login as `normaluser1`
+では `normaluser1` でログインしてみましょう。
 
 [source,bash,role="execute"]
 ----
 oc login -u normaluser1 -p Op#nSh1ft
 ----
 
-List all your current projects
+現在のProjectをリストアップします。
 
 [source,bash,role="execute"]
 ----
 oc get projects
 ----
 
-This user shouldn't have any projects, and you should see output similar to this (don't worry if you do though):
+このユーザはProjectを持っていないはずなので、このような出力が表示されるはずです。(もし持っていても気にしなくて大丈夫です)
 
 ----
 No resources found.
 ----
 
-Create two projects `welcome1` and `welcome2`.
+`welcome1` と `welcome2` の2つのProjectを作成します。
 
 [source,bash,role="execute"]
 ----
@@ -99,7 +99,7 @@ oc new-project welcome1
 oc new-project welcome2
 ----
 
-You'll be creating two applications. One in the `welcome1` project and the other in the `welcome2` project.
+次に二つのアプリケーションを作成します。1つは `welcome1` Project に作り、もう1つは `welcome2` Projectに作ります.
 
 [source,bash,role="execute"]
 ----
@@ -107,7 +107,7 @@ oc new-app -n welcome1 --name=php1 quay.io/redhatworkshops/welcome-php:latest
 oc new-app -n welcome2 --name=php2 quay.io/redhatworkshops/welcome-php:latest
 ----
 
-After the deployment, you should have two running pods. One in each namespace. Check it with the `oc get pods` command (You may have to run this a few times before you see any output):
+デプロイが終わると、それぞれのNamespaceに1つずつ、2つの実行中のPodができるはずです。`oc get pods` コマンドで確認してください。(出力が表示されるまでに何度か実行しなければならないかもしれません)
 
 [source,bash,role="execute"]
 ----
@@ -115,7 +115,7 @@ oc get pods -n welcome1 -l deploymentconfig=php1
 oc get pods -n welcome2 -l deploymentconfig=php2
 ----
 
-The output should look something like this:
+出力は以下のようになっているはずです。
 
 ----
 [~] $ oc get pods -n welcome1 -l deploymentconfig=php1
@@ -126,21 +126,21 @@ NAME           READY   STATUS    RESTARTS   AGE
 php2-1-ljw9w   1/1     Running   0          4m20s
 ----
 
-Now we can check the quota by first becoming `kubeadmin`:
+これで `kubeadmin` になってクォータを確認してみましょう。
 
 [source,bash,role="execute"]
 ----
 oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
 ----
 
-Now run `oc describe clusterresourcequotas for-user-normaluser1` to see the status of the quota:
+`oc describe clusterresourcequotas for-user-normaluser1` を実行してクォータの状態を確認します。
 
 [source,bash,role="execute"]
 ----
 oc describe clusterresourcequotas for-user-normaluser1
 ----
 
-You should see the following output:
+以下のような出力が表示されます。
 
 ----
 Name:		for-user-normaluser1
@@ -155,14 +155,14 @@ Resource	Used	Hard
 pods		2	10
 ----
 
-You see that not only that 2 out of 10 pods are being used, but that the namespaces the quota is being applied to. Check the namespace manifest for `welcome1` to see the annotation the quota is looking for:
+10個中2個のPodが使用されていることと、クォータが適用されているNamespaceが確認できます。`welcome1` のNamespaceをチェックして、クォータが見張るannotationを確認してください。
 
 [source,bash,role="execute"]
 ----
 oc get ns welcome1 -o yaml
 ----
 
-The output should look something like this. Take special note of the annotations:
+出力は以下のようになるはずです。特にannotationに注意してください。
 
 [source,yaml]
 ----
@@ -188,8 +188,7 @@ status:
   phase: Active
 ----
 
-Now as `normaluser1`, try to scale your apps beyond 10 pods:
-
+それでは `normaluser1` になって、10個を超えるPodにスケールしてみます。
 
 [source,bash,role="execute"]
 ----
@@ -198,7 +197,7 @@ oc scale dc/php1 -n welcome1 --replicas=5
 oc scale dc/php2 -n welcome2 --replicas=6
 ----
 
-Take a note of how many pods are running:
+実行中のPodの数に注意して見てみましょう。
 
 [source,bash,role="execute"]
 ----
@@ -206,7 +205,7 @@ oc get pods --no-headers -n welcome1 -l deploymentconfig=php1 | wc -l
 oc get pods --no-headers -n welcome2 -l deploymentconfig=php2 | wc -l
 ----
 
-Both of these commands should return no more than 10 added up together. Check the events to see the quota in action!
+これらのコマンドはどちらも、合計で10個以上のPodを返しません。イベントをチェックして、クオータが動作しているのを確認してください。
 
 [source,bash,role="execute"]
 ----
@@ -214,13 +213,13 @@ oc get events -n welcome1 | grep "Error creating" | head -1
 oc get events -n welcome2 | grep "Error creating" | head -1
 ----
 
-You should see a message like the following.
+以下のようなメッセージが表示されるはずです。
 
 ----
 3m31s       Warning   FailedCreate                  replicationcontroller/php2-1   Error creating: pods "php2-1-wn22s" is forbidden: exceeded quota: for-user-normaluser1, requested: pods=1, used: pods=10, limited: pods=10
 ----
 
-To see the status, switch to the `kubeadmin` account and run the `describe` command from before:
+ステータスを確認するには、`kubeadmin` になって先程の `describe` コマンドを実行します。
 
 [source,bash,role="execute"]
 ----
@@ -228,7 +227,7 @@ oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
 oc describe clusterresourcequotas for-user-normaluser1
 ----
 
-You should see that the hard pod limit has been reached
+Podのハードクォータの上限に達したことが確認できます。
 
 ----
 Name:		for-user-normaluser1
@@ -243,16 +242,15 @@ Resource	Used	Hard
 pods		10	10
 ----
 
-#### Setting quota by label
-
-In order to set a quota by application stacks that may span multiple projects, you'll have to use labels to identify the project. First, make sure you're `kubeadmin`
+#### Labelによるクォータ
+複数のProjectにまたがる可能性のあるアプリケーションスタックでクォータを設定するには、Labelを使ってProjectを識別する必要があります。まず、`kubeadmin` でログインします。
 
 [source,bash,role="execute"]
 ----
 oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
 ----
 
-Now set a quota based on a label. For this lab we will use `appstack=pricelist` key/value based label to identify projects.
+Labelに基づいてクォータを設定します。このラボでは、Projectを識別するために `appstack=pricelist` のLabelを使用します。
 
 [source,bash,role="execute"]
 ----
@@ -261,7 +259,7 @@ oc create clusterresourcequota for-pricelist \
     --hard=pods=5
 ----
 
-Now create two projects:
+ここで2つのProjectを作成します。
 
 [source,bash,role="execute"]
 ----
@@ -269,7 +267,7 @@ oc adm new-project pricelist-frontend
 oc adm new-project pricelist-backend
 ----
 
-Assign the `edit` role to the user `normaluser1` for these two projects:
+2つのProjectのユーザ `normaluser1` に `edit` ロールを割り当てます。
 
 [source,bash,role="execute"]
 ----
@@ -277,7 +275,7 @@ oc adm policy add-role-to-user edit normaluser1 -n pricelist-frontend
 oc adm policy add-role-to-user edit normaluser1 -n pricelist-backend
 ----
 
-To identify these two projects to belonging to the `pricelist` application stack, you will need to label the corresponding namespace:
+これら2つのProjectが `pricelist` アプリケーションスタックに属するものであることを識別するには、対応するNamespaceにLabelを付ける必要があります。
 
 [source,bash,role="execute"]
 ----
@@ -285,14 +283,14 @@ oc label ns pricelist-frontend appstack=pricelist
 oc label ns pricelist-backend appstack=pricelist
 ----
 
-Run the `oc describe` command for the `for-pricelist` cluster resource quota:
+`oc describe clusterresourcequotas` で `for-pricelist` を指定します。
 
 [source,bash,role="execute"]
 ----
 oc describe clusterresourcequotas for-pricelist
 ----
 
-You should see that both of the projects are now being tracked:
+両方のProjectがトラッキングされていることがわかるはずです。
 
 ----
 Name:		for-pricelist
@@ -307,7 +305,7 @@ Resource	Used	Hard
 pods		0	5
 ----
 
-Login as `normaluser1` and create the applications in their respective projects:
+`normaluser1` でログインし、それぞれのProjectにアプリケーションを作成します。
 
 [source,bash,role="execute"]
 ----
@@ -316,7 +314,7 @@ oc new-app -n pricelist-frontend --name frontend quay.io/redhatworkshops/priceli
 oc new-app -n pricelist-backend --name backend quay.io/redhatworkshops/pricelist:backend
 ----
 
-Check the status of the quota by logging in as `kubeadmin` and running the `describe` command:
+`kubeadmin` でログインし、`describe` コマンドを実行して、クォータの状態を確認してください。
 
 [source,bash,role="execute"]
 ----
@@ -324,7 +322,7 @@ oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
 oc describe clusterresourcequotas for-pricelist
 ----
 
-You should see that 2 out of 5 pods are being used against this quota:
+5つのPodクォータに対して2つが使用されていることを確認できます。
 
 ----
 Name:		for-pricelist
@@ -341,10 +339,10 @@ pods		2	5
 
 [NOTE]
 ====
-The user `normaluser1` can create more pods because `pricelist-frontend` and `pricelist-backend` were assigned to the user by `kubeadmin`. They don't have the `openshift.io/requester=normaluser1` annotation since `normaluser1` didn't create them. You can already see how you can mix and match quota polices to fit your envrionment.
+`normaluser1` は、`kubeadmin` によって `pricelist-frontend` と `pricelist-backend` のユーザとして割り当てられているため、より多くのPodを作成することができます。`normaluser1` はPodを作成していないので、`openshift.io/requester=normaluser1` annotationはありません。あなたの環境に合わせてクォータポリシーをミックスしたり、マッチさせたりすることができることがわかります。
 ====
 
-Test this by logging back in as `normaluser1` and try to scale the applications beyond 5 pods total.
+`normaluser1` でログインして、合計5つのPodを超えてアプリケーションをスケールしてみてください。
 
 [source,bash,role="execute"]
 ----
@@ -353,7 +351,7 @@ oc scale -n pricelist-frontend dc/frontend --replicas=3
 oc scale -n pricelist-backend dc/backend --replicas=3
 ----
 
-Just like before, you should see an error about not being able to scale:
+先ほどと同じように、スケールできないというエラーが表示されるはずです。
 
 [source,bash,role="execute"]
 ----
@@ -361,36 +359,36 @@ oc get events -n pricelist-frontend | grep "Error creating" | head -1
 oc get events -n pricelist-backend | grep "Error creating" | head -1
 ----
 
-The output should be like the other exercise:
+出力は先の演習と同じようになっているはずです。
 
 ----
 2m51s       Warning   FailedCreate                  replicationcontroller/backend-1   Error creating: pods "backend-1-r78gk" is forbidden: exceeded quota: for-pricelist, requested: pods=1, used: pods=5, limited: pods=5
 ----
 
-#### Clean Up
+#### クリーンアップ
 
-Clean up the work you did by first becoming `kubeadmin`:
+`kubeadmin` で行った作業をクリーンアップします。
 
 [source,bash,role="execute"]
 ----
 oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
 ----
 
-These quotas may interfere with other labs; so delete both of the `clusterresourcequota` we created in this lab:
+これらのクォータは他のラボと干渉する可能性があるので、このラボで作成した `clusterresourcequota` の両方を削除してください。
 
 [source,bash,role="execute"]
 ----
 oc delete clusterresourcequotas for-pricelist for-user-normaluser1
 ----
 
-Also delete the projects we created for this lab:
+また、このラボで作成したProjectも削除してください。
 
 [source,bash,role="execute"]
 ----
 oc delete projects pricelist-backend pricelist-frontend welcome1 welcome2
 ----
 
-Make sure you login as `kubeadmin` for the next lab.
+次のラボでは必ず `kubeadmin` でログインしてください。
 
 [source,bash,role="execute"]
 ----
