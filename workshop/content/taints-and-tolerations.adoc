@@ -154,12 +154,9 @@ Pod が均等に広がるようにするには、`oc delete pods --all` を何�
 
 もう一つのコンポーネントとして `operator` があります。 `operator` については「Toleration」のセクションで詳しく説明します。
 
-For this lab we will taint the first node that's not an infra or storage node
-with `welcome-php=run:NoSchedule`.  This makes it to where all new pods
-(without a proper toleration) NOT schedule on this node.
 
 
-このラボでは、インフラやストレージノードではない最初のノードを `welcome-php=run:NoSchedule` で Taint します。 
+このラボでは、インフラ・ノードでもストレージ・ノードではない最初のノードを `welcome-php=run:NoSchedule` で Taint します。 
 これにより、すべての新しいポッド(適切な Toleration を持たないものは)は、このノードでスケジューリングされないようになります。
 
 
