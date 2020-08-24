@@ -33,7 +33,7 @@ bash {{ HOME_PATH }}/support/create-net-projects.sh
 ----
 
 ### 作成されたリソースの確認
-netproj-a` と `netproj-b` の 2 つの *Project* が作成されました。
+`netproj-a` と `netproj-b` の 2 つの *Project* が作成されました。
 以下のコマンドを実行して、作成されたリソースを確認します。
 
 [source,bash,role="execute"]
@@ -202,4 +202,4 @@ Checking connectivity between Pod A and Pod B... worked
 ----
 
 最後の行が、 `worked` になっている事に注目してください。
-これは、`netproj-a` プロジェクトの Pod が `netproj-b` プロジェクトの Podに接続できたことを意味します (期待通りの動作です)。
+これは、`netproj-a` プロジェクトの Pod が `netproj-b` プロジェクトの Pod に接続できたことを意味します (期待通りの動作です)。
