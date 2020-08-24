@@ -1,10 +1,8 @@
-### Node Maintenance
+### Node のメンテナンス
 
-It is possible to put any node of the OpenShift environment into maintenance by
-marking it as non-schedulable followed by a _drain_ of all pods on the node.
+OpenShift 環境の任意のノード上のすべてのポッドをドレインし、non-schedulable としてマークすることで、メンテナンス状態にすることができます。
 
-These operations require elevated privileges. Ensure you are logged in as
-cluster admin:
+これらの操作には高度な権限が必要です。クラスタ管理者としてログインしていることを確認してください。：
 
 [source,bash,role="execute"]
 ----
@@ -13,87 +11,81 @@ oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
 
 You will see by now that there are pods running on almost all of your nodes:
 
+今までに、ほぼすべてのノードでポッドが稼働していることがわかるでしょう。:
+
 [source,bash,role="execute"]
 ----
 oc get pods --all-namespaces -o wide
 ----
 
-Sometimes you might need to perform maintenance on a host. Let's take a look
-at the *Pods* that are on `node02`:
+ホストのメンテナンスが必要になることもあるでしょう。ここでは `node02` にある *Pods* を見てみましょう。:
 
 [source,bash,role="execute"]
 ----
 oc adm manage-node --list-pods {{ NODE2_INTERNAL_FQDN }}
 ----
 
-Firstly, we probably want to ensure that no new workload can be put on this
-host. Mark node `{{ NODE2_INTERNAL_FQDN }}` as non-schedulable to prevent the
-schedulers in the system to place any new workloads on it:
+まず、このホストに新しいワークロードを置かないようにしたいと思います。
+ノード `{{ NODE2_INTERNAL_FQDN }}` を non-schedulable としてマークして、システム内のスケジューラがこのホストに新しいワークロードを置かないようにします。:
 
 [source,bash,role="execute"]
 ----
 oc adm manage-node {{ NODE2_INTERNAL_FQDN }} --schedulable=false
 ----
 
-The output of the command will show that the node is now not schedulable:
+コマンドの出力は、ノードがスケジューリング不可能になったことを示します。:
 
 ----
 NAME                                          STATUS                     ROLES     AGE       VERSION
 {{ NODE2_INTERNAL_FQDN }}   Ready,SchedulingDisabled   compute   1h        v1.11.0+d4cacc0
 ----
 
-Marking the node as non-schedulable did not impact the pods it is running. List those
-pods:
+ノードを non-schedulable なノードとしてマークしても、実行中のポッドには影響しませんでした。
+それらのポッドをリストアップしてください。:
 
 [source,bash,role="execute"]
 ----
 oc adm manage-node {{ NODE2_INTERNAL_FQDN }} --list-pods
 ----
 
-Other than a *Pod* for Container Native Storage and a Fluentd instance (there is
-one on every node), there may or may not be other *Pods* running on this node.
+Container Native Storage 用の *Pod* と Fluentd インスタンス(各ノードに1つ) の *Pod* 以外に、このノード上で動作している *Pod* があるかもしれません。
 
-The next step is to drain the *Pods* to other nodes in the cluster.
+次のステップでは、 *Pods* をクラスタ内の他のノードにドレインします。
 
 [IMPORTANT]
 ====
-*Pods* running on the node as part of a `DaemonSet` like those associated to
-Logging or OCS will *not* be drained. They will not be accessible anymore
-through OpenShift, but will continue to run as containers on the nodes until the
-local OpenShift services are stopped and/or the node is shutdown. This is not a
-problem since software like OCS is designed to handle such situations transparently.
+Logging や OCS に関連付けられているような `DaemonSet` の一部としてノード上で実行されている *Pod* は *ドレイン* されません。
+これらは OpenShift を通じてアクセスできなくなりますが、ローカルの OpenShift サービスが停止したり、ノードがシャットダウンされたりするまでは、ノード上でコンテナとして実行され続けます。
+OCS のようなソフトウェアはこのような状況を透過的に処理するように設計されているので、これは問題ではありません。
 ====
 
-Start the drain process like this:
+こんな感じでドレイン作業を開始します。:
 
 [source,bash,role="execute"]
 ----
 oc adm drain {{ NODE2_INTERNAL_FQDN }} --ignore-daemonsets
 ----
 
-After a few moments, all of the *Pods*, except those for Fluentd, Container
-Native Storage, and Prometheus previously running on `{{ NODE2_INTERNAL_FQDN
-}}` should have terminated and been launched elsewhere.
+しばらくすると、 `{{ NODE2_INTERNAL_FQDN }}` 上で動作していた Fluentd, Container Native Storage, Prometheus 以外のすべての *Pods* が終了し、別の場所で起動したはずです。
 
 [source,bash,role="execute"]
 ----
 oc adm manage-node {{ NODE2_INTERNAL_FQDN }} --list-pods
 ----
 
-The node `{{ NODE2_INTERNAL_FQDN }}` is now ready for an administrator to
-start maintenance operations. If those include a reboot of the system or
-upgrading OpenShift components, the *Pods* associated with
-OCS and logging will come back up automatically.
+ノード `{{ NODE2_INTERNAL_FQDN }}` は、これで管理者が保守作業を開始できる状態になりました。
+システムの再起動や OpenShift コンポーネントのアップグレードが含まれている場合は、OCS とロギングに関連付けられた *Pods* が自動的に立ち上がるようになります。
 
-Now that our maintenance is complete, the node is still non-schedulable. Let's
-fix that:
+
+これでメンテナンスが完了しましたが、ノードはまだ non-schedulable のままです。
+それを修正しましょう。:
 
 [source,bash,role="execute"]
 ----
 oc adm manage-node {{ NODE2_INTERNAL_FQDN }} --schedulable=true
 ----
 
-Now the node will be able to have workload scheduled on it again:
+これで、ノードに再びワークロードがスケジュールされるようになります。:
 
 ----
 NAME                                          STATUS    ROLES     AGE       VERSION

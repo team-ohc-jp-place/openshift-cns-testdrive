@@ -1,56 +1,47 @@
-## OpenShift Network Policy Based SDN
-OpenShift has a software defined network (SDN) inside the platform that is based
-on Open vSwitch. This SDN is used to provide connectivity between application
-components inside of the OpenShift environment. It comes with default network
-ranges pre-configured, although you can make changes to these should they
-conflict with your existing infrastructure, or for whatever other reason you may
-have.
+## OpenShift の Network Policy ベースの SDN
 
-The OpenShift Network Policy SDN plug-in allows projects to truly isolate their
-network infrastructure inside OpenShift’s software defined network. While you
-have seen projects isolate resources through OpenShift’s RBAC, the network policy
-SDN plugin is able to isolate pods in projects using pod and namespace label selectors.
+OpenShift は Open vSwitch をベースにしたプラットフォーム内部に SDN（Software Defined Network）を持っています。
+この SDN は OpenShift 環境内のアプリケーションコンポーネント間の接続性を提供するために使用されます。
+これにはデフォルトのネットワーク範囲があらかじめ設定されていますが、既存のインフラストラクチャと競合する場合やその他の理由で変更することができます。
 
-The network policy SDN plugin was introduced in OpenShift 3.7, and more
-information about it and its configuration can be found in the
-link:https://docs.openshift.com/container-platform/3.11/architecture/networking/sdn.html[networking
-documentation^]. Additionally, other vendors are working with the upstream
-Kubernetes community to implement their own SDN plugins, and several of these
-are supported by the vendors for use with OpenShift. These plugin
-implementations make use of appc/CNI, which is outside the scope of this lab.
+OpenShift Network Policy SDN プラグインを使用すると、プロジェクトは OpenShift の SDN 内のネットワークインフラストラクチャを完全に分離することができます。
+OpenShift の *プロジェクト* は、 RBAC を通じてリソースを分離しているのを見たことがあると思いますが、ネットワークポリシー SDN プラグインは、ポッドとネームスペースのラベルセレクターを使ってプロジェクト内のポッドを分離することができます。
 
-### Switch Your Project
-Before continuing, make sure you are using a project that actually exists. If
-the last thing you did in the previous lab was delete a project, this will
-cause errors in the scripts in this lab.
+OpenShift 3.7でネットワークポリシーSDNプラグインが導入され、さらにその設定に関する情報は
+link:https://docs.openshift.com/container-platform/3.11/architecture/networking/sdn.html[networking documentation^]で見る事ができます。
+さらに、他のベンダーは、アップストリームの Kubernetes コミュニティと強力して、独自の SDN プラグインを実装し、ベンダーのサポートが提供されています。
+これらのプラグインの実装では appc/CNI を使用していますが、このラボでは触れません。
+
+### Project の切り替え
+続行する前に、実際に存在するプロジェクトを使用していることを確認してください。
+前のラボで最後にプロジェクトを削除した場合、このラボのスクリプトでエラーが発生します。
 
 [source,bash,role="execute"]
 ----
 oc project default
 ----
 
-### Execute the Creation Script
-Only users with project or cluster administration privileges can manipulate *Project*
-networks.
+### 生成スクリプトの実行 Execute the Creation Script
+プロジェクトまたはクラスタ管理権限を持つユーザーのみが、*プロジェクト* ネットワークを操作できます。
 
-Then, execute a script that we have prepared for you. It will create two
-*Projects* and then deploy a *DeploymentConfig* with a *Pod* for you:
+それでは、用意されているスクリプトを実行します。
+2つの *Project* が作成され、 *DeploymentConfig* を使って、*Pod* が展開されます。
 
 [source,bash,role="execute"]
 ----
 bash {{ HOME_PATH }}/support/create-net-projects.sh
 ----
 
-### Examine the created infrastructure
-Two *Projects* were created for you, `netproj-a` and `netproj-b`. Execute the
-following command to see the created resources:
+### 作成されたリソースの確認
+netproj-a` と `netproj-b` の 2 つの *Project* が作成されました。
+以下のコマンドを実行して、作成されたリソースを確認します。
 
 [source,bash,role="execute"]
 ----
 oc get pods -n netproj-a
 ----
 
-After a while you will see something like the following:
+しばらくすると以下のようなものが表示されます。：
 
 ```
 NAME           READY   STATUS              RESTARTS   AGE
@@ -58,14 +49,14 @@ ose-1-66dz2    0/1     ContainerCreating   0          7s
 ose-1-deploy   1/1     Running             0          16s
 ```
 
-Similarly:
+同様に……:
 
 [source,bash,role="execute"]
 ----
 oc get pods -n netproj-b
 ----
 
-After a while you will see something like the following:
+しばらくすると、以下のようなものが表示されます。：
 
 ```
 NAME           READY   STATUS      RESTARTS   AGE
@@ -73,21 +64,19 @@ ose-1-deploy   0/1     Completed   0          38s
 ose-1-vj2gn    1/1     Running     0          30s
 ```
 
-We will run commands inside the pod in the `netproj-a` *Project* that will
-connect to TCP port 5000 of the pod in the `netproj-b` *Project*.
+`netproj-b` *Project* 内の Pod の TCP ポート 5000 に接続するために、`netproj-a` *Project* 内のポッド内でコマンドを実行します。
 
-### Test Connectivity (should work)
-Now that you have some projects and pods, let's test the connectivity between
-the pod in the `netproj-a` *Project* and the pod in the `netproj-b` *Project*.
+### 接続性のテスト #1 (should work)
+いくつかの *プロジェクト* と *Pod* ができたので、`netproj-a` *Project* の *Pod* と `netproj-b` *Project* の *Pod* の接続性をテストしてみましょう。
 
-To test connectivity between the two pods, run:
+2つの Pod 間の接続性をテストするには、次のコマンドを実行します。:
 
 [source,bash,role="execute"]
 ----
 bash {{ HOME_PATH }}/support/test-connectivity.sh
 ----
 
-You will see something like the following:
+次のようなものが表示されます。:
 
 [source]
 ----
@@ -96,20 +85,17 @@ Getting Pod A's Name... ose-1-66dz2
 Checking connectivity between Pod A and Pod B... worked
 ----
 
-Note that the last line says `worked`. This means that the pod in the
-`netproj-a` *Project* was able to connect to the pod in the `netproj-b`
-*Project*.
 
-This worked because, by default, with the network policy SDN, all pods in all
-projects can connect to each other.
+最後の行に `worked` と書いてあることに注意してください。
+これは、`netproj-a` *Project*　の *Pod* が　`netproj-b` *Project*　の *Pod* に接続できたことを意味します。
 
-### Restricting Access
-With the Network Policy based SDN, it's possible to restrict access in a
-project by creating a `NetworkPolicy` custom resource (CR).
+これは、デフォルトのネットワークポリシー SDN では、すべてのプロジェクトのすべてのポッドがお互いに接続できるようになっているためです。
 
-For example, the following restricts all access to all pods in a *Project*
-where this `NetworkPolicy` CR is applied. This is the equivalent of a `DenyAll`
-default rule on a firewall:
+### アクセスを制限する
+Network Policy ベースの SDN では、`NetworkPolicy` カスタムリソース (CR) を作成することでプロジェクトのアクセスを制限することができます。
+
+例えば、以下は、この `NetworkPolicy` CR が適用された *Project* 内のすべての Pod へのすべてのアクセスを制限します。
+これはファイアウォールの `DenyAll` デフォルトルールに相当します。:
 
 [source,yaml]
 ----
@@ -122,32 +108,28 @@ spec:
   ingress: []
 ----
 
-Note that the `podSelector` is empty, which means that this will apply to all
-pods in this *Project*. Also note that the `ingress` list is empty, which
-means that there are no allowed `ingress` rules defined by this
-`NetworkPolicy` CR.
+`podSelector` が空であることに注意してください。これは、これがこの *プロジェクト* 内の全ての *Pod* に適用される事を意味しています。
 
-To restrict access to the pod in the `netproj-b` *Project* simply apply the
-above NetworkPolicy CR with:
+また、 `ingress` リストが空である事に注意してください。これは、この `NetworkPolicy` CR で定義された、許可された `ingress` ルールが存在しない事を意味しています。
+
+`netproj-b` *Project* の *Pod* へのアクセスを制限するには、上記の NetworkPolicy CR を適用します。:
 
 [source,bash,role="execute"]
 ----
 oc create -n netproj-b -f {{ HOME_PATH }}/support/network-policy-block-all.yaml
 ----
 
-### Test Connectivity #2 (should fail)
-Since the "block all by default" `NetworkPolicy` CR has been applied,
-connectivity between the pod in the `netproj-a` *Project* and the pod in the
-`netproj-b` *Project* should now be blocked.
+### 接続性のテスト #2 (should fail)
+"block all by default" `NetworkPolicy` CR が適用されたため、`netproj-a` *Project* の *Pod* と`netproj-b` *Project*の *Pod* 間の接続がブロックされるようになりました。
 
-Test by running:
+次のコマンドでテストを行います。:
 
 [source,bash,role="execute"]
 ----
 bash {{ HOME_PATH }}/support/test-connectivity.sh
 ----
 
-You will see something like the following:
+次のようなものが表示されます。:
 
 [source]
 ----
@@ -156,20 +138,16 @@ Getting Pod A's Name... ose-1-66dz2
 Checking connectivity between Pod A and Pod B............ FAILED!
 ----
 
-Note the last line that says `FAILED!`. This means that the pod in the
-`netproj-a` *Project* was unable to connect to the pod in the `netproj-b`
-*Project* (as expected).
+最後の行が、 `FAILED!` である事に注意してください。
+これは、`netproj-a` *Project* の *Pod* が `netproj-b` *Project* の *Pod* に接続できなかったことを意味します (期待通りの動作です)。
 
-### Allow Access
-With the Network Policy based SDN, it's possible to allow access to
-individual or groups of pods in a project by creating multiple
-`NetworkPolicy` CRs.
+### アクセス許可
+Network Policy ベースの SDN では、複数の `NetworkPolicy` CR を作成することで、プロジェクト内の個々の *Pod* や *Pod* のグループへのアクセスを許可することができる。
 
-The following allows access to port 5000 on TCP for all pods in the project
-with the label `run: ose`. The pod in the `netproj-b` project has this label.
+以下は、`run: ose` というラベルを持つ *プロジェクト* 内のすべての *Pod* に対して、TCP 上の 5000 番ポートへのアクセスを許可します。
+`netproj-b` *プロジェクト* の *Pod* はこのラベルを持っています。
 
-The ingress section specifically allows this access from all projects that
-have the label `name: netproj-a`.
+ingressセクションでは、ラベル `name: netproj-a` を持つすべてのプロジェクトからのアクセスを許可しています。
 
 [source,yaml]
 ----
@@ -192,35 +170,29 @@ spec:
         matchLabels:
           name: netproj-a
 ----
+`podSelector` は、ローカルプロジェクトの *Pod* を特定のラベルセレクタを使ってマッチさせる場所であることに注意してください。
 
-Note that the `podSelector` is where the local project's pods are matched
-using a specific label selector.
+あるプロジェクト内のすべての `NetworkPolicy` CR を組み合わせて、プロジェクト内の *Pod* へのアクセス許可を作成します。
+この特定のケースでは、"deny all " ポリシーと "allow TCP 5000 " ポリシーが組み合わされています。
 
-All `NetworkPolicy` CRs in a project are combined to create the allowed
-ingress access for the pods in the project. In this specific case the "deny
-all" policy is combined with the "allow TCP 5000" policy.
-
-To allow access to the pod in the `netproj-b` *Project* from all pods in the
-`netproj-a` *Project*, simply apply the above NetworkPolicy CR with:
+`netproj-b` *Project* 内の *Pod* へのアクセスを `netproj-a` *Project* 内のすべての  *Pod* から許可するには、上記の NetworkPolicy CR を適用します。:
 
 [source,bash,role="execute"]
 ----
 oc create -n netproj-b -f {{ HOME_PATH }}/support/network-policy-allow-all-from-netproj-a.yaml
 ----
 
-### Test Connectivity #3 (should work again)
-Since the "allow access from `netproj-a` on port 5000" NetworkPolicy has been applied,
-connectivity between the pod in the `netproj-a` *Project* and the pod in the
-`netproj-b` *Project* should be allowed again.
+### 接続性のテスト #3 (should work again)
+"5000番ポートの `netproj-a` からのアクセスを許可する" という NetworkPolicy が適用されているので、`netproj-a` *Project* 内の *Pod* と、`netproj-b` *Project* 内の  *Pod* の接続性は再び許可されるはずです。。
 
-Test by running:
+次を実行する事でテストします。:
 
 [source,bash,role="execute"]
 ----
 bash {{ HOME_PATH }}/support/test-connectivity.sh
 ----
 
-You will see something like the following:
+次のようなものが見えるはずです。：
 
 [source]
 ----
@@ -229,6 +201,5 @@ Getting Pod A's Name... ose-1-66dz2
 Checking connectivity between Pod A and Pod B... worked
 ----
 
-Note the last line that says `worked`. This means that the pod in the
-`netproj-a` *Project* was able to connect to the pod in the `netproj-b`
-*Project* (as expected).
+最後の行が、 `worked` になっている事に注目してください。
+これは、`netproj-a` *Project* のポッドが `netproj-b` *Project* のポッドに接続できたことを意味します (期待通りの動作です)。
