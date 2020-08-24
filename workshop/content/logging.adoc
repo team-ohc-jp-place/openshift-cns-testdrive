@@ -1,4 +1,4 @@
-## OpenShift Log Aggregation
+## OpenShift ログ　アグリゲーション
 In this lab you will explore the logging aggregation capabilities of
 OpenShift.
 
