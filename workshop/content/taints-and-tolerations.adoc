@@ -1,20 +1,13 @@
-## Taints と Tolerations
-
-In a previous lab, you created "infra" nodes leveraging https://docs.openshift.com/container-platform/4.3/nodes/scheduling/nodes-scheduler-node-selectors.html[nodeSelector]
-to control where the workload lands. You saw how you can set nodes to perform
-certain tasks. The `nodeSelector` in  the `nodePlacement` attracts pods to a
-set of nodes. But what if you want the opposite? What if you want to repel
-pods?
+## Taint と Toleration
 
 以前のラボでは、インフラノードを作成し、 https://docs.openshift.com/container-platform/4.3/nodes/scheduling/nodes-scheduler-node-selectors.html[nodeSelector] を使用して、ワークロードを配置する場所を制御しました。
 あるタスクを実行するために、どのようにノードをセットするかを見てきました。
  `nodePlacement` 内の `nodeSelector` は、あるノードのセットに Pod を引き寄せ居ます。
 しかし、反対に、Pod をなるノードから遠ざけたい場合は、どうすればいいでしょう？
 
-汚染された (Tainted) ノード上でポッドが動作しないようにする方法があります。
+Taint された(汚された)ノード上でポッドが動作しないようにする方法があります。
 
-Some usecases include:
-以下のようなユースケースが考えられるでしょう。：
+例えば、以下のようなユースケースが考えられるでしょう。：
 
 * クラスタ内のノード(またはノードのグループ)は特別な目的のために予約されています。 
 * 特定のタスクに特化したハードウェア(GPUのような)を持つノードがある。
@@ -22,12 +15,12 @@ Some usecases include:
 * コンプライアンス上の理由から、ノードが異なるネットワークゾーンに存在する。
 * 不具合のあるノードのトラブルシューティングを行いたい。
 
-このラボでは、Taints と Tolerations を使用してワークロードを制御する方法を探ります。
+このラボでは、Taint と Toleration を使用してワークロードを制御する方法を探ります。
 
 
 ### 背景
 
-Taints と Tolerations は、協調して動作し、ワークロードが他のノードにスケジュールされないようにします。
+Taint と Toleration は、協調して動作し、ワークロードが他のノードにスケジュールされないようにします。
 ノードが Taint になると、そのノードは Taint を許容しないワークロードを受け入れるべきではありません。
 ワークロードに適用された Toleration は、対応する Pod を、マッチする Taint をもったノードにスケジュールする事を可能にします。（ただし、必要ではありません）
  
@@ -52,8 +45,6 @@ oc get nodes -l 'node-role.kubernetes.io/worker,!node-role.kubernetes.io/infra,!
 ----
 
 どのラボをやったかにもよりますが、ワーカーラベルセットを持ったノードが3つ以上ある場合があります。
-
-Now, let's look to see if there are any taints added to these workers.
 
 では、これらのワーカーノードに、何か Taint が設定されてないか見てみましょう。
 
@@ -140,9 +131,6 @@ Pod が均等に広がるようにするには、`oc delete pods --all` を何�
 
 #### ノードを Taint する
 
-We will now taint a node, so it'll reject workloads. First, we will go over
-what each taint does. There are 3 basic taints that you can set.
-
 これからノードを Taint して、ワークロードを拒否するようにします。
 最初に、それぞれの Taint が何をするのかを説明します。
 設定できる基本的な Taint は3つあります。
@@ -221,11 +209,7 @@ oc get po -o wide
 oc get nodes -l appnode=welcome-php
 ----
 
-#### Tolerations
-
-A `toleration` is a way for pods to "tolerate" (or "ignore") a node's taint
-during scheduling. Tolerations are applied in the `podSpec`, and is in the
-following form.
+#### Toleration
 
 `toleration` は、スケジューリング中にノードの Taint を "許容 "する(または "無視 "する) Pod の方法です。
 `toleration` は `podSpec` で適用され、以下の形式になります。
