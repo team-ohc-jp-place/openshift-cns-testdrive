@@ -3,7 +3,6 @@
 これには、OpenShift Alertmanager UI の概要、Prometheus ウェブコンソールへのアクセス、PromQL (Prometheuses Query Language) クエリの実行によるクラスタの検査、最後に Grafana ダッシュボードの確認が含まれます。
 
 ### OpenShift Monitoring
-
 OpenShift Container Platformには、Prometheusオープンソースプロジェクトとその広範なエコシステムをベースにした、設定済み、プリインストール済み、自己更新型の監視スタックが含まれています。
 これはクラスタコンポーネントの監視を提供し、発生した問題をクラスタ管理者に即座に通知する一連のアラートと一連の Grafana ダッシュボードが含まれています。
 クラスタ監視スタックは、OpenShift Container Platform クラスタの監視にのみサポートされています。
@@ -60,13 +59,13 @@ OpenShift をインストールすると、デフォルトでは、Web コンソ
 sum(kube_pod_container_resource_limits_memory_bytes)/(1024^3)
 ----
 +
-1. "Run Queries" をクリックします。
+1.「Run Queries」をクリックします。
 1. これで、リストの中に値を持つ時系列が表示されるはずです。この値は、このクエリで定義された時系列の最新の値です。
 また、過去の期間の値を示すグラフも表示されます（デフォルトは30m）。
 
 それでは、クラスタ全体の CPU 使用量を確認するためのクエリを実行してみましょう。
 
-1. "Add Query"をクリックします。
+1.「Add Query」をクリックします。
 1. 次のクエリをコピーして、クエリテキストボックスに貼り付けます。:
 +
 [source,role="copypaste"]
@@ -74,7 +73,7 @@ sum(kube_pod_container_resource_limits_memory_bytes)/(1024^3)
 cluster:cpu_usage_cores:sum
 ----
 +
-1."Run Queries" をクリックします。
+1.「Run Queries」をクリックします。
 1. これで、リストの中に値を持つ時系列が表示されるはずです。
 この値は、このクエリで定義された時系列の最新の値です。
 また、新しいクエリが同じグラフにプロットされていることがわかります。
@@ -95,8 +94,8 @@ Metrics UI 加えて、OpenShift モニタリングにはあらかじめ設定�
 OpenShiftをインストールすると、デフォルトでは、Grafana ダッシュボードを含む OpenShift 内のすべてのコンポーネント間通信に対して CA 証明書と SSL 証明書が生成されます。
 ====
 +
-1. "Log in with OpenShift" をクリックします。
-1. もし "kube:admin" がある場合は、クリックします。
+1.「Log in with OpenShift」をクリックします。
+1. もし「kube:admin」がある場合は、クリックします。
 +
 [source,role="copypaste"]
 ----
@@ -112,6 +111,7 @@ kubeadmin
 1. これが Grafana の 「Home Dashboard」 ページです。
 1. ページトップの「Home」ドロップダウンをクリックします。
 1.「Kubernetes / Compute Resources / Cluster」 ダッシュボードを選択します。
-  「Kubernetes / Compute Resources / Cluster」ダッシュボードは、現在、クラスターにより、コミットされ使用されているリソースの概要を表示します。+
+  「Kubernetes / Compute Resources / Cluster」ダッシュボードは、現在、クラスターにより、コミットされ使用されているリソースの概要を表示します。
++
 .Dashboards UI (Grafana)
 image::images/grafana_dashboard.png[]
