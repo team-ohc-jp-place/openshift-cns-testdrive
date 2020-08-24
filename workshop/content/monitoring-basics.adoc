@@ -7,7 +7,7 @@ OpenShift Container Platformには、Prometheusオープンソースプロジェ
 これはクラスタコンポーネントの監視を提供し、発生した問題をクラスタ管理者に即座に通知する一連のアラートと一連の Grafana ダッシュボードが含まれています。
 クラスタ監視スタックは、OpenShift Container Platform クラスタの監視にのみサポートされています。
 
-#### Examine Alerting Configuration
+#### Alerting の構成を見てみる
 
 1. リンク先:{{MASTER_URL }}[OpenShift Web Console]にkubeadminの資格情報でログインします。
 +
@@ -43,12 +43,12 @@ OpenShift をインストールすると、デフォルトでは、Web コンソ
 
 また、このページの上部にあるリンクをクリックして、直接 Alertmanager UI に入ることもできます。
 
-##### Metrics UI (Prometheus Console)
+##### Metrics UI (Prometheus コンソール)
 アラート画面に加えて、OpenShift のビルトインモニタリングでは、Prometheus が収集したメトリクスにアクセスするためのインターフェイスを提供しています。詳しくは次のリンクを参照下さい。link:https://prometheus.io/docs/prometheus/latest/querying/basics/[Prometheus クエリ言語（PromQL）].
 
 1.OpenShift Console の左側の「Monitoring」セクションで、「Metrics」のリンクをクリックします。
 
-##### Running Prometheus Queries
+##### Prometheus クエリーを実行する
 クエリを実行して、すべてのポッド定義で定義されているリソースのメモリ制限を確認してみましょう。
 
 1. 次のクエリをコピーして、式のテキストボックスに貼り付けます。:
@@ -89,7 +89,7 @@ Metrics UI 加えて、OpenShift モニタリングにはあらかじめ設定�
 +
 [WARNING]
 ====
-最初に Dashboards UIコ ンソールにアクセスすると、ブラウザに自己署名証明書のエラーが表示されます。
+最初に Dashboards UI コンソールにアクセスすると、ブラウザに自己署名証明書のエラーが表示されます。
 OpenShiftをインストールすると、デフォルトでは、Grafana ダッシュボードを含む OpenShift 内のすべてのコンポーネント間通信に対して CA 証明書と SSL 証明書が生成されます。
 ====
 +
