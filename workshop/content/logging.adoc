@@ -1,11 +1,11 @@
 ## OpenShift ログ集約
-このラボでは、OpenShiftのロギングアグリゲーション機能を調査します。
+このラボでは、OpenShiftのログ集約機能を触ってみます。
 
 OpenShift の非常に重要な機能は、実行中の環境とアプリケーションポッドからログを収集して集約することです。
 OpenShift には柔軟性のある *EFK* によるログ集約ソリューションが同梱されています。
 *EFK* は、それぞれのソリューションの頭文字を集めたものです。( *E* lasticSearch、*F* luentd、*K* ibana)
 
-クラスタのロギングコンポーネントは、Elasticsearch、Fluentd、Kibana（EFK）をベースにしています。
+クラスタの Logging コンポーネントは、Elasticsearch、Fluentd、Kibana（EFK）をベースにしています。
 コレクターである Fluentd は、OpenShift クラスタ内の各ノードにデプロイされています。
 これはすべてのノードとコンテナのログを収集し、Elasticsearch（ES）に書き込みます。
 Kibana は一元化された Web UI で、ユーザーや管理者は集約されたデータを使ってリッチなビジュアライゼーションやダッシュボードを作成することができます。
@@ -16,7 +16,7 @@ EFK スタックは OpenShift の上で動作します。
 [WARNING]
 ====
 このラボでは、infra-nodes ラボを完了していることが必要です。
-ロギングスタックはそのラボで作成された `infra` ノードにインストールされます。
+Logging スタックはそのラボで作成された `infra` ノードにインストールされます。
 ====
 
 [NOTE]
@@ -32,7 +32,7 @@ EFK スタックは OpenShift の上で動作します。
 プロセスを完全に自動化したり、CLIや他のツールを使用して行うことも可能ですが、これらの方法は現時点では、この演習やドキュメントではカバーされていません。
 ====
 
-### OpenShift ロギングをデプロイする
+### OpenShift Logging をデプロイする
 
 OpenShift Container Platform Cluster Logging は、デフォルト構成で使用するように設計されており、中小規模の OpenShift Container Platform クラスタ向けに調整されています。
 以降のインストール手順には、サンプルの Cluster Logging Custom Resource（CR）が含まれており、これを使用して Cluster Logging インスタンスを作成し、Cluster Logging の導入を構成することができます。
@@ -46,7 +46,7 @@ Cluster Logging Custom Resource の外でできる変更を含め、各コンポ
 #### `openshift-logging` namespace を作成する
 
 OpenShift Logging は、独自の名前空間 `openshift-logging` 内で実行されます。
-この名前空間はデフォルトでは存在せず、ロギングをインストールする前に作成する必要があります。
+この名前空間はデフォルトでは存在せず、Logging をインストールする前に作成する必要があります。
 名前空間は yaml 形式で以下のように表されます。:
 
 [source,yaml]
@@ -95,8 +95,8 @@ openshift-logging　をインストールするには、このパターンに従
 その後、以下の手順に従ってください。:
 
 1. Elasticsearch Operator のインストール:
-  a. OpenShift コンソールから、 `Operators` → `OperatorHub`をクリックします。
-  b. `Elasticsearch Operator` を、可能なら Operator リストから選択し、 `Install` をクリックします。
+  a. OpenShift コンソールから、 `Operators` → `OperatorHub` をクリックします。
+  b. `Elasticsearch Operator` を、Operator リストから選択し、 `Install` をクリックします。
   c. `Create Operator Subscription` ページで、*Update Channel 4.2* を選択し、他のすべてのデフォルト設定をそのままに、`Subscribe`　をクリックします。
 +
 これにより、この OpenShift Container Platform クラスタを使用するすべてのユーザーとプロジェクトがこの Operator を利用できるようになります。
@@ -139,10 +139,10 @@ Operator が  `InstallSucceeded` メッセージを表示してインストー�
 * Workloads → Pods のページに切り替えて、openshift-logging と openshift-operators プロジェクトで問題を報告している任意の Pod のログを確認します。
 
 
-#### ロギング `CustomResource (CR)` インスタンスを作成する
+#### Logging `CustomResource (CR)` インスタンスを作成する
 
-Operator を `CRD` と一緒にインストールしたので、ロギング `CR` を作成して、ロギングのインストールを開始します。
-これは、ロギングをインストールして設定する方法を定義します。
+Operator を `CRD` と一緒にインストールしたので、Logging `CR` を作成して、Logging のインストールを開始します。
+これは、Logging をインストールして設定する方法を定義します。
 
 1. OpenShift Consoleで、`Administration` → `Custom Resource Definitions` ページに切り替えます。
 
@@ -152,7 +152,7 @@ Operator を `CRD` と一緒にインストールしたので、ロギング `CR
 +
 [NOTE]
 ====
-`404` のエラーが表示されたら、慌てないでください。
+`404` のエラーが表示されても、慌てないでください。
 Operator のインストールは成功したものの、Operator 自体のインストールが完了しておらず、 `CustomResourceDefinition` がまだ作成されていない可能性があります。
 しばらく待ってからページを更新してください。
 ====
@@ -212,7 +212,7 @@ spec:
 
 そして `Create` をクリックします。
 
-#### Loggging インストールを確認する
+#### Logging インストールを確認する
 
 Logging が作成されたので、動作しているかどうかを確認してみましょう。
 
@@ -246,7 +246,7 @@ fluentd-zqgqx                                   1/1     Running   0          14m
 kibana-7fb4fd4cc9-bvt4p                         2/2     Running   0          14m
 ----
 
-_Fluentd_ *Pods* は、 *DaemonSet* としてデプロイされます。これは、特定の *Pods* が、クラスタ内の特定の *Nodes* で常に実行されるための仕組みです。:
+_Fluentd_ *Pods* は、 *DaemonSet* としてデプロイされます。*DaemonSet* は、特定の *Pods* が、クラスタ内の特定の *Nodes* で常に実行されるための仕組みです。:
 
 
 [source,bash,role="execute"]
@@ -262,7 +262,7 @@ fluentd   9         9         9       9            9           kubernetes.io/os=
 ----
 
 クラスタ内の *Node* ごとに1つの `fluentd` *Pod* が必要です。
-*Masters* も *Nodes* であり、`fluentd` はそこでも様々なログを読み取るために実行されることを覚えておいてください。
+*Master* も *Node* であり、`fluentd` はそこでも様々なログを読み取るために実行されることを覚えておいてください。
 
 また、ElasticSearch 用のストレージが自動的にプロビジョニングされていることがわかります。
 このプロジェクトの *PersistentVolumeClaim* オブジェクトにクエリを実行すると、新しいストレージが表示されます。
@@ -294,8 +294,8 @@ Metrics ソリューションの場合と同様に、Logging の構成( `CR` )�
 
 #### _Kibana_ にアクセスする
 
-前述の通り、_Kibana_ はフロントエンドであり、ユーザーや管理者が OpenShift Logging スタックにアクセスするための方法です。
-Kibana_ ユーザーインターフェースにアクセスするには、まず Kibana の *Service* を公開するために設定された *Route* を見て、そのパブリックアクセス URL を調べます。:
+前述の通り、_Kibana_ はフロントエンドであり、ユーザーや管理者が OpenShift Logging スタックにアクセスするためのインターフェイスです。
+_Kibana_ ユーザーインターフェースにアクセスするには、まず Kibana の *Service* を公開するために設定された *Route* を見て、そのパブリックアクセス URL を調べます。:
 
 _Kibana_ route を見つけてアクセスするには:
 
@@ -331,7 +331,7 @@ EFK インストールの一部として設定されている特別な認証プ�
 
 OpenShift Console に cluster-admin ユーザーとして認証済みのため、Kibana の管理画面が表示されます。
 
-#### _Kibana_ を使って Query を行う
+#### _Kibana_ を使ってクエリを行う
 
 _Kibana_ の Web インターフェースが立ち上がったら、クエリを実行できるようになります。
 _Kibana_ は、クラスタから送られてくるすべてのログを問い合わせるための強力なインターフェイスをユーザに提供します
