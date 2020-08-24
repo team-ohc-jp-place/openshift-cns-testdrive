@@ -170,9 +170,9 @@ spec:
         matchLabels:
           name: netproj-a
 ----
-`podSelector` は、ローカルプロジェクトの *Pod* を特定のラベルセレクタを使ってマッチさせる場所であることに注意してください。
+`podSelector` は、ローカルプロジェクトの Pod を特定のラベルセレクタを使ってマッチさせる場所であることに注意してください。
 
-あるプロジェクト内のすべての `NetworkPolicy` CR を組み合わせて、プロジェクト内の *Pod* へのアクセス許可を作成します。
+あるプロジェクト内のすべての `NetworkPolicy` CR を組み合わせて、プロジェクト内の Pod へのアクセス許可を作成します。
 この特定のケースでは、"deny all " ポリシーと "allow TCP 5000 " ポリシーが組み合わされています。
 
 `netproj-b` *Project* 内の *Pod* へのアクセスを `netproj-a` *Project* 内のすべての  *Pod* から許可するには、上記の NetworkPolicy CR を適用します。:
