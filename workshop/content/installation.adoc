@@ -1,124 +1,93 @@
-## Installation and Verification
+## インストールと検証
 
-The scope of the new installer-provisioned infrastructure (IPI) OpenShift 4
-installation is purposefully narrow. It is designed for simplicity and
-ensured success. Many of the items and configurations that were previously
-handled by the installer are now expected to be "Day 2" operations, performed
-just after the installation of the control plane and basic workers completes.
-The installer provides a guided experience for provisioning the cluster on a
-particular platform.
+OpenShift 4の
+Installer-provisioned infrastructure (IPI) インストールでは、意図的に設定する範囲を狭くしています。これは、シンプルさと確実な成功を目指して設計されているためです。これまでインストーラで処理されていた項目や構成の多くは、control planeと基本的なワーカーのインストールが完了した直後に実行される、「Day 2」の操作となることでしょう。インストーラは、特定のプラットフォーム上でクラスタをプロビジョニングするためのガイドを提供します。
 
-This IPI installation has already been performed for you, and the cluster is
-in its basic, default state.
+このIPIインストールはすでに実行されており、クラスタはデフォルト状態になっています。
 
-### Logging in
-To inspect the cluster installation, you can simply SSH to the bastion host where it was installed on like so:
+### ログイン
+クラスタのインストール状況を確認するには、以下のようにインストールされている踏み台ホストにSSHで接続します。
 
 [source,bash,role="execute"]
 ----
 ssh -l {{ SSH_USERNAME }} {{ BASTION_FQDN }} -o ServerAliveInterval=120
 ----
 
-Here is your ssh password:
+あなたの ssh パスワードはこれです。
 
 [source,bash,role="copypaste"]
 ----
 {{ SSH_PASSWORD }}
 ----
 
-You'll notice that there is a 4-digit alphanumeric string (eg: f4a3) in the hostname. This
-string is your `GUID`. Since you will often use `GUID`, it makes sense to
-export it as an environment variable:
+ホスト名に4桁の英数字文字列(例:f4a3)があることに気づくでしょう。この文字列が `GUID` です。`GUID` はよく使うものなので、環境変数としてエクスポートしておくのがよいです。
 
 [source,bash,role="execute"]
 ----
 export GUID=`hostname | cut -d. -f2`
 ----
 
-### Master Components
-
+### マスターのコンポーネント
 .OpenShift Master's 4 main responsibilities.
 image::images/openshift_master_4_responsibilities.png[]
 
 
-#### API/Authentication
-The Kubernetes API server validates and configures the resources that make up a Kubernetes cluster.
+#### API/認証
+Kubernetes APIサーバーは、Kubernetesクラスタを構成するリソースを検証し、設定します。
 
-Common things that interact with the Kubernetes API server are:
+Kubernetes APIサーバーとインタラクションするための一般的なものは以下の通りです。
 
-* OpenShift Web Console
-* OpenShift `oc` command line tool
-* OpenShift Node
-* Kubernetes Controllers
+* OpenShift Webコンソール
+* OpenShift `oc` コマンドラインツール
+* OpenShift ノード
+* Kubernetes コントローラ
 
-All interactions with the API server are secured using TLS. In addition, all
-API calls must be authenticated (the user is who they say they are) and
-authorized (the user has rights to make the requested API calls).
+APIサーバーとのすべてのやり取りは、TLS を使用して安全に保護されています。さらに、すべてのAPIコールは認証されていて(ユーザがユーザ自身と確認できる)、認可されている(ユーザがリクエストしたAPIコールの権限を持っている)必要があります。
 
-
-#### Data Store
-The OpenShift Data Store (etcd) stores the persistent master state while
-other components watch etcd for changes to bring themselves into the desired
-state. etcd can be optionally configured for high availability, typically
-deployed with 2n+1 peer services.
+#### データストア
+OpenShift Data Store (etcd) はマスターの状態を永続的に保存し、他のコンポーネントが希望する状態にする変更をetcdで監視します。etcdはオプションで高可用性を構成することができ、通常は2n+1でデプロイされます。
 
 [NOTE]
 ====
-etcd stores the cluster's state. It is not used to store user application data.
+etcdはクラスタの状態を保存します。ユーザアプリケーションのデータを保存するためには使用されません。
 ====
 
-#### Scheduler
-The pod scheduler is responsible for determining placement of new pods onto
-nodes within the cluster.
+#### スケジューラ
+Podスケジューラは、クラスタ内のノードへの新しいPodの配置を決定します。
 
-The scheduler is very flexible and can take the physical topology of the
-cluster into account (racks, datacenters, etc).
+スケジューラは非常に柔軟で、クラスタの物理的なトポロジー(ラック、データセンターなど)を考慮に入れることができます。
 
-#### Health / Scaling
-Each pod can register both liveness and readiness probes.
+#### ヘルスチェック/スケーリング
+各PodはLiveness ProbeとReadiness Probeの両方を登録することができます。
 
-Liveness probes tell the system if the pod is healthy or not. If the pod is
-not healthy, it can be restarted automatically.
+Liveness ProbeはPodが健康かどうかをシステムに知らせます。Podが正常でない場合は、自動的に再起動することができます。
 
-Readiness probes tell the system when the pod is ready to take traffic. This,
-for example, can be used by the cluster to know when to put a pod into the
-load balancer.
+Readiness ProbeはPodがトラフィックを受ける準備ができているかどうかをシステムに知らせます。これは例えば、クラスタがPodをロードバランサに入れるタイミングを知るために使用できます。
 
-For more information on the OpenShift Master's areas of responsibility, please refer to
-the
-link:https://docs.openshift.com/container-platform/3.11/architecture/infrastructure_components/kubernetes_infrastructure.html[infrastructure components section] of the product documentation.
+OpenShift Masterの責任範囲の詳細については、製品ドキュメントのlink:https://docs.openshift.com/container-platform/3.11/architecture/infrastructure_components/kubernetes_infrastructure.html[infrastructure components section] を参照してください。
 
-### Examining the installation artifacts
-OpenShift 4 installs with two effective superusers:
+### インストールで作られる成果物
+OpenShift 4は2つのスーパーユーザでインストールします。
 
-* `kubeadmin` (technically an alias for `kube:admin`)
+* `kubeadmin`(`kube:admin` のエイリアス)
 * `system:admin`
 
-Why two? Because `system:admin` is a user that uses a certificate to login
-and has no password. Therefore this superuser cannot log-in to the web
-console (which requires a password).
+なぜ2つなのか？それは、`system:admin` は証明書を使ってログインするユーザーであり、パスワードを持っていないからです。そのため、このスーパーユーザーでは(パスワードが必要な)Webコンソールにログインすることができません。
 
-If you want additional users to be able to authenticate to and use the
-cluster, you need to configure your desired authentication mechanisms using
-CustomResources and Operators as previously discussed. LDAP-based
-authentication will be configured as one of the lab exercises.
+追加のユーザがクラスタを認証して使えるようにしたい場合は、以前に説明したようにCustomResourcesとOperatorsを使用して必要な認証メカニズムを設定する必要があります。ラボの演習の1つとして、LDAPベースの認証を設定します。
 
-### Verifying the Installation
-Let's do some basic tests with your installation. As an administrator, most
-of your interaction with OpenShift will be from the command line. The `oc`
-program is a command line interface that talks to the OpenShift API.
+### インストールの検証
+基本的なテストをいくつか行ってみましょう。管理者として、OpenShiftとのやりとりのほとんどはコマンドラインから行います。`oc` プログラムはOpenShift APIと対話するコマンドラインインターフェースです。
 
-#### Login to OpenShift
-When the installation completed, the installer left some artifacts that
-contain the various URLs and passwords required to access the environment.
-The installation program was run under the `ec2-user` account.
+#### OpenShiftへのログイン
+インストールが完了すると、インストーラはクラスタ環境にアクセスするために必要な様々なURLとパスワードを含むいくつかの成果物を残しました。インストールプログラムは `ec2-user` アカウントで実行されています。
 
 [source,bash,role="execute"]
 ----
 ls -al ~/cluster-$GUID
 ----
 
-You'll see something like the following:
+以下のように表示されます。
 
 ----
 total 3348
@@ -134,17 +103,14 @@ drwxr-xr-x. 2 ec2-user ec2-user      50 May  3 08:00 auth
 drwxr-xr-x. 2 ec2-user ec2-user      62 May  3 07:54 tls
 ----
 
-The OpenShift 4 IPI installation embeds Terraform in order to create some of
-the cloud provider resources. You can see some of its outputs here. The
-important file right now is the `.openshift_install.log`. Its last few lines
-contain the relevant output to figure out how to access your environment:
+OpenShift 4 IPIのインストールでは、クラウドプロバイダーのリソースの一部を作成するためにTerraformが埋め込まれています。その出力の一部をここで見ることができます。重要なファイルは `.openshift_install.log` です。最後の数行には、環境へのアクセス方法を把握するための出力が含まれています。
 
 [source,bash,role="execute"]
 ----
 tail -n5 ~/cluster-$GUID/.openshift_install.log
 ----
 
-You will see something like the following::
+以下のように表示されます。
 
 ----
 time="2019-04-08T14:49:34Z" level=info msg="Install complete!"
@@ -154,47 +120,42 @@ time="2019-04-08T14:49:34Z" level=info msg="Access the OpenShift web-console her
 time="2019-04-08T14:49:34Z" level=info msg="Login to the console with user: kubeadmin, password: SxUr2-tQ2py-c6jq2-YtjW3"
 ----
 
-The installation was run as a different system user, and the artifacts folder
-is read-only mounted into your `lab-user` folder. While the installer has
-fortunately given you a convenient `export` command to run, you don't have
-write permissions to the path that it shows. The `oc` command will try to
-write to the `KUBECONFIG` file, which it can't, so you'll get errors later if you try it.
+インストールは別のシステムユーザで実行され、成果物のフォルダはあなたの `lab-user` フォルダに読み取り専用でマウントされています。`export` コマンドを与えてくれましたが、表示されているパスへの書き込み権限がありません。`oc` コマンドは `KUBECONFIG` ファイルに書き込もうとしますが、それはできません。
 
-Our installation process has actually already copied the config you need to
-`~/.kube/config`, so you are already logged in. Try the following:
+インストールプロセスでは、必要な設定を `~/.kube/config` にコピーしているので、すでにログインしています。以下のようにしてみてください。
 
 [source,bash,role="execute"]
 ----
 oc whoami
 ----
 
-The `oc` tool should already be in your path and be executable.
+`oc` ツールが既にパスに入っていて、実行可能な状態になっているはずです。
 
-#### Examine the Cluster Version
-First, you can check the current version of your OpenShift cluster by
-executing the following:
+#### クラスタのバージョンを調べる
+まず、以下を実行してOpenShiftクラスタの現在のバージョンを確認します。
 
 [source,bash,role="execute"]
 ----
 oc get clusterversion
 ----
 
-And you will see some output like:
+以下のような出力が表示されます。
 
-```
+----
 NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
 version   4.3.1     True        False         15m     Cluster version is 4.3.1
-```
+----
 
-For more details, you can execute the following command:
+詳細については、以下のコマンドを実行します。
 
 [source,bash,role="execute"]
 ----
 oc describe clusterversion
 ----
 
-Which will give you additional details, such as available updates:
-```
+これを実行すると、利用可能なアップデートなどの追加の詳細が表示されます。
+
+----
 Name:         version
 Namespace:
 Labels:       <none>
@@ -243,18 +204,17 @@ Status:
   Observed Generation:  1
   Version Hash:         7VzR42wcDZ4=
 Events:                 <none>
-```
+----
 
-#### Look at the Nodes
-Execute the following command to see a list of the *Nodes* that OpenShift knows
-about:
+#### ノードを調べる
+以下のコマンドを実行すると、OpenShiftが知っている *Nodes* の一覧が表示されます。
 
 [source,bash,role="execute"]
 ----
 oc get nodes
 ----
 
-The output should look something like the following:
+出力は以下のようになります。
 
 ----
 NAME                                         STATUS   ROLES    AGE    VERSION
@@ -266,37 +226,23 @@ ip-10-0-153-202.us-east-2.compute.internal   Ready    master   58m   v1.16.2
 ip-10-0-165-150.us-east-2.compute.internal   Ready    master   59m   v1.16.2
 ----
 
-You have 3 masters and 3 workers. The OpenShift *Master* is also a *Node*
-because it needs to participate in the software defined network (SDN). If you
-need additional nodes for additional purposes, you can create them very
-easily when using IPI and leveraging the cloud provider operators. You will
-create nodes to run OpenShift infrastructure components (registry, router,
-etc.) in a subsequent exercise.
+3つのmasterと3つのworkerがあります。OpenShift *Master* はSDN（Software Defined Network）に参加する必要があるため、*Node* でもあります。追加の目的でノードが必要な場合は、IPIでクラウドプロバイダーのOperatorを活用すると、非常に簡単にノードを作成できます。OpenShiftのインフラコンポーネント(レジストリ、ルーターなど)を実行するためのノードを作成するのは、後の演習で行います。
 
-#### Check the Web Console
-OpenShift provides a web console for users, developers, application
-operators, and administrators to interact with the environment. Many of the
-cluster administration functions, including upgrading the cluster itself, can
-be performed simply by using the web console.
+#### Webコンソールを確認する
+OpenShiftでは、ユーザ、開発者、アプリケーション運用者、管理者が環境とインタラクションするためのWebコンソールを提供しています。クラスタ自体のアップグレードを含むクラスタ管理機能の多くは、Webコンソールを使用するだけで実行できます。
 
-The web console actually runs as an application inside the OpenShift
-environment and is exposed via the OpenShift Router. You will learn more
-about the router in a subsequent exercise. For now, you can simply
-control+click the link:
+Webコンソールは実際にはOpenShift環境内でアプリケーションとして実行され、OpenShift Routerを介して公開されます。ルーターについては、この後の演習で詳しく説明します。今は、リンクをcontrol+クリックするだけでOKです。
 
 {{ MASTER_URL }}
 
-#### You will now exit the ssh session
+#### sshのセッションを終了
 [source,role="execute"]
 ----
 exit
 ----
-If you accidentally hit exit more than once and connection to the console closed, refresh the webpage to reconnect.
+誤って exit を何度も押してしまい、コンソールへの接続が閉じてしまった場合は、ウェブページを更新して再接続してください。
 
 [WARNING]
 ====
-You will receive a self-signed certificate error in your browser when you
-first visit the web console. When OpenShift is installed, by default, a CA
-and SSL certificates are generated for all inter-component communication
-within OpenShift, including the web console.
+最初にWebコンソールにアクセスすると、ブラウザに自己署名証明書エラーが表示されます。OpenShiftをインストールすると、デフォルトでは、Webコンソールを含むOpenShift内のすべてのコンポーネント間通信に対してCA証明書とSSL証明書が生成されます。
 ====
