@@ -22,9 +22,9 @@ OpenShiftのサブスクリプションモデルでは、顧客は追加料金�
 taint/tolerationの使用は、これらの演習ではカバーされていません。
 ====
 
-これを実現するために、`MachineSets`を追加で作成します。
+これを実現するために、`MachineSets` を追加で作成します。
 
-MachineSets`がどのように動作するかを理解するためには、以下を実行してください。
+`MachineSets` がどのように動作するかを理解するためには、以下を実行してください。
 
 [source,bash,role="copypaste copypaste-warning"]
 ----
@@ -32,7 +32,7 @@ oc get machineset -n openshift-machine-api -o yaml cluster-5fa6-hx2ml-worker-us-
 ----
 
 #### Metadata
-`MachineSet` の `metadata` には、の`MachineSet` の名前や、様々なラベルのような情報が含まれています。
+`MachineSet`  の `metadata` には、の `MachineSet` の名前や、様々なラベルのような情報が含まれています。
 
 
 ```YAML
@@ -52,11 +52,11 @@ metadata:
 
 [NOTE]
 ====
-`MachineAutoScaler`が定義されている`MachineSet`をダンプした場合、`MachineSet`に`annotation`が表示されるかもしれません。
+`MachineAutoScaler` が定義されている `MachineSet` をダンプした場合、`MachineSet` に `annotation` が表示されるかもしれません。
 ====
 
 #### Selector
-`MachineSet` は `Machine` の作成方法を定義し、 `Selector` はどのマシンがそのセットに関連付けられているかをOperatorに指示します。
+`MachineSet` は `Machine` の作成方法を定義し、`Selector` はどのマシンがそのセットに関連付けられているかをOperatorに指示します。
 
 ```YAML
 spec:
