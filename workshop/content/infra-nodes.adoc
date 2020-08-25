@@ -32,7 +32,7 @@ oc get machineset -n openshift-machine-api -o yaml cluster-5fa6-hx2ml-worker-us-
 ----
 
 #### Metadata
-`MachineSet`  の `metadata` には、の `MachineSet` の名前や、様々なラベルのような情報が含まれています。
+`MachineSet`  の `metadata` には、`MachineSet` の名前や、様々なラベルのような情報が含まれています。
 
 
 ```YAML
@@ -85,7 +85,7 @@ spec:
 
 #### Template Spec
 `template` は、`Machine`/`Node` をどのように作成するかを指定する必要があります。
-`spec`、より具体的には、`providerSpec` には、`Machine`を正しく作成してブートストラップするための重要なAWSデータがすべて含まれていることに気づくでしょう。
+`spec`、より具体的には、`providerSpec` には、`Machine` を正しく作成してブートストラップするための重要なAWSデータがすべて含まれていることに気づくでしょう。
 
 この例では、結果として得られるノードが1つ以上の特定のラベルを継承していることを確認したいと思います。上の例で見たように、ラベルは `metadata` セクションにあります。
 ```YAML
@@ -102,7 +102,7 @@ spec:
 デフォルトでは、インストーラが作成する `MachineSets` は、ノードに追加のラベルを適用しません。
 
 ### カスタムMachineSetの定義
-既存の`MachineSet`を分析したところで、次は作成のルールを確認してみましょう。
+既存の `MachineSet` を分析したところで、次は作成のルールを確認してみましょう。
 
 1. `providerSpec` の中では何も変更しない
 2. `machine.openshift.io/cluster-api-cluster: <clusterid>` のインスタンスを変更しない
@@ -163,7 +163,7 @@ ip-10-0-167-9.us-east-2.compute.internal     Ready    worker         61m    v1.1
 ip-10-0-169-121.us-east-2.compute.internal   Ready    master         67m    v1.16.2
 ```
 
-どのノードが新しいノードなのか分からなくて困っている場合は、`AGE`カラムを見てみてください。
+どのノードが新しいノードなのか分からなくて困っている場合は、`AGE` カラムを見てみてください。
 また、`ROLES` 列では、新しいノードが `worker` と `infra` の両方のロールを持っていることに気づくでしょう。
 
 ### ラベルを確認する
@@ -182,7 +182,7 @@ oc get node ip-10-0-133-134.us-east-2.compute.internal --show-labels
 `node-role.kubernetes.io/infra` ラベルが確認できます。
 
 ### MachineSetの追加(スケール)
-現実的な本番環境では、インフラストラクチャコンポーネントを保持するために、少なくとも3つの`MachineSets`が必要になります。ロギングアグリゲーションソリューションとサービスメッシュの両方がElasticSearchをデプロイするので、ElasticSearchは3つのノードに分散した3つのインスタンスを必要とします。なぜ3つの`MachineSets`が必要なのでしょうか。理論的には、異なるAZに複数の `MachineSets` を配置することで、AWSがAZを失った場合であっても完全にダウンすることを防ぐためです。
+現実的な本番環境では、インフラストラクチャコンポーネントを保持するために、少なくとも3つの `MachineSets` が必要になります。ロギングアグリゲーションソリューションとサービスメッシュの両方がElasticSearchをデプロイするので、ElasticSearchは3つのノードに分散した3つのインスタンスを必要とします。なぜ3つの `MachineSets` が必要なのでしょうか。理論的には、異なるAZに複数の `MachineSets` を配置することで、AWSがAZを失った場合であっても完全にダウンすることを防ぐためです。
 
 スクリプトレットで作成した `MachineSet` はすでに3つのレプリカを作成しているので、今のところ何もする必要はありません。また、自分で追加のレプリカを作成する必要もありません。
 
@@ -190,9 +190,9 @@ oc get node ip-10-0-133-134.us-east-2.compute.internal --show-labels
 `openshift-machine-api` プロジェクトにはいくつかの `Pods` があります。そのうちの一つは `machine-api-controllers-56bdc6874f-86jnb` のような名前です。その `Pod` のコンテナ上で `oc log` を使うと、ノードを実際に生成するためのさまざまな演算子のビットを見ることができます。
 
 ## クイック演算子の背景
-Operatorはただの `Pods` です。しかし 彼らは特別な `Pods` であり、Kubernetes環境でアプリケーションをデプロイして管理する方法を理解しているソフトウェアです。Operatorのパワーは、`CustomResourceDefinitions` (`CRD`)と呼ばれるKubernetesの機能に依存しています。`CRD`はまさにその名の通りの機能です。これらはカスタムリソースを定義する方法であり、本質的にはKubernetes APIを新しいオブジェクトで拡張するものです。
+Operatorはただの `Pods` です。しかし 彼らは特別な `Pods` であり、Kubernetes環境でアプリケーションをデプロイして管理する方法を理解しているソフトウェアです。Operatorのパワーは、`CustomResourceDefinitions` (`CRD`)と呼ばれるKubernetesの機能に依存しています。`CRD` はまさにその名の通りの機能です。これらはカスタムリソースを定義する方法であり、本質的にはKubernetes APIを新しいオブジェクトで拡張するものです。
 
-Kubernetesで `Foo` オブジェクトを作成/読み込み/更新/削除できるようにしたい場合、`Foo` リソースとは何か、どのように動作するのかを定義した `CRD` を作成します。そして、`CRD`のインスタンスである `CustomResources` (`CRs`) を作成することができます。
+Kubernetesで `Foo` オブジェクトを作成/読み込み/更新/削除できるようにしたい場合、`Foo` リソースとは何か、どのように動作するのかを定義した `CRD` を作成します。そして、`CRD` のインスタンスである `CustomResources` (`CRs`) を作成することができます。
 
 Operator の場合、一般的なパターンとしては、Operator が `CRs` を見て設定を行い、Kubernetes 環境上で _operate_ を行い、設定で指定されたことを実行するというものです。ここでは、OpenShiftのインフラストラクチャオペレータのいくつかがどのように動作するかを見てみましょう。
 
@@ -322,8 +322,8 @@ oc get pod -n openshift-ingress -o wide
 ====
 
 もし十分に手際が良ければ、`Terminating` か `ContainerCreating` のいずれかのポッドを捕まえることができるかもしれません。
-Terminating` ポッドはワーカーノードの1つで動作していました。
-実行中の`Running` ポッドは最終的に `infra` ロールを持つノードの1つで動作しています。
+`Terminating` ポッドはワーカーノードの1つで動作していました。
+実行中の `Running` ポッドは最終的に `infra` ロールを持つノードの1つで動作しています。
 
 ## レジストリ
 レジストリは、オペレータが実際のレジストリポッドをどのように展開するかを設定するために、同様の `CRD` メカニズムを使用します。
