@@ -266,7 +266,7 @@ oc adm policy add-cluster-role-to-group cluster-reader ose-fancy-dev
 OpenShiftに付属するさまざまなロールに興味がある方は、link:https://docs.openshift.com/container-platform/4.5/authentication/using-rbac.html[Role-Based Access Control (RBAC)^] のドキュメントを参照してください。
 ====
 
-#### `cluster-reader` ポリシーを調べる
+#### cluster-reader ポリシーを調べる
 通常のユーザでログインしてみましょう。
 
 [source,bash,role="execute"]
@@ -428,25 +428,23 @@ See 'oc new-app -h' for examples.
 このエラーは想定通りのものです。
 
 #### Prometheus
-Now that you have a user with `cluster-reader` privileges (one that can see
-many administrative aspects of the cluster), we can revisit Prometheus and
-attempt to log-in to it.
+`cluster-reader` 権限を持つユーザ (クラスタ管理の多くの情報を閲覧することができるユーザ) ができたので、Prometheusをもう一度見てみましょう。
 
-Login as a the user with `cluster-reader` privileges:
+`cluster-reader` 権限を持つユーザでログインします。
 
 [source,bash,role="execute"]
 ----
 oc login -u fancyuser1 -p Op#nSh1ft
 ----
 
-Find the `prometheus` `Route` with the following command:
+`prometheus` の `Route` を検索します。
 
 [source,bash,role="execute"]
 ----
 oc get route prometheus-k8s -n openshift-monitoring
 ----
 
-You will see something like the following:
+以下のように表示されます。
 
 ----
 NAME             HOST/PORT                                                                      PATH   SERVICES         PORT   TERMINATION          WILDCARD
@@ -455,41 +453,22 @@ prometheus-k8s   prometheus-k8s-openshift-monitoring.{{ ROUTE_SUBDOMAIN }}      
 
 [WARNING]
 ====
-Before continuing, make sure to go to the OpenShift web console and log out
-by using the dropdown menu at the upper right where it says `kube:admin`.
-Otherwise Prometheus will try to use your `kubeadmin` user to pass through
-authentication. While it will work, it doesn't demonstrate the
-`cluster-reader` role.
+先に進む前に、OpenShiftのWebコンソールに移動し、右上の`kube:admin` のドロップダウンメニューからログアウトしてください。そうしないと、Prometheusは認証を通過するためにあなたの `kubeadmin` ユーザを使用しようとします。もちろんこれは動作しますが、`cluster-reader` ロールのデモンストレーションにはなりません。
 ====
+インストーラは、デフォルトでPrometheus用の`Route`を設定しています。
+link:https://prometheus-k8s-openshift-monitoring.{{ ROUTE_SUBDOMAIN }}[Prometheus Link]
+をcontrol+クリックしてブラウザで開きます。ログイン画面が出てきたら *Log in with OpenShift* ボタンをクリックして `ldap auth` を選択し、先ほど `cluster-reader` 権限を付与した `fancyuser1` ユーザを使用します。より細かく言えば、`ose-fancy-dev` グループに `cluster-reader` 権限があり、`fancyuser1` がメンバーです。これらのユーザのパスワードはすべて `openshift` です。自己署名証明書のため、証明書エラーが出ると思います。必ず承諾するようにしましょう。
 
-The installer configured a `Route` for Prometheus by default. Go ahead and
-control+click the link:https://prometheus-k8s-openshift-monitoring.{{
-ROUTE_SUBDOMAIN }}[Prometheus link] to open it in your browser. You'll be
-greeted with a login screen. Click the *Log in with OpenShift* button, then
-select the `ldap` auth mechanism, and use the `fancyuser1` user that you gave
-`cluster-reader` privileges to earlier. More specifically, the
-`ose-fancy-dev` group has `cluster-reader` permissions, and `fancyuser1` is a
-member. Remember that the password for all of these users is `openshift`. You
-will probably get a certificate error because of the self-signed certificate.
-Make sure to accept it.
-
-After logging in, the first time you will be presented with an auth proxy
-permissions acknowledgement:
+ログインすると、最初にauthプロキシのパーミッションの承認画面が表示されます。
 
 .Auth Proxy Acceptance.
 image::images/prometheus-auth-proxy.png[]
 
-There is actually an OAuth proxy that sits in the flow between you and the
-Prometheus container. This proxy is used to validate your AuthenticatioN
-(AuthN) as well as authorize (AuthZ) what is allowed to happen. Here you are
-explicitly authorizing the permissions from your `fancyuser1` account to be
-used as part of accessing Prometheus. Hit _Allow selected permissions_.
+実際には、あなたとPrometheusコンテナの間のフローの中にOAuthプロキシが存在します。このプロキシは、あなたの認証(AuthenticatioN:AuthN)を確認するためと、また、何が許可されているかの認可(AuthoriZe:AuthZ)のためにに使用されます。ここでは、Prometheusへのアクセスの一部として使用される `fancyuser1` アカウントのパーミッションを明示的に承認しています。_Allow selected permissions_ をクリックします。
 
-At this point you are viewing Prometheus. There are no alerts configured. If
-you look at `Status` and then `Targets` you can see some interesting
-information about the current state of the cluster.
+この時点でPrometheusが表示されています。アラートは設定されていません。`Status` と `Targets` を見ると、クラスタの現在の状態に関する興味深い情報を見ることができます。
 
-After you are done, make sure to login again as the admin user:
+これが終わったら、管理者ユーザーとして再度ログインしてください。
 
 [source,bash,role="execute"]
 ----
