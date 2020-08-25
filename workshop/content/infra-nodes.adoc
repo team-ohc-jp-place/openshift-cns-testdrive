@@ -1,46 +1,30 @@
 ## OpenShift Infrastructure Nodes
-OpenShiftのサブスクリプションモデルでは、顧客はさまざまなコアを実行することができます。
-インフラストラクチャコンポーネントを追加料金なしで利用できます。つまり、ノード
-コアのOpenShiftインフラストラクチャコンポーネントのみを実行している場合はカウントされません。
-をカバーするのに必要な総加入者数に換算すると
-の環境のことを指します。
+OpenShiftのサブスクリプションモデルでは、顧客は追加料金なしで様々なコアインフラストラクチャコンポーネントをを実行できます。つまり、OpenShiftのコアインフラストラクチャコンポーネントのみを実行しているノードは、クラスター環境をカバーするために必要なサブスクリプションの総数にはカウントされません。
 
-インフラストラクチャの分類に該当するOpenShiftコンポーネント
+インフラストラクチャのカテゴライズに該当するOpenShiftコンポーネントは以下が含まれます。
 
-* kubernetes and OpenShift control plane services ("masters")
-* router
-* container image registry
-* cluster metrics collection ("monitoring")
-* cluster aggregated logging
-* service brokers
+* kubernetesとOpenShiftのコントロールプレーンサービス（"masters"）。
+* ルータ
+* コンテナイメージレジストリ
+* クラスタメトリクスの収集 ("monitoring")
+* クラスタ集約型ロギング
+* サービスブローカー
 
-上記に記載されていないコンテナ/ポッド/コンポーネントを実行しているノードはすべて
-ワーカーノードであり、サブスクリプションでカバーされている必要があります。
+上記以外のコンテナ/ポッド/コンポーネントを実行しているノードはすべてワーカーとみなされ、サブスクリプションでカバーされている必要があります。
 
-### 機械セットの詳細
-`MachineSets`の演習では、`MachineSets`を使用して、スケーリングを検討しました。
-のレプリカ数を変更することで、クラスタを変更することができます。インフラストラクチャの場合
-ノードを使用して、特定の Kubernetes
-のラベルを使用しています。そして、さまざまなインフラストラクチャコンポーネントを設定して、以下のように実行するようにします。
-は、これらのラベルを持つノードに特化しています。
+### MachineSet 詳細
+`MachineSets` の演習では、`MachineSets` を使用して、レプリカ数を変更してクラスタをスケーリングすることを検討しました。インフラストラクチャノードの場合、特定のKubernetesラベルを持つ `Machine` を追加で作成したいと思います。そして、それらのラベルを持つノード上で特定の動作をするように様々なインフラストラクチャコンポーネントを設定することができます。
 
 [NOTE]
 ====
-現在、インフラストラクチャコンポーネントを制御するために使用される演算子は、以下のようなことを行います。
-テインツやトレラントの使用をすべてが支持しているわけではありません。これは、以下のことを意味します。
-インフラストラクチャのワークロードはインフラストラクチャノードに移行しますが、他の
-ワークロードがインフラストラクチャ上で実行されることが特に妨げられているわけではありません。
-ノードを使用しています。言い換えれば、ユーザーのワークロードはインフラストラクチャと混ざり合う可能性があります。
-テイン/トレレーションのサポートがすべてのオペレータに完全に実装されるまでの間、作業負荷を軽減することができます。
+現在、インフラストラクチャコンポーネントの制御に使用されているOperatorは、"taint" と "toleration" の使用をすべてサポートしているわけではありません。これは、インフラストラクチャのワークロードはインフラストラクチャノード上で実行されますが、他のワークロードがインフラストラクチャノード上で実行されることは特に禁止されていないことを意味します。言い換えれば、すべてのOperatorに taint/toleration が完全に実装されるまでは、ユーザワークロードとインフラストラクチャワークロードが混在する可能性があります。
 
-テインツ/トレレーションの使用は、これらの演習ではカバーされていません。
+taint/tolerationの使用は、これらの演習ではカバーされていません。
 ====
 
 これを実現するために、`MachineSets`を追加で作成します。
 
-`MachineSets`がどのように動作するかを理解するためには、以下を実行してください。
-
-これにより、以下の議論の一部をフォローすることができます。
+MachineSets`がどのように動作するかを理解するためには、以下を実行してください。
 
 [source,bash,role="copypaste copypaste-warning"]
 ----
@@ -48,8 +32,8 @@ oc get machineset -n openshift-machine-api -o yaml cluster-5fa6-hx2ml-worker-us-
 ----
 
 #### Metadata
-MachineSet`の`metadata`自体には、名前のような情報が含まれています。
-の`MachineSet`と様々なラベルの
+`MachineSet` の `metadata` には、の`MachineSet` の名前や、様々なラベルのような情報が含まれています。
+
 
 ```YAML
 metadata:
@@ -68,13 +52,11 @@ metadata:
 
 [NOTE]
 ====
-もし、`MachineSet`をダンプした場合、`MachineSet`に `annotations` が表示されるかもしれません。
-のように、`MachineAutoScaler` が定義されているものを指定します。
+`MachineAutoScaler`が定義されている`MachineSet`をダンプした場合、`MachineSet`に`annotation`が表示されるかもしれません。
 ====
 
 #### Selector
-`MachineSet` は `Machine` の作成方法を定義し、`Selector` は `MachineSet` を指定します。
-どのマシンがセットに関連付けられているかをオペレータに知らせます。
+`MachineSet` は `Machine` の作成方法を定義し、 `Selector` はどのマシンがそのセットに関連付けられているかをOperatorに指示します。
 
 ```YAML
 spec:
@@ -85,13 +67,10 @@ spec:
       machine.openshift.io/cluster-api-machineset: 190125-3-worker-us-east-1b
 ```
 
-この場合、クラスタ名は `190125-3` であり、追加の
-のラベルを指定します。
+この場合、クラスタ名は `190125-3` であり、セット全体のラベルが追加されています。
 
-### テンプレートのメタデータ
-テンプレートは、`MachineSet`の一部であり、それをテンプレート化するものである。
-マシン`です。テンプレート`自体にメタデータを関連付けることができます。
-変更を加える際には、ここで物事が一致していることを確認してください。
+### Template Metadata
+`template` は、`MachineSet` の一部で、`Machine` をテンプレート化するものです。
 
 ```YAML
   template:
@@ -104,16 +83,11 @@ spec:
         machine.openshift.io/cluster-api-machineset: 190125-3-worker-us-east-1b
 ```
 
-#### テンプレート仕様
-テンプレートは、`Machine`/Node`をどのように作成するかを指定する必要があります。
-spec`、より具体的には `providerSpec` であることに気づくでしょう。
-には、`Machine`を作成するための重要なAWSデータがすべて含まれています。
-を正しく継承し、ブートストラップされます。
+#### Template Spec
+`template` は、`Machine`/`Node` をどのように作成するかを指定する必要があります。
+`spec`、より具体的には、`providerSpec`には、`Machine`を正しく作成してブートストラップするための重要なAWSデータがすべて含まれていることに気づくでしょう。
 
-このケースでは、結果として得られるノードが1つ以上の
-特定のラベルを使用します。上の例で見たように、ラベルは
-メタデータ`セクションを参照してください。
-
+この例では、結果として得られるノードが1つ以上の特定のラベルを継承していることを確認したいと思います。上の例で見たように、ラベルは `metadata` セクションにあります。
 ```YAML
   spec:
       metadata:
@@ -125,23 +99,19 @@ spec`、より具体的には `providerSpec` であることに気づくでし�
 ...
 ```
 
-デフォルトでは、インストーラが作成する `MachineSets` には
-ノードにラベルを追加します。
+デフォルトでは、インストーラが作成する `MachineSets` は、ノードに追加のラベルを適用しません。
 
-### カスタムマシンセットの定義
-既存の`MachineSet`を解析したので、次は、`MachineSet`を解析してみましょう。
-1つを作成するためのルール、少なくとも私たちが行っているような単純な変更のために。
+### カスタムMachineSetの定義
+既存の`MachineSet`を分析したところで、次は作成のルールを確認してみましょう。
 
-1. providerSpec` の中では何も変更しない。
-2. machine.openshift.io/cluster-api-clusterのインスタンスを変更しないでください。<clusterid>``のインスタンスを変更しないでください。
-3. `MachineSet` にユニークな `name` を与えます。
-4. `machine.openshift.io/cluster-api-machineset` のインスタンスが `name` と一致することを確認します。
-5. ノードに必要なラベルを `.spec.template.spec.metadata.l labels` に追加します。
-6. `MachineSet` `name` の参照を変更する場合でも、`subnet` を変更しないように注意してください。
+1. `providerSpec` の中では何も変更しない
+2. `machine.openshift.io/cluster-api-cluster: <clusterid>` のインスタンスを変更しない
+3. `MachineSet` にユニークな `name` を指定する
+4. `machine.openshift.io/cluster-api-machineset` のインスタンスが `name` と一致することを確認する
+5. ノードに必要なラベルを `.spec.template.spec.metadata.labels` に追加する
+6. `MachineSet` `name` の参照を変更する場合でも、`subnet` を変更しないように注意する
 
-これは複雑に聞こえるかもしれませんが、小さなプログラムといくつかのステップがあります。
-があなたのためにハードワークをしてくれます。
-
+一見複雑に見えますが、以下のように実行してみましょう。
 
 [source,bash,role="execute"]
 ----
@@ -158,7 +128,7 @@ oc scale machineset $MACHINESET -n openshift-machine-api --replicas=3
 oc get machineset -n openshift-machine-api
 ----
 
-以下のような名前で記載された新しいインフラセットが表示されているはずです。
+新しいインフラセットが以下例に似た名前で表示されているはずです。
 
 ```
 ...
@@ -167,12 +137,12 @@ cluster-city-56f8-mc4pf-infra-us-east-2a    1         1                         
 ```
 
 まだインスタンスが起動していてブートストラップを行っているため、セットの中には利用可能なマシンがありません。
-インスタンスがいつ起動するかは `oc get machine -n openshift-machine-api` で確認することができます。
-次に `oc get node` を使うと、実際のノードがいつ結合されて準備が整ったかを確認することができます。
+インスタンスがいつ実行されるかは `oc get machine -n openshift-machine-api` で確認することができます。
+次に `oc get node` を使って、実際のノードがいつ結合されて準備が整ったかを確認することができます。
 
-[注意]
+[NOTE]
 ====
-マシン」が準備されて「ノード」として追加されるまでには数分かかることがあります。
+`Machine` が準備されて `Node` として追加されるまでには数分かかることがあります。
 ====
 
 [source,bash,role="execute"]
@@ -194,60 +164,50 @@ ip-10-0-169-121.us-east-2.compute.internal   Ready    master         67m    v1.1
 ```
 
 どのノードが新しいノードなのか分からなくて困っている場合は、`AGE`カラムを見てみてください。
-これが一番若いノードでしょう! また、`ROLES` 列では、新しいノードが `worker` と `infra` の両方のロールを持っていることに気づくでしょう。
+また、`ROLES` 列では、新しいノードが `worker` と `infra` の両方のロールを持っていることに気づくでしょう。
 
 ### ラベルを確認する
-この例では、一番若いノードは `ip-10-0-128-138.us-east-1.compute.internal` という名前でした。
+この例では、一番若いノードは `ip-10-0-133-134.us-east-2.compute.internal` という名前でした。
+
 
 [source,bash,role="copypaste copypaste-warning"]
 ----
-oc get node ip-10-0-139-81.us-east-2.compute.internal --show-labels
+oc get node ip-10-0-133-134.us-east-2.compute.internal --show-labels
 ----
 
 そして、`LABELS`の欄には、次のように書かれています。
 
     beta.kubernetes.io/arch=amd64,beta.kubernetes.io/instance-type=m5.2xlarge,beta.kubernetes.io/os=linux,failure-domain.beta.kubernetes.io/region=us-east-2,failure-domain.beta.kubernetes.io/zone=us-east-2a,kubernetes.io/arch=amd64,kubernetes.io/hostname=ip-10-0-140-3,kubernetes.io/os=linux,node-role.kubernetes.io/infra=,node-role.kubernetes.io/worker=,node.openshift.io/os_id=rhcos
 
-見えにくいですが、`node-role.kubernetes.io/infra`ラベルがあります。
+`node-role.kubernetes.io/infra` ラベルが確認できます。
 
-### マシンセットを追加する(またはスケールする)
-現実的な本番環境では、インフラストラクチャコンポーネントを保持するために、少なくとも3つの`MachineSets`が必要です。
-ロギングアグリゲーションソリューションとサービスメッシュの両方がElasticSearchをデプロイするので、ElasticSearchは3つのノードに分散した3つのインスタンスを必要とします。
-なぜ3つの `MachineSets` が必要なのか?
-理論的には、異なるAZに複数の `MachineSets` を配置することで、AWSがAZを失っても真っ暗になることはありません。
+### MachineSetの追加(スケール)
+現実的な本番環境では、インフラストラクチャコンポーネントを保持するために、少なくとも3つの`MachineSets`が必要になります。ロギングアグリゲーションソリューションとサービスメッシュの両方がElasticSearchをデプロイするので、ElasticSearchは3つのノードに分散した3つのインスタンスを必要とします。なぜ3つの`MachineSets`が必要なのでしょうか。理論的には、異なるAZに複数の `MachineSets` を配置することで、AWSがAZを失った場合であっても完全にダウンすることを防ぐためです。
 
-スクリプトレットで作成した `MachineSet` はすでに3つのレプリカを作成しているので、今は何もする必要はありません。
-また、自分で追加のレプリカを作成する必要もありません。
+スクリプトレットで作成した `MachineSet` はすでに3つのレプリカを作成しているので、今のところ何もする必要はありません。また、自分で追加のレプリカを作成する必要もありません。
 
 ### 追加クレジット
-openshift-machine-api` プロジェクトにはいくつかの `Pods` があります。
-そのうちの一つは `machine-api-controllers-56bdc6874f-86jnb` のような名前である。その `Pod` のコンテナ上で `oc log` を使うと、ノードを実際に生成するためのさまざまな演算子のビットを見ることができます。
+`openshift-machine-api` プロジェクトにはいくつかの `Pods` があります。そのうちの一つは `machine-api-controllers-56bdc6874f-86jnb` のような名前です。その `Pod` のコンテナ上で `oc log` を使うと、ノードを実際に生成するためのさまざまな演算子のビットを見ることができます。
 
 ## クイック演算子の背景
-オペレータはただの `Pods` です。しかし、それらは特別な `Pods` です。
-それらは、Kubernetes環境でアプリケーションをデプロイして管理する方法を理解しているソフトウェアです。
-Operatorsの力は、`CustomResourceDefinitions` (`CRD`)と呼ばれる最近のKubernetesの機能に依存しています。
-CRD`はまさにその名の通りの機能です。これらはカスタムリソースを定義する方法であり、本質的にはKubernetes APIを新しいオブジェクトで拡張するものです。
+Operatorはただの `Pods` です。しかし 彼らは特別な `Pods` であり、Kubernetes環境でアプリケーションをデプロイして管理する方法を理解しているソフトウェアです。Operatorのパワーは、`CustomResourceDefinitions` (`CRD`)と呼ばれるKubernetesの機能に依存しています。`CRD`はまさにその名の通りの機能です。これらはカスタムリソースを定義する方法であり、本質的にはKubernetes APIを新しいオブジェクトで拡張するものです。
 
-Kubernetes で `Foo` オブジェクトを作成、読み込み、更新、削除できるようにしたい場合、`Foo` リソースとは何か、どのように動作するかを定義した `CRD` を作成します。
-そして、`CRD`のインスタンスである `CustomResources` (`CRs`) を作成することができます。
+Kubernetesで`Foo`オブジェクトを作成/読み込み/更新/削除できるようにしたい場合、`Foo`リソースとは何か、どのように動作するのかを定義した `CRD` を作成します。そして、`CRD`のインスタンスである `CustomResources` (`CRs`) を作成することができます。
 
-オペレータの場合、一般的なパターンとしては、オペレータが `CRs` を見て設定を行い、Kubernetes 環境上で _operate_ を行い、設定で指定されたことを実行するというものです。
-ここでは、OpenShiftのインフラストラクチャオペレータのいくつかがどのように動作するかを見てみましょう。
+Operator の場合、一般的なパターンとしては、Operator が `CRs` を見て設定を行い、Kubernetes 環境上で _operate_ を行い、設定で指定されたことを実行するというものです。ここでは、OpenShiftのインフラストラクチャオペレータのいくつかがどのように動作するかを見てみましょう。
 
 ## インフラストラクチャコンポーネントの移動
 これで特別なノードができたので、インフラストラクチャのコンポーネントをその上に移動させることができます。
 
 ### ルータ
-OpenShiftルータは `openshift-ingress-operator` という `Operator` によって管理されています。
-その `Pod` は `openshift-ingress-operator` プロジェクトに存在する。
+OpenShiftルータは `openshift-ingress-operator` という `Operator` によって管理されています。その `Pod` は `openshift-ingress-operator` プロジェクトに存在します。
 
 [source,bash,role="execute"]
 ----
 oc get pod -n openshift-ingress-operator
 ----
 
-実際のデフォルトのルータのインスタンスは `openshift-ingress` プロジェクトにあります。 Pods` を見てみましょう。
+実際のデフォルトのルータのインスタンスは `openshift-ingress` プロジェクトにあります。 `Pods` を見てみましょう。
 
 [source,bash,role="execute"]
 ----
@@ -269,24 +229,23 @@ router-default-7bc4c9c5cd-fq7m2   1/1     Running   0          9h    10.131.0.7 
 oc get node ip-10-0-144-70.us-east-2.compute.internal
 ----
 
-それが `worker` の役割を持っていることがわかるだろう。
+`worker` の役割が指定されていることが確認できます。
 
 ```
 NAME                                        STATUS   ROLES    AGE   VERSION
 ip-10-0-144-70.us-east-2.compute.internal   Ready    worker   9h    v1.12.4+509916ce1
 ```
 
-ルータオペレータのデフォルトの設定では、`worker`の役割を持つノードをピックするようになっています。
-しかし、専用のインフラストラクチャノードを作成したので、ルータインスタンスを `infra` の役割を持つノードに配置するようにオペレータに指示したい。
+ルータオペレータのデフォルトの設定では、`worker`の役割を持つノードを見つけてルータを配置するようになっています。しかし、専用のインフラストラクチャノードを作成したので、ルータインスタンスを `infra` の役割を持つノードに配置するようにオペレータに指示します。
 
-OpenShiftのルーターオペレータは、`ingresses.config.openshift.io`というカスタムリソース定義(`CRD`)を使用して、クラスタのデフォルトルーティングサブドメインを定義します。
+OpenShiftのルーターオペレータは、`ingresses.config.openshift.io`という`CustomResourceDefinitions`(`CRD`)を使用して、クラスタのデフォルトルーティングサブドメインを定義します。
 
 [source,bash,role="execute"]
 ----
 oc get ingresses.config.openshift.io cluster -o yaml
 ----
 
-`cluster` オブジェクトはマスタだけでなくルータオペレータにも観測されます。あなたのはこんな感じでしょう
+`cluster` オブジェクトはmasterだけでなくルータオペレータにも観測されます。以下のようなyamlになるでしょう。
 
 ```YAML
 apiVersion: config.openshift.io/v1
@@ -305,6 +264,7 @@ status: {}
 
 個々のルータのデプロイは `ingresscontrollers.operator.openshift.io` CRD で管理されます。
 名前空間 `openshift-ingress-operator` に作成されたデフォルトのものがあります。
+
 
 [source,bash,role="execute"]
 ----
@@ -458,12 +418,10 @@ oc get pod -n openshift-image-registry
 最後に、イメージレジストリの設定のための `CRD` が名前空間ではなく、クラスタスコープになっていることに注目してください。
 OpenShiftクラスタごとに内部/統合レジストリは1つしかありません。
 
-## モニタリング
-クラスタ監視オペレータは、Prometheus+Grafana+AlertManagerクラスタ監視スタックの展開と状態管理を担当します。
-これは、クラスタの初期インストール時にデフォルトでインストールされます。
-このオペレータは `openshift-monitoring` プロジェクトの `ConfigMap` を利用して、監視スタックの動作のために様々なチューニングや設定を行います。
+## Monitoring
+Cluster Monitoring operatorは、Prometheus+Grafana+AlertManagerによるクラスタ監視スタックの展開と状態管理を担当します。これは、クラスタの初期インストール時にデフォルトでインストールされます。このオペレータは `openshift-monitoring` プロジェクトの `ConfigMap` を利用して、監視スタックの動作のために様々なチューニングや設定を行います。
 
-以下の `ConfigMap` 定義は、インフラストラクチャノードにデプロイされる監視ソリューションを設定するものである。
+以下の `ConfigMap` 定義は、インフラストラクチャノードにデプロイされる監視ソリューションを設定するものです。
 
 
 ```
@@ -497,7 +455,7 @@ data:
         node-role.kubernetes.io/infra: ""
 ```
 
-インストールの一部として作成された `ConfigMap` は存在しません。これがない場合、オペレータはデフォルトの設定を仮定します。
+インストールの一部として作成された `ConfigMap` は存在しません。これがない場合、Operatorはデフォルトの設定を仮定します。
 クラスタに `ConfigMap` が定義されていないことを確認してください。
 
 [source,bash,role="execute"]
@@ -539,6 +497,6 @@ watch 'oc get pod -n openshift-monitoring'
 oc get pod -w -n openshift-monitoring
 ----
 
-## ロギング
+## Logging
 OpenShiftのログ集約ソリューションはデフォルトではインストールされていません。
 ロギングの設定とデプロイメントを行う専用のラボ演習があります。
