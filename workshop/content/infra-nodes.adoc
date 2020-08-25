@@ -175,7 +175,7 @@ ip-10-0-169-121.us-east-2.compute.internal   Ready    master         67m    v1.1
 oc get node ip-10-0-133-134.us-east-2.compute.internal --show-labels
 ----
 
-そして、`LABELS`の欄には、次のように書かれています。
+そして、`LABELS` の欄には、次のように書かれています。
 
     beta.kubernetes.io/arch=amd64,beta.kubernetes.io/instance-type=m5.2xlarge,beta.kubernetes.io/os=linux,failure-domain.beta.kubernetes.io/region=us-east-2,failure-domain.beta.kubernetes.io/zone=us-east-2a,kubernetes.io/arch=amd64,kubernetes.io/hostname=ip-10-0-140-3,kubernetes.io/os=linux,node-role.kubernetes.io/infra=,node-role.kubernetes.io/worker=,node.openshift.io/os_id=rhcos
 
@@ -192,7 +192,7 @@ oc get node ip-10-0-133-134.us-east-2.compute.internal --show-labels
 ## クイック演算子の背景
 Operatorはただの `Pods` です。しかし 彼らは特別な `Pods` であり、Kubernetes環境でアプリケーションをデプロイして管理する方法を理解しているソフトウェアです。Operatorのパワーは、`CustomResourceDefinitions` (`CRD`)と呼ばれるKubernetesの機能に依存しています。`CRD`はまさにその名の通りの機能です。これらはカスタムリソースを定義する方法であり、本質的にはKubernetes APIを新しいオブジェクトで拡張するものです。
 
-Kubernetesで`Foo`オブジェクトを作成/読み込み/更新/削除できるようにしたい場合、`Foo`リソースとは何か、どのように動作するのかを定義した `CRD` を作成します。そして、`CRD`のインスタンスである `CustomResources` (`CRs`) を作成することができます。
+Kubernetesで `Foo` オブジェクトを作成/読み込み/更新/削除できるようにしたい場合、`Foo` リソースとは何か、どのように動作するのかを定義した `CRD` を作成します。そして、`CRD`のインスタンスである `CustomResources` (`CRs`) を作成することができます。
 
 Operator の場合、一般的なパターンとしては、Operator が `CRs` を見て設定を行い、Kubernetes 環境上で _operate_ を行い、設定で指定されたことを実行するというものです。ここでは、OpenShiftのインフラストラクチャオペレータのいくつかがどのように動作するかを見てみましょう。
 
