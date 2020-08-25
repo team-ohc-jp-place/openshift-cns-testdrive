@@ -347,7 +347,7 @@ oc apply -f {{ HOME_PATH }}/support/ingresscontroller.yaml
 ----
 
 
-Run:
+実行:
 
 [source,bash,role="execute"]
 ----
@@ -356,28 +356,26 @@ oc get pod -n openshift-ingress -o wide
 
 [NOTE]
 ====
-Your session may timeout during the router move. Please refresh the page to
-get your session back. You will not lose your terminal session but may have
-to navigate back to this page manually.
+ルーターの移動中にセッションがタイムアウトすることがあります。
+ページを更新してセッションを取り戻してください。
+端末セッションが失われることはありませんが、手動でこのページに戻る必要があるかもしれません。
 ====
 
-If you're quick enough, you might catch either `Terminating` or
-`ContainerCreating` pods. The `Terminating` pod was running on one of the
-worker nodes. The `Running` pods eventually are on one of our nodes with the
-`infra` role.
+もし十分に手際が良ければ、`Terminating` か `ContainerCreating` のいずれかのポッドを捕まえることができるかもしれません。
+Terminating` ポッドはワーカーノードの1つで動作していました。
+実行中の`Running` ポッドは最終的に `infra` ロールを持つノードの1つで動作しています。
 
-## Registry
-The registry uses a similar `CRD` mechanism to configure how the operator
-deploys the actual registry pods. That CRD is
-`configs.imageregistry.operator.openshift.io`. You will edit the `cluster` CR
-object in order to add the `nodeSelector`. First, take a look at it:
+## レジストリ
+レジストリは、オペレータが実際のレジストリポッドをどのように展開するかを設定するために、同様の `CRD` メカニズムを使用します。
+このCRDは `configs.imageregistry.operator.openshift.io` です。
+このCRDに `nodeSelector` を追加するために `cluster` のCRDオブジェクトを編集します。まず、それを見てみましょう。
 
 [source,bash,role="execute"]
 ----
 oc get configs.imageregistry.operator.openshift.io/cluster -o yaml
 ----
 
-You will see something like:
+以下のように確認できます。
 
 ```YAML
 apiVersion: imageregistry.operator.openshift.io/v1
@@ -422,56 +420,51 @@ status:
 ...
 ```
 
-If you run the following command:
+次のコマンドを実行します。
 
 [source,bash,role="execute"]
 ----
 oc patch configs.imageregistry.operator.openshift.io/cluster -p '{"spec":{"nodeSelector":{"node-role.kubernetes.io/infra": ""}}}' --type=merge
 ----
 
-It will modify the `.spec` of the registry CR in order to add the desired `nodeSelector`.
+上記コマンドによって、レジストリCRの `.spec` を修正し、`nodeSelector` を追加します。
 
 [NOTE]
 ====
-At this time the image registry is not using a separate project for its
-operator. Both the operator and the operand are housed in the
-`openshift-image-registry` project.
+この時点では、画像レジストリは演算子のために別のプロジェクトを使用していません。
+演算子とオペランドは両方とも `openshift-image-registry` プロジェクトの中にあります。
 ====
 
-After you run the patch command you should see the registry pod being moved to the
-infra node. The registry is in the `openshift-image-registry` project. If you
-execute the following quickly enough:
+パッチコマンドを実行すると、レジストリポッドがinfraノードに移動しているのがわかるはずです。
+レジストリは `openshift-image-registry` プロジェクトにあります。
+
+以下を素早く実行してみてください。
+
 
 [source,bash,role="execute"]
 ----
 oc get pod -n openshift-image-registry
 ----
 
-You might see the old registry pod terminating and the new one starting.
-Since the registry is being backed by an S3 bucket, it doesn't matter what
-node the new registry pod instance lands on. It's talking to an object store
-via an API, so any existing images stored there will remain accessible.
+古いレジストリポッドが終了し、新しいレジストリポッドが起動しているのがわかるかもしれません。
+レジストリはS3バケットによってバックアップされているので、新しいレジストリポッドのインスタンスがどのノードにあるかは問題ではありません。
+これはAPI経由でオブジェクトストアと通信しているので、そこに保存されている既存のイメージはすべてアクセス可能なままです。
 
-Also note that the default replica count is 1. In a real-world environment
-you might wish to scale that up for better availability, network throughput,
-or other reasons.
+また、デフォルトのレプリカ数は1であることにも注意してください。
+現実の環境では、可用性やネットワークのスループットなどの理由から、このレプリカ数を増やしたいと思うかもしれません。
 
-If you look at the node on which the registry landed (see the section on the
-router), you'll note that it is now running on an infra worker.
+レジストリが着地したノード(ルータのセクションを参照)を見てみると、それが現在infraワーカー上で実行されていることに気づくでしょう。
 
-Lastly, notice that the `CRD` for the image registry's configuration is not
-namespaced -- it is cluster scoped. There is only one internal/integrated
-registry per OpenShift cluster.
+最後に、イメージレジストリの設定のための `CRD` が名前空間ではなく、クラスタスコープになっていることに注目してください。
+OpenShiftクラスタごとに内部/統合レジストリは1つしかありません。
 
-## Monitoring
-The Cluster Monitoring operator is responsible for deploying and managing the
-state of the Prometheus+Grafana+AlertManager cluster monitoring stack. It is
-installed by default during the initial cluster installation. Its operator
-uses a `ConfigMap` in the `openshift-monitoring` project to set various
-tunables and settings for the behavior of the monitoring stack.
+## モニタリング
+クラスタ監視オペレータは、Prometheus+Grafana+AlertManagerクラスタ監視スタックの展開と状態管理を担当します。
+これは、クラスタの初期インストール時にデフォルトでインストールされます。
+このオペレータは `openshift-monitoring` プロジェクトの `ConfigMap` を利用して、監視スタックの動作のために様々なチューニングや設定を行います。
 
-The following `ConfigMap` definition will configure the monitoring
-solution to be redeployed onto infrastructure nodes.
+以下の `ConfigMap` 定義は、インフラストラクチャノードにデプロイされる監視ソリューションを設定するものである。
+
 
 ```
 apiVersion: v1
@@ -504,50 +497,48 @@ data:
         node-role.kubernetes.io/infra: ""
 ```
 
-There is no `ConfigMap` created as part of the installation. Without one, the operator will assume
-default settings. Verify the `ConfigMap` is not defined in your cluster:
+インストールの一部として作成された `ConfigMap` は存在しません。これがない場合、オペレータはデフォルトの設定を仮定します。
+クラスタに `ConfigMap` が定義されていないことを確認してください。
 
 [source,bash,role="execute"]
 ----
 oc get configmap cluster-monitoring-config -n openshift-monitoring
 ----
 
-You should see:
+以下のように出力されるはずです。
 
 ```
 Error from server (NotFound): configmaps "cluster-monitoring-config" not found
 ```
 
-The operator will, in turn, create several `ConfigMap` objects for the
-various monitoring stack components, and you can see them, too:
+Operatorは、様々なモニタリングスタックコンポーネントのためにいくつかの `ConfigMap` オブジェクトを作成します。
 
 [source,bash,role="execute"]
 ----
 oc get configmap -n openshift-monitoring
 ----
 
-You can create the new monitoring config with the following command:
+次のコマンドで新しいモニタリング設定を作成できます。
 
 [source,bash,role="execute"]
 ----
 oc create -f {{ HOME_PATH }}/support/cluster-monitoring-configmap.yaml
 ----
 
-Watch the monitoring pods move from `worker` to `infra` `Nodes` with:
+モニタリングポッドが `worker` から `infra` `Nodes` に移動するのを見てみましょう。
 
 [source,bash,role="execute"]
 ----
 watch 'oc get pod -n openshift-monitoring'
 ----
 
-or:
+または
 
 [source,bash,role="execute"]
 ----
 oc get pod -w -n openshift-monitoring
 ----
 
-## Logging
-OpenShift's log aggregation solution is not installed by default. There is a
-dedicated lab exercise that goes through the configuration and deployment of
-logging.
+## ロギング
+OpenShiftのログ集約ソリューションはデフォルトではインストールされていません。
+ロギングの設定とデプロイメントを行う専用のラボ演習があります。
