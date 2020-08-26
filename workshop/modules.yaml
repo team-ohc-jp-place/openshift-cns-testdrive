@@ -1,4 +1,8 @@
 modules:
+  ocs4:
+    name: OpenShift Container Storage のデプロイと管理
+  option-placeholder:
+    name: ------- オプションメニュー -------
   environment:
     name: ラボ環境の概要
   installation:
@@ -13,8 +17,6 @@ modules:
     name: MachineSets, Machines, and Nodes
   infra-nodes:
     name: OpenShift インフラストラクチャノード
-  ocs4:
-    name: OpenShift Container Storage のデプロイと管理
   logging:
     name: OpenShift ログ集約
   ldap-groupsync:

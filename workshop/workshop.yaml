@@ -3,12 +3,13 @@ name: OpenShift and Container Storage for Admins
 modules:
   activate:
   - environment
+  - ocs4
+  - option-placeholder
   - installation
   - app-mgmt-basics
   - app-storage-basics
   - machinesets
   - infra-nodes
-  - ocs4
   - logging
   - ldap-groupsync
   - monitoring-basics
