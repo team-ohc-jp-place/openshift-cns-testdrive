@@ -1,10 +1,10 @@
 modules:
+  environment:
+    name: ラボ環境の概要
   ocs4:
     name: OpenShift Container Storage のデプロイと管理
   option-placeholder:
-    name: ------- オプションメニュー -------
-  environment:
-    name: ラボ環境の概要
+    name: --- オプションメニュー ---
   installation:
     name: インストールの検証
   app-mgmt-basics:

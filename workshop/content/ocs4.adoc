@@ -150,7 +150,7 @@ ip-10-0-162-215.us-east-2.compute.internal   Ready    worker   5m19s   v1.16.2
 oc create namespace openshift-storage
 ----
 
-OpenShift WebコンソールのStorage Dashboardでメトリクスとアラートを取得するために、`openshift-storage` namespaceには `cluster-monitoring=true` のラベルを付けることが必要です。以下のように実行して下さい。
+OpenShift WebコンソールのStorageダッシュボードでメトリクスとアラートを取得するために、`openshift-storage` namespaceには `cluster-monitoring=true` のラベルを付けることが必要です。以下のように実行して下さい。
 
 [source,role="execute"]
 ----
@@ -232,7 +232,7 @@ rook-ceph-operator-98b4c45c9-zxlxz       1/1     Running   0          2m6s
 それでは *Openshift Web Console* に戻ってOCSのインストールを確認してみましょう。
 
 左側のメニューから *Operators* -> *Installed
-Operators* を選択します。Projectは `openshift-storage` を選択します。+
+Operators* を選択します。Projectは `openshift-storage` を選択します。 +
 以下のような画面になっているはずです。
 
 .Installed Operators in the openshift-storage namespace
@@ -273,13 +273,13 @@ CAUTION: *ここで選択したストレージ容量は、将来容量を拡張�
 
 worker nodeと容量を選択したら、*Create* ボタンをクリックします。
 
-Web Consoleの `Openshift Container Storage Operator` の画面に戻って、 `All instances` を選択することでもOCS Cluster Serviceの作成の様子を見ることができます。 +
-Web Console で見る場合は、全てのインスタンスの Status が `Ready` になるまで待って下さい。
+//*Web Consoleの `Openshift Container Storage Operator` の画面に戻って、 `All instances` を選択することでもOCS Cluster Serviceの作成の様子を見ることができます。 +
+//Web Console で見る場合は、全てのインスタンスの Status が `Ready` になるまで待って下さい。
+//
+//.OCS instance overview after cluster install is finished
+//image::images/ocs/OCS4-OCP43-finished-cluster-install.png[OCS instance overview after cluster install is finished]
 
-.OCS instance overview after cluster install is finished
-image::images/ocs/OCS4-OCP43-finished-cluster-install.png[OCS instance overview after cluster install is finished]
-
-また、ターミナルで次のコマンドを実行しておくと、次々とPodが作成される様子が確認できます。
+ターミナルで次のコマンドを実行しておくと、次々とPodが作成される様子が確認できます。
 
 [source,role="execute"]
 ----
@@ -355,7 +355,7 @@ oc get storagecluster -n openshift-storage ocs-storagecluster -o jsonpath='{.sta
 ### ストレージダッシュボードを使用する
 
 このセクションでは、*Web Console* に含まれている、OCS独自のダッシュボードを使ってストレージクラスターのステータスを確認します。 +
-ダッシュボードは左側のメニューバーから *Home* -> *Dashboards* とクリックし、 `Persistent Storage` タブを選択することでアクセスできます。
+ダッシュボードは左側のメニューバーから *Home* -> *Overview* とクリックし、 `Persistent Storage` タブを選択することでアクセスできます。
 
 NOTE: OCSのデプロイが完了したばかりの場合、ダッシュボードが完全に表示されるまでに5〜10分かかります。
 
@@ -972,8 +972,8 @@ No OBCs found.
 NooBaa CLIは最初に環境をチェックし、次に環境に関するすべての情報を出力します。MCGのステータスに加えて、MCG bucketへの接続に使用できる使用可能なS3アドレスとS3クレデンシャルが表示されます。 +
 S3アドレスはOpenShiftクラスタ内で内部的にルーティングするか、外部DNSを使用するかを選択できます。 +
 
-ところで、*Openshift Web Console* のダッシュボード使用することでも、MCGステータスの概要を取得できます。左側のメニューから、*Home* -> *Dashboards* とん託し、`Object Service` タブをクリックします。
-このDashboardではS3 endpointの接続情報を提供しませんが、S3バックエンドの使用に関するグラフとランタイム情報を提供します。
+ところで、*Openshift Web Console* のダッシュボード使用することでも、MCGステータスの概要を取得できます。左側のメニューから、*Home* -> *Overview* 選択し、`Object Service` タブをクリックします。
+このダッシュボードではS3 endpointの接続情報を提供しませんが、S3バックエンドの使用に関するグラフとランタイム情報を提供します。
 
 === Object Bucket Claimの作成
 
@@ -1041,7 +1041,7 @@ status:
 ----
 oc get -n openshift-storage secret test21obc -o yaml
 ----
-.Example output:
+.出力例:
 [source,yaml]
 ----
 apiVersion: v1
@@ -1076,7 +1076,7 @@ type: Opaque
 ----
 oc get -n openshift-storage cm test21obc -o yaml
 ----
-.Example output:
+.出力例:
 [source,yaml]
 ----
 apiVersion: v1
@@ -1253,7 +1253,7 @@ oc logs -n obc-test $(oc get pods -n obc-test -l app=obc-test -o jsonpath='{.ite
 OCS worker nodeを追加するときは、既存のノードに十分なCPUやメモリがない場合などが挙げられます。
 ====
 
-.現在のmachinesetを確認する
+まずは現在の *machineset* を確認します。
 [source,role="execute"]
 ----
 oc get machinesets -n openshift-machine-api | egrep 'NAME|workerocs'
@@ -1306,14 +1306,14 @@ ip-10-0-160-200.us-east-2.compute.internal
 ip-10-0-162-215.us-east-2.compute.internal
 ----
 
-NOTE: 新しく追加したworker nodeにも `cluster.ocs.openshift.io/openshift-storage=` ラベルは既に付けられています。これは *machinesets* 自体にラベルの設定を行ったため、新しく作られるnodeにも自動的にラベルが付けられます。
+NOTE: 新しく追加したworker nodeにも `cluster.ocs.openshift.io/openshift-storage=` ラベルは既に付けられています。これは *machinesets* 自体にラベルの設定を行ったためで、新しく作られるnodeにも自動的にラベルが付けられます。
 
 これで、クラスターを拡張するための新しいnodeを準備できました。
 次のセクションに進んで、これらの空のnodeにストレージをプロビジョニングします。
 
 === ストレージ容量を追加する
 
-このセクションでは、構成済みのOCS worker nodeストレージ容量とパフォーマンスを追加します。
+このセクションでは、構成済みのOCS worker nodeでストレージ容量とパフォーマンスを追加します。
 前のセクションを実行した場合は、6つのOCS worker nodeが存在するはずです。
 
 ストレージを追加するには、*Openshift Web Console* に移動し、手順にしたがってOCSストレージクラスターの概要を表示します。
@@ -1332,7 +1332,7 @@ image::images/ocs/OCS4-OCP43-Storage-Cluster-overview-reachit.png[]
 image::images/ocs/OCS4-add-capacity.png[Add Capacity dialog]
 
 StorageClassは `gp2` を選びます。
-`Raw Capacity` に表示される容量を拡張できます。OCSは三重でレプリカを取るため、`Raw Capacity`は希望する追加容量はの3倍の容量になります。
+`Raw Capacity` に表示される容量を拡張できます。OCSは三重でレプリカを取るため、`Raw Capacity` は希望する追加容量はの3倍の容量になります。
 
 NOTE: *`Raw Capacity` は最初にOCSクラスタを構成した時点で選択したストレージ容量で決まるため、変更することはできません。*
 
@@ -1363,7 +1363,7 @@ rook-ceph-osd-prepare-ocs-deviceset-2-1-glsgj-x4k7t               Succeeded   ip
 
 以上でOCSクラスターを拡張することができました。
 
-=== 新しいストレージを確認する。
+=== 新しいストレージを確認する
 
 容量を追加し、OSD podの存在を確認したら、toolboxを使用して追加したストレージ容量を確認することができます。
 
@@ -1552,7 +1552,7 @@ image::images/ocs/metrics-simplecephquery.png[Ceph Simple Query]
 image::images/ocs/metrics-simplecephgraph.png[Ceph Simple Graph]
 
 次に、より複雑なクエリの例を試してみます。
-クエリフィールドに `rate(ceph_osd_op[5m]` または `irate(ceph_osd_op[5m])` を入力し、kbd:[Enter] を実行します。
+クエリフィールドに `rate(ceph_osd_op[5m])` または `irate(ceph_osd_op[5m])` を入力し、kbd:[Enter] を実行します。
 
 .Complex Ceph Query
 image::images/ocs/metrics-complexcephquery.png[Ceph Complex Query]
