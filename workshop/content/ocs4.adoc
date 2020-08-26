@@ -2,13 +2,12 @@
 // Activate experimental attribute for Keyboard Shortcut keys
 :experimental:
 
-== Lab Overview
+== 演習の概要
+この演習では Red Hat OpenShift Container Storage(OCS) 4のデプロイおよび管理の方法を学習します。 +
+この演習はOCS 4に関心のあるシステム管理者、およびアプリケーション開発者の両方を対象者として想定します。 +
+この演習では OpenShift Container Storage Operatorを使用して、OpenShift Container Platform(OCP) 4向けの永続ストレージのソリューションである、CephとMulti-Cloud Gateway(MCG)をデプロイします。
 
-このハンズオンワークショップは、Red Hat OpenShift Container Storage(OCS) 4のデプロイおよび管理の方法を学習します。 +
-このハンズオンワークショップは、OCS 4に関心のあるシステム管理者、およびアプリケーション開発者の両方を対象者として想定します。 +
-このハンズオンでは、OpenShift Container Storage Operatorを使用して、OpenShift Container Platform(OCP) 4向けの永続ストレージのソリューションである、CephとMulti-Cloud Gateway(MCG)をデプロイします。
-
-=== このハンズオンで学習する内容
+=== この演習で学習する内容
 
 * OCS Operatorを使用して、OCPクラスター上にCephクラスターとMCGをデプロイする
 * デプロイされたCephクラスターとMCGを確認する

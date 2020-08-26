@@ -1,0 +1,6 @@
+:experimental:
+
+## OpenShift 4 Ops
+この演習は外部に公開されているテキストを使用します。こちらのテキストを参照して行って下さい。
+
+https://github.com/capsmalt/ocp4ws-ops

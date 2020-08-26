@@ -1,10 +1,14 @@
 modules:
+  introduction:
+    name: ワークショップの概要
   environment:
-    name: ラボ環境の概要
+    name: ハンズオン演習環境の紹介
+  ocp4ws-ops:
+    name: 演習 1:OpenShift 4 Ops
   ocs4:
-    name: OpenShift Container Storage のデプロイと管理
+    name: 演習 2:OpenShift Container Storage
   option-placeholder:
-    name: --- オプションメニュー ---
+    name: --------
   installation:
     name: インストールの検証
   app-mgmt-basics:
