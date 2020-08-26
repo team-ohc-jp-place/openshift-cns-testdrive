@@ -1,5 +1,5 @@
 ## OpenShift Monitoring
-このラボでは、OpenShift Monitoring　機能のさまざまな側面を探ります。
+このラボでは、OpenShift Monitoring 機能のさまざまな側面を探ります。
 これには、OpenShift Alertmanager UI の概要、Prometheus ウェブコンソールへのアクセス、PromQL (Prometheuses Query Language) クエリの実行によるクラスタの検査、最後に Grafana ダッシュボードの確認が含まれます。
 
 ### OpenShift Monitoring

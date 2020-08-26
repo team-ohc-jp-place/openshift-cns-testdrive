@@ -1,4 +1,4 @@
-## 外部認証プロバイダの設定
+## 外部認証プロバイダ(LDAP)の設定
 OpenShiftは多くの異なる認証プロバイダをサポートしています。完全なリストは link:https://docs.openshift.com/container-platform/4.5/authentication/understanding-identity-provider.html[understanding
 identity provider configuration] に記載されています。最も一般的に使用されている認証プロバイダの1つはLDAPです。Microsoft Active Directoryによって提供されているか、他のソースから提供されているかにはよりません。
 

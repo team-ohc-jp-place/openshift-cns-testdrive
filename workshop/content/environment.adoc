@@ -1,4 +1,4 @@
-## Environment Overview
+## ラボ環境の概要
 {{ENVIRONMENT}}で稼働するOpenShift 4クラスタを使って操作します。このラボでは、Rook/CephをベースにしたOpenShift Container Storageのインストールも行います。
 
 事前にOpenShift 4のインストールは完了しています。OpenShiftクラスタは基本的にすべてデフォルトに設定されており、以下のようになっています。
