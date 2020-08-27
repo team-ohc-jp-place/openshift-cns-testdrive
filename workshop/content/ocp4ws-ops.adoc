@@ -4,3 +4,26 @@
 この演習は外部に公開されているテキストを使用します。こちらのテキストを参照して行って下さい。
 
 https://github.com/capsmalt/ocp4ws-ops
+
+### [参考] 踏み台ホスト(Bastion Host)へのSSHログイン
+踏み台ホストへのSSHログインは、以下のコマンドで行えます。
+
+[source,bash,role="execute"]
+----
+ssh -l {{ SSH_USERNAME }} {{ BASTION_FQDN }} -o ServerAliveInterval=120
+----
+
+あなたの ssh パスワードはこれです。
+
+[source,bash,role="copypaste"]
+----
+{{ SSH_PASSWORD }}
+----
+
+### [参考] OpenShift 4クラスタへのログイン(oc login)
+踏み台ホストでOpenShift 4クラスタにログインする場合は、以下のコマンドで行えます。
+
+[source,bash,role="execute"]
+----
+oc login -u kubeadmin -p {{ KUBEADMIN_PASSWD }} {{ API_URL }} 
+----
