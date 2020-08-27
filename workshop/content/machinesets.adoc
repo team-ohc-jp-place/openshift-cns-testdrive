@@ -1,5 +1,12 @@
-## MachineSets, Machines, Nodes
+= MachineSets, Machines, Nodes
+:experimental:
+
+== 演習の概要
 Kubernetes `Node` はコンテナがオーケストレーションされ、`Pod` として実行される場所です。OpenShift 4は、`Operator` を使った自動化に重点を置いている点で、OpenShift 3とは根本的に異なります。`Node` に関しては、`Node` の作成と破壊を含め、クラスタサイズの状態を維持することに重点を置いた `Operator` とコントローラのセットがあります。
+
+この演習では、クラスタサイズを保つために利用される `Machineset` と `Machine` について学びます。
+
+---
 
 ### MachineSets と Machines
 アプリケーション管理の演習で見たように、`ReplicaSet`/`ReplicationController` とそれが作成する `Pod` の間には基本的な関係があります。同様に、`MachineSet` と`Machine` の間にも関係があります。

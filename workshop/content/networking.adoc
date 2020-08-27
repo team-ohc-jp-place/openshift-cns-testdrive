@@ -1,5 +1,7 @@
-## OpenShift の Network Policy ベースの SDN
+= OpenShift の Network Policy ベースの SDN
+:experimental:
 
+== 演習の概要
 OpenShift は Open vSwitch をベースにしたプラットフォーム内部に SDN（Software Defined Network）を持っています。
 この SDN は OpenShift 環境内のアプリケーションコンポーネント間の接続性を提供するために使用されます。
 これにはデフォルトのネットワーク範囲があらかじめ設定されていますが、既存のインフラストラクチャと競合する場合やその他の理由で変更することができます。
@@ -10,11 +12,13 @@ OpenShift のプロジェクトは、 RBAC を通じてリソースを分離し�
 OpenShift 3.7でネットワークポリシーSDNプラグインが導入され、さらにその設定に関する情報は
 link:https://docs.openshift.com/container-platform/3.11/architecture/networking/sdn.html[networking documentation^]で見る事ができます。
 さらに、他のベンダーは、アップストリームの Kubernetes コミュニティと強力して、独自の SDN プラグインを実装し、ベンダーのサポートが提供されています。
-これらのプラグインの実装では appc/CNI を使用していますが、このラボでは触れません。
+これらのプラグインの実装では appc/CNI を使用していますが、この演習では触れません。
+
+---
 
 ### Project の切り替え
 続行する前に、実際に存在するプロジェクトを使用していることを確認してください。
-前のラボで最後にプロジェクトを削除した場合、このラボのスクリプトでエラーが発生します。
+前の演習で最後にプロジェクトを削除した場合、この演習のスクリプトでエラーが発生します。
 
 [source,bash,role="execute"]
 ----

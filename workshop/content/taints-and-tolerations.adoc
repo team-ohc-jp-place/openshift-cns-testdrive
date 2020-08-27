@@ -1,6 +1,8 @@
-## Taint と Toleration
+= Taint と Toleration
+:experimental:
 
-以前のラボでは、インフラノードを作成し、 https://docs.openshift.com/container-platform/4.3/nodes/scheduling/nodes-scheduler-node-selectors.html[nodeSelector] を使用して、ワークロードを配置する場所を制御しました。
+== 演習の概要
+以前の演習では、インフラノードを作成し、 https://docs.openshift.com/container-platform/4.3/nodes/scheduling/nodes-scheduler-node-selectors.html[nodeSelector] を使用して、ワークロードを配置する場所を制御しました。
 あるタスクを実行するために、どのようにノードをセットするかを見てきました。
  `nodePlacement` 内の `nodeSelector` は、あるノードのセットに Pod を引き寄せます。
 しかし、反対に、Pod をなるノードから遠ざけたい場合は、どうすればいいでしょう？
@@ -15,7 +17,9 @@ Taint された(汚された)ノード上でポッドが動作しないように
 * コンプライアンス上の理由から、ノードが異なるネットワークゾーンに存在する。
 * 不具合のあるノードのトラブルシューティングを行いたい。
 
-このラボでは、Taint と Toleration を使用してワークロードを制御する方法を試して見ます。
+この演習では、Taint と Toleration を使用してワークロードを制御する方法を試して見ます。
+
+---
 
 ### 背景
 
@@ -43,7 +47,7 @@ oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
 oc get nodes -l 'node-role.kubernetes.io/worker,!node-role.kubernetes.io/infra,!cluster.ocs.openshift.io/openshift-storage'
 ----
 
-どのラボをやったかにもよりますが、ワーカーラベルセットを持ったノードが3つ以上ある場合があります。
+どの演習をやったかにもよりますが、ワーカーラベルセットを持ったノードが3つ以上ある場合があります。
 
 では、これらのワーカーノードに、何か Taint が設定されてないか見てみましょう。
 
@@ -155,7 +159,7 @@ Pod が均等に広がるようにするには、`oc delete pods --all` を何�
 
 
 
-このラボでは、インフラ・ノードでもストレージ・ノードではない最初のノードを `welcome-php=run:NoSchedule` で Taint します。 
+この演習では、インフラ・ノードでもストレージ・ノードではない最初のノードを `welcome-php=run:NoSchedule` で Taint します。 
 これにより、すべての新しいポッド(適切な Toleration を持たないものは)は、このノードでスケジューリングされないようになります。
 
 
@@ -269,14 +273,14 @@ Taint と Toleration について、もっと良く知るには、https://docs.o
 
 #### クリーンアップ
 
-次のラボでは `kubeadmin` でログインしてください。
+次の演習では `kubeadmin` でログインしてください。
 
 [source,bash,role="execute"]
 ----
 oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
 ----
 
-他のラボも Taint の影響を受ける可能性があるので、やったことを元に戻しておきましょう。
+他の演習も Taint の影響を受ける可能性があるので、やったことを元に戻しておきましょう。
 
 [source,bash,role="execute"]
 ----

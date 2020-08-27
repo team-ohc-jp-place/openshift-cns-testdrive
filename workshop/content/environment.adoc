@@ -1,6 +1,7 @@
+= 演習環境の概要
 :experimental:
 
-## 演習環境の概要
+== OpenShift クラスタ構成
 このワークショップは、{{ENVIRONMENT}}で稼働するOpenShift 4クラスタを使って操作します。
 
 事前にOpenShift 4のインストールは完了しています。OpenShiftクラスタは基本的にすべてデフォルトに設定されており、以下のようなクラスタ構成になっています。
@@ -11,7 +12,7 @@
 
 またこのワークショップでは、Rook/CephをベースにしたOpenShift Container Storage(OCS)のデプロイも行います。その際にはOCS用のWorker Nodeを3台追加します。Worke Nodeの追加はOCSの演習の中で行うため、今の時点では3台のWorker Nodeで構いません。
 
-## ターミナルとWebコンソールの使い方
+== ターミナルとWebコンソールの使い方
 このワークショップは、link:https://github.com/openshift-labs/workshop-dashboard[Homeroom] というツールを利用しています。Homeroomでは、画面左側に(まさに今読んでいる)演習ガイドが表示され、画面右側にはターミナルとWebコンソールを利用することができます。 +
 このターミナルとWebコンソールはダミーではなく、これらを使って行われる操作は現実に行われます。つまり、あなたが行う操作は、あなたが実際に利用するOpenShiftクラスタに反映されます。
 

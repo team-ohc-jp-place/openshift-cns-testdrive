@@ -23,6 +23,8 @@ image::images/ocs/OCS-Pods-Diagram.png[Showing OCS4 pods]
 
 NOTE: Cephに動作などの詳細については、<<Cephの概要>> セクションを参照下さい。
 
+---
+
 [[labexercises]]
 
 == OCS Operatorを使用して、OCPクラスター上にCephクラスターとMCGをデプロイする

@@ -1,6 +1,8 @@
-### Node のメンテナンス
+= Node のメンテナンス
+:experimental:
 
 OpenShift 環境の任意のノード上のすべてのポッドをドレインし、non-schedulable としてマークすることで、メンテナンス状態にすることができます。
+
 
 これらの操作には高度な権限が必要です。クラスタ管理者としてログインしていることを確認してください。：
 
@@ -8,8 +10,6 @@ OpenShift 環境の任意のノード上のすべてのポッドをドレイン�
 ----
 oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
 ----
-
-You will see by now that there are pods running on almost all of your nodes:
 
 今までに、ほぼすべてのノードでポッドが稼働していることがわかるでしょう。:
 

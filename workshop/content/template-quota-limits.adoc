@@ -1,11 +1,16 @@
-## プロジェクト・リクエスト・テンプレートとクォータ/制限
+= プロジェクト・リクエスト・テンプレートとクォータ/制限
+:experimental:
+
+== 演習の概要
 アプリケーション管理のベーシック・ラボでは、OpenShift の基本的なビルディング・ブロックを扱いましたが、これらはすべて *プロジェクト* 内に含まれています。
 
 OpenShiftでは、1つの *プロジェクト* 内で使用できるオブジェクトの数やリソース（CPU、メモリなど）を制限しません。
 さらに、ユーザーは無制限に *プロジェクト* を作成することができます。制約のない世界や POC(Proof Of Concept) の環境では、それはそれでいいでしょう。
 しかし、現実には少し制約をつける必要があります。
 
-### 背景: プロジェクト・リクエスト・テンプレート
+---
+
+### プロジェクト・リクエスト・テンプレート
 ユーザーが `oc new-project` コマンドを呼び出すと、新しいプロジェクトのリクエストフローが開始されます。
 このワークフローの中で、新たに要求されたプロジェクトを作成するためにデフォルトのプロジェクト・リクエスト・ *テンプレート* が処理されます。
 
@@ -123,10 +128,10 @@ documentation^].
 link:https://docs.openshift.com/container-platform/3.11/admin_guide/quota.html[quota
 documentation^] を参照してください。
 
-### 背景 : LimitRange
+### LimitRange
 // FIXME: 4.0 Doc Link Needed
 link:https://docs.openshift.com/container-platform/3.11/admin_guide/limits.html[limit
-range documentation^] のリンクに背景についての良い情報があります。:
+range documentation^] のリンクに良い情報があります。:
 
 ----
 
@@ -212,7 +217,7 @@ NOTE: Quota と Limits は、*プロジェクト* レベルで適用されるこ
 link:https://docs.openshift.com/container-platform/3.11/admin_guide/multiproject_quota.html[multi-project
 quota^] を見て下さい。これらの演習では、複数プロジェクトのクォータをカバーすることはありません。
 
-### プロジェクト・リクエスト・テンプレート をインストールする。
+### プロジェクト・リクエスト・テンプレートをインストールする
 この背景を踏まえて、実際に OpenShift にこの新しい *プロジェクト・リクエスト・テンプレート* を使用するように指示してみましょう。
 
 #### Template を作成する
@@ -241,7 +246,7 @@ NAME              DESCRIPTION   PARAMETERS    OBJECTS
 project-request                 5 (5 blank)   7
 ----
 
-#### Setting the Default ProjectRequestTemplate
+#### デフォルトのプロジェクト・リクエスト・テンプレートの設定
 デフォルトの *projectRequestTemplate* は OpenShift API Server の設定の一部です。
 この設定は最終的に `openshift-apiserver` プロジェクト内の *ConfigMap* に格納されます。
 API Server の構成は、以下のコマンドで表示できます。:

@@ -1,4 +1,8 @@
-## OpenShift ログ集約
+= OpenShift ログ集約
+// Activate experimental attribute for Keyboard Shortcut keys
+:experimental:
+
+== 演習の概要
 このラボでは、OpenShiftのログ集約機能を触ってみます。
 
 OpenShift の非常に重要な機能の一つに、実行中の環境とアプリケーションポッドからログを収集して集約する機能があります。
@@ -31,6 +35,8 @@ Logging スタックはそのラボで作成された `infra` ノードにイン
 ウェブコンソールとのやりとりはすべて、事実上バックグラウンドで API オブジェクトを作成または操作しています。
 プロセスを完全に自動化したり、CLIや他のツールを使用して行うことも可能ですが、これらの方法は現時点では、この演習やドキュメントではカバーされていません。
 ====
+
+---
 
 ### OpenShift Logging をデプロイする
 

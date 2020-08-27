@@ -4,13 +4,13 @@ modules:
   environment:
     name: ハンズオン演習環境の紹介
   ocp4ws-ops:
-    name: 演習 1:OpenShift 4 Ops
+    name: 演習1 :OpenShift 4 Ops
   ocs4:
-    name: 演習 2:OpenShift Container Storage
+    name: 演習2 :OpenShift Container Storage
   option-placeholder:
     name: --------
   installation:
-    name: インストールの検証
+    name: OpenShiftクラスタのインストールの検証
   app-mgmt-basics:
     name: アプリケーション管理の基礎
   app-storage-basics:

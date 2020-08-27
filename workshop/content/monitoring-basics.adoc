@@ -1,6 +1,11 @@
-## OpenShift Monitoring
+= OpenShift Monitoring
+:experimental:
+
+== 演習の概要
 このラボでは、OpenShift Monitoring 機能のさまざまな側面を探ります。
 これには、OpenShift Alertmanager UI の概要、Prometheus ウェブコンソールへのアクセス、PromQL (Prometheuses Query Language) クエリの実行によるクラスタの検査、最後に Grafana ダッシュボードの確認が含まれます。
+
+---
 
 ### OpenShift Monitoring
 OpenShift Container Platformには、Prometheusオープンソースプロジェクトとその広範なエコシステムをベースにした、設定済み、プリインストール済み、自己更新型の監視スタックが含まれています。
