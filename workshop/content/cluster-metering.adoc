@@ -1,10 +1,10 @@
-## クラスターのメータリング
+= クラスタのメータリング
+:experimental:
 
-== ラボの概要
+== 演習の概要
+この演習は、システム管理者とアプリケーション開発者の両方で、Metering OperatorとReportのデプロイと管理方法を学びたい方を対象としています。
 
-このハンズオンワークショップは、システム管理者とアプリケーション開発者の両方で、Metering Operatorとスケジュールレポートのデプロイと管理方法を学びたい方を対象としています。
-
-=== このラボでは、以下の方法を学びます
+この演習では、以下の方法を学びます
 
 * OperatorHubからMetering Operatorのデプロイ 
 * Metering stackのインストール
@@ -12,36 +12,37 @@
 * Reportの作成
 * Reportの読み方
 
-### 背景
+---
 
-OpenShift Container Platform (OCP) 4.2では、Operator MeteringがGAになりました。Operator Meteringは、クラスタ全体でリソースがどのように使用されたかの説明責任を提供するチャージバックおよびReportのツールです。クラスタ管理者は、Pod、Namespace、およびクラスタ全体の過去の使用データに基づいてReportをスケジュールすることができます。Operator Meteringはlink:https://coreos.com/blog/introducing-operator-framework-metering[Operator Framework]の一部です。
+=== 背景
 
-[NOTE]
-====
-この演習はCLIとOpenShiftのWebコンソールを両方で行います。Webコンソールとのインタラクションはすべて、事実上バックグラウンドでAPIオブジェクトを作成または操作しています。プロセスを完全に自動化したり、CLIや他のツールを使用して行うことも可能ですが、これらの方法は現時点では演習やドキュメントではカバーされていません。
-====
-
-### Operator Metering のインストール
+OpenShift Container Platform (OCP) 4.2では、Operator MeteringがGAになりました。 +
+Operator Meteringは、クラスタ全体でリソースがどのように使用されたかを提供する、チャージバックおよびReportのツールです。 +
+クラスタ管理者は、*Pod*、*Namespace*、およびクラスタ全体の過去の使用データに基づいて、Reportをスケジュールすることができます。 +
+Operator Meteringはlink:https://coreos.com/blog/introducing-operator-framework-metering[Operator Framework]の一部です。
 
 [NOTE]
 ====
-このラボでは、既存のクラスタに `oc login` コマンドでログインしたと仮定しています。
+この演習はCLIとOpenShiftのWebコンソールを両方で行います。Webコンソールとのインタラクションはすべて、事実上バックグラウンドでAPIオブジェクトを操作しています。 +
+プロセスを完全に自動化したり、CLIや他のツールを使用して行うことも可能ですが、これらの方法は現時点では演習やドキュメントではカバーされていません。
 ====
 
-#### Cluster Projects の確認
+=== Operator Metering のインストール
 
-`oc projects` コマンドを実行して、既存のクラスタ内のProjectを表示します (これは `kubectl namespace` と似ています)。まだインストールされていないことを確認するために、出力で openshift-metering を検索してください。
+==== Cluster Projects の確認
+
+`oc projects` コマンドを実行して、既存のクラスタ内の *Project* を表示します(これは `kubectl namespace` と似ています)。出力で `openshift-metering` を検索してください。
 
 [source,bash,role="execute"]
 ----
 oc projects | grep openshift-metering
 ----
 
-現在 Metering のprojectは存在しないことが出力されているはずです。
+現在 Metering の *Project* は存在しないことが出力されているはずです。
 
-#### OpenShift Webコンソールへのログイン
+==== OpenShift Webコンソールへのログイン
 
-{{ MASTER_URL }}[OpenShift Webコンソール] にkubeadminのクレデンシャルでログインします。
+{{ MASTER_URL }}[OpenShift Webコンソール] にkubeadminでログインします。
 
 [source,role="copypaste"]
 ----
@@ -55,16 +56,17 @@ kubeadmin
 
 [WARNING]
 ====
-OpenShift Webコンソールに初めてアクセスすると、ブラウザに自己署名証明書エラーが表示されます。OpenShiftをインストールすると、デフォルトでは、Webコンソールを含むOpenShift内のすべてのコンポーネント間通信に対してCAとSSL証明書が生成されます。
+OpenShift Webコンソールに初めてアクセスすると、ブラウザに自己署名証明書エラーが表示されます。 +
+OpenShiftをインストールすると、デフォルトでは、Webコンソールを含むOpenShift内のすべてのコンポーネント間通信に対してCAとSSL証明書が生成されます。
 ====
 
 #### クラスタにMetering Operatorをインストール
-
 OpenShift Webコンソールを使用してMetering Operatorをインストールするには、まず `openshift-metering` Namespaceを作成し、OperatorHubからMetering Operatorをインストールします。
 
 1. OpenShift Container PlatformのWebコンソールで、*Administration* → *Namespaces* → *Create Namespace* をクリックします。
 
-2. 名前を `openshift-metering` に設定します。他の名前ではサポートされません。Namespace に以下のLabelを付けます。
+2. 名前を `openshift-metering` に設定します。他の名前ではサポートされませんので注意して下さい。 +
+Namespace に以下のLabelを付けます。
 +
 [source,role="copypaste"]
 ----
@@ -73,13 +75,15 @@ openshift.io/cluster-monitoring=true
 +
 *Create* をクリックします。
 
-3. 次に、 *Operators* → *OperatorHub* をクリックし、`Metering` とフィルタをかけてMetering Operatorを探します。
+3. 次に、 *Operators* → *OperatorHub* をクリックし、`Metering` とフィルタリングしてMetering Operatorを探します。
 
 4. *Metering* のカードをクリックし、パッケージの説明を確認してから、*Install* をクリックします。
 
-5. *Install Operator* の画面にて、Update Channelに `4.5` を指定し、上記で作成した `openshift-metering` Namespace を選択します。Approval Strategyに `Automatic` を指定したら、*Install* をクリックします。
+5. *Install Operator* の画面にて、Update Channelに `4.5` を指定し、上記で作成した `openshift-metering` Namespace を選択します。 +
+Approval Strategyに `Automatic` を指定したら、*Install* をクリックします。
 
-6. *Installed Operators* の画面で、Metering Operatorのインストールが終わると、*Status* に *Succeeded* と表示されます。最初のカラムに表示される名前(Metering) をクリックすることで、*Operator Details* のページを見ることができます。
+6. *Installed Operators* の画面で、Metering Operatorのインストールが終わると、*Status* に *Succeeded* と表示されます。 +
+表示される名前(Metering) をクリックすることで、*Operator Details* のページを見ることができます。
 
 [NOTE]
 ====
@@ -88,9 +92,11 @@ Metering Operatorのインストールには、数分かかる場合がありま
 
 ### Metering stackのインストール
 
-1. Webコンソールで、`openshift-metering` ProjectのMetering Operatorの *Operator Details* ページにいることを確認して下さい。このページに移動するには、*Operators* → *Installed Operators* とクリックして、Metering Operatorを選択します。
+1. `openshift-metering` *Project* で、Metering Operatorの *Operator Details* ページにいることを確認して下さい。 +
+このページに移動するには、*Operators* → *Installed Operators* とクリックして、Metering Operatorを選択します。
 
-2. *Provided APIs* の一覧から、 *Metering Configuration* カードを探し出し、*Create Instance* をクリックします。Configure via で `YAML View` を指定すると、デフォルトのMeteringConfigファイルを持つYAMLエディタが開きます。
+2. *Provided APIs* の一覧から、 *Metering Configuration* カードを探し出し、*Create Instance* をクリックします。 +
+`Configure via` で `YAML View` を指定すると、デフォルトのMeteringConfigファイルを持つYAMLエディタが開きます。
 
 3. 以下のMeteringConfigをYAMLエディタにコピーして貼り付け、*Create* をクリックして、デフォルトの構成を置き換えます。
 +
@@ -113,15 +119,16 @@ spec:
         namenode: "hdfs-namenode-0.hdfs-namenode:9820"
 ----
 +
-OpenShift Container Storageへの依存関係を作らないようにするために、このラボでは、Metering Operatorが独自にデプロイする、サポートされていないストレージ構成であるHDFSを使用します。
+WARNING: このラボでは、OpenShift Container Storageへの依存関係を作らないようにするために、Metering Operatorが独自にデプロイする、サポートされていないストレージ構成であるHDFSを使用します。
 
 ### インストールの確認
 
-必要なPodがすべて作成されていることを確認することで、Reportデータソースがデータのインポートを開始していることを確認します。
+必要な *Pod* がすべて作成されていることを確認することで、Reportデータソースがデータのインポートを開始していることを確認します。
 
-1. `openshift-metering` Namespace で *Workloads* → *Pods* を移動し、Podが作成されていることを確認します。これは、Metering Stackをインストールから数分かかることがあります。
+1. `openshift-metering` Namespace で *Workloads* → *Pods* と移動し、*Pod* が作成されていることを確認します。 +
+これは、Metering Stackをインストールから数分かかることがあります。
 +
-`oc` CLIを使用しても同様のチェックを実行ができます。
+`oc` CLIを使用しても同様のチェックができます。
 +
 [source,bash,role="execute"]
 ----
@@ -139,9 +146,10 @@ presto-coordinator-0                  2/2     Running             0          31s
 reporting-operator-56c6c878fb-2zbhp   0/2     ContainerCreating   0          4s
 ----
 
-2. Podが `Ready` と表示されるまでチェックを続けます。これには数分かかることがあります。多くのPodは、それ自体がReadyとみなされる前に他のコンポーネントの機能に依存しています。他のPodの起動に時間がかかりすぎると、一部のPodが再起動することがありますが、これは問題ではなく、インストール中に予想されることです。
+2. *Pod* が `Ready` と表示されるまでチェックを続けます。これには数分かかることがあります。 +
+多くの *Pod* では、それ自体がReadyとみなされる前に他のコンポーネントの機能に依存しています。他の *Pod* の起動に時間がかかりすぎると、一部の *Pod* が再起動することがあります。これは問題ではなく、インストール中に予期される動作です。
 +
-`oc` CLIを使用すると、同様のチェックで以下のような出力が表示されます。
+`oc` CLIで同様のチェックをすると次のような出力が表示されます。
 
 +
 [source,bash,role="execute"]
@@ -160,20 +168,29 @@ presto-coordinator-0                  2/2     Running   0          12m
 reporting-operator-787868bfcc-w8qs6   2/2     Running   0          11m
 ----
 
-3. 次に、`oc` CLIを使用して、ReportDataSourcesがデータのインポートを開始していることを確認します。これは下のコマンドの出力で、`EARLIEST METRIC`列に有効なタイムスタンプが表示されることで示されます(これには数分かかる場合があります)。データをインポートしない「-raw」ReportDataSourcesをフィルタリングします。
+3. 次に、`oc` CLIを使用して、ReportDataSourcesがデータのインポートを開始していることを確認します。 +
+これは下のコマンドの出力で、`EARLIEST METRIC`列に有効なタイムスタンプが表示されることで示されます(これには数分かかる場合があります)。 +
+データをインポートしない「-raw」ReportDataSourcesをフィルタリングします。
 +
 [source,bash,role="execute"]
 ----
 oc get reportdatasources -n openshift-metering | grep -v raw
 ----
 
-すべてのPodの準備が整い、データがインポートされていることを確認したら、Meteringを使用してデータを収集し、クラスタのReportを作成することができます。
+すべての *Pod* の準備が整い、データがインポートされていることを確認したら、Meteringを使用してデータを収集し、クラスタのReportを作成することができます。
 
 ### Reportの作成
 
-Report Custom Resourceは、Reportの実行とステータスを管理するために使用されます。Metering、使用量のデータソースから派生したReportを生成し、さらなる分析やフィルタリングに使用することができます。
+Report Custom Resourceは、Reportの実行とステータスを管理するために使用されます。 +
+使用量のデータソースから派生したReportを生成し、さらなる分析やフィルタリングに使用することができます。
 
-1つのReport Resourceは、データベーステーブルを管理し、スケジュールに従って新しい情報に更新するジョブを表します。Reportは、Reporting-OperatorのHTTP APIを介して、そのテーブルのデータを公開します。`spec.schedule` フィールドが設定されたReportは常に実行されており、データを収集した期間をトラッキングします。これにより、Meteringがシャットダウンされたり、長期間使用できない場合でも、データは中断されたところからbackfillされることが保証されます。スケジュールが設定されていない場合、Reportは `reportingStart` と `reportingEnd` で指定された時間だけ実行されます。デフォルトでは、ReportはReportDataSourcesが期間に含まれるデータを完全にインポートするのを待ちます。Reportにスケジュールがある場合、現在処理されている期間のデータがインポートを終了するまで実行を待ちます。
+1つのReport Resourceは、データベーステーブルを管理し、スケジュールに従って新しい情報に更新するジョブを表します。 +
+Reportは、Reporting-OperatorのHTTP APIを介して、そのテーブルのデータを公開します。`spec.schedule` フィールドが設定されたReportは常に実行されており、データを収集した期間をトラッキングします。 +
+これにより、Meteringがシャットダウンされたり、長期間使用できない場合でも、データは中断されたところからbackfillされることが保証されます。
+
+スケジュールが設定されていない場合、Reportは `reportingStart` と `reportingEnd` で指定された時間だけ実行されます。 +
+デフォルトでは、ReportはReportDataSourcesが期間に含まれるデータが完全にインポートされるのを待ちます。 +
+Reportにスケジュールがある場合、現在処理されている期間のデータがインポートを終了するまで実行を待ちます。
 
 `oc` CLIを使用して、どのようなReportが利用可能かを確認するために、ReportQueriesを取得します。
 
@@ -182,11 +199,11 @@ Report Custom Resourceは、Reportの実行とステータスを管理するた�
 oc get reportqueries -n openshift-metering | grep -v raw
 ----
 
-後に `-raw` を持つReportQueriesは、より複雑なクエリを構築するために他のReportQueriesによって使用されるもので、Reportに直接使用されるべきではありません。
+後に `-raw` の付くReportQueriesは、より複雑なクエリを構築するために他のReportQueriesによって使用されるものです。Reportに直接使用されるべきではありません。
 
 #### スケジュールを使ったReportの作成
 
-以下の操作で作成するReportには、すべてのPodのCPUリクエストに関する情報が含まれており、1時間ごとに実行され、実行するたびに最後の1時間分のデータが追加されます。
+以下の操作で作成するReportには、すべての *Pod* のCPUリクエストに関する情報が含まれており、1時間ごとに実行され、実行するたびに最後の1時間分のデータが追加されます。
 
 1. OpenShift Container PlatformのWebコンソールで、*Operators* → *Installed Operators* をクリックします。*Installed Operators* でMetering Operatorをクリックします。
 

@@ -30,7 +30,7 @@ modules:
   template-quota-limits:
     name: プロジェクト・リクエスト・テンプレートとクォータ/制限
   cluster-metering:
-    name: クラスターのメータリング
+    name: クラスタのメータリング
   networking:
     name: OpenShift の Network Policy ベースの SDN
   disabling-project-self-provisioning:
