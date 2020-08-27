@@ -25,5 +25,5 @@ ssh -l {{ SSH_USERNAME }} {{ BASTION_FQDN }} -o ServerAliveInterval=120
 
 [source,bash,role="execute"]
 ----
-oc login -u kubeadmin -p {{ KUBEADMIN_PASSWD }} {{ API_URL }} 
+oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }} {{ API_URL }} 
 ----
