@@ -9,8 +9,6 @@ modules:
     name: 　Lab1-1
   ocp4ws-ops-1-2:
     name: 　Lab1-2
-  ocp4ws-ops:
-    name: 演習1 :OpenShift 4 Ops ハンズオン
   ocs4:
     name: 演習2 :OpenShift Container Storage 4 ハンズオン
   option-placeholder:
