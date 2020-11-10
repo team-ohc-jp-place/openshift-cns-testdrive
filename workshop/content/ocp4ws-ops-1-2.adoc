@@ -8,7 +8,7 @@
 * D) Routeの作成 (3-4)
 * E) アプリの動作確認 (3-5)
 
-image::images/ocp4-Lab1-3_overview.png[]
+image::images/ocp4ws-ops/ocp4-Lab1-3_overview.png[]
 
 '''
 
@@ -59,15 +59,15 @@ OpenShift4コンソールで各自のプロジェクトを作成しましょう�
 
 . コンソールを Developer Console に切り替えます。
 +
-image::images/ocp4-lab1-3-developer-console.png[]
+image::images/ocp4ws-ops/ocp4-lab1-3-developer-console.png[]
 
 . [</> Developer] > [+Add] > [Project: プルダウンメニューを選択] > [Create Project] を選択します。
 +
-image::images/ocp4-lab1-3-create-project.png[]
+image::images/ocp4ws-ops/ocp4-lab1-3-create-project.png[]
 
 . プロジェクト名(例: `blog` )を指定し、*Create* を選択します。
 +
-image::images/ocp4-lab1-3-create-project-blog.png[]
+image::images/ocp4ws-ops/ocp4-lab1-3-create-project-blog.png[]
 +
 [TIPS]
 ====
@@ -79,11 +79,11 @@ NOTE: OpenShift4ではプロジェクトを作成することで、新規Namespa
 
 . [</> Developer] > [+Add] > [From Catalog] を選択します。
 +
-image::images/ocp4-lab1-3-from-catalog.png[]
+image::images/ocp4ws-ops/ocp4-lab1-3-from-catalog.png[]
 
 . 次に [Python] テンプレート を選択します。
 +
-image::images/ocp4-lab1-3-from-catalog-python.png[]
+image::images/ocp4ws-ops/ocp4-lab1-3-from-catalog-python.png[]
 +
 [TIPS]
 ====
@@ -104,7 +104,7 @@ NOTE: Developer CatalogからPythonアプリケーションを作成すること
 . アプリケーションのリポジトリなどを指定して、OpenShift4上にアプリケーションをデプロイします。
 +
 最初に、*[Create Application]*　を選択します。 +
- image:images/ocp4-lab1-3-from-catalog-python-create.png[]
+ image:images/ocp4ws-ops/ocp4-lab1-3-from-catalog-python-create.png[]
 +
 次に、*[リポジトリなどいくつかの項目]* を指定し、最後に *[Create]* を選択します。
 
@@ -114,7 +114,7 @@ NOTE: Developer CatalogからPythonアプリケーションを作成すること
  ** Name:``任意の名前(例: blog)``
  ** Create route: `チェックを外す`
 +
-image::images/ocp4-lab1-3-from-catalog-python-create-detail.png[]
+image::images/ocp4ws-ops/ocp4-lab1-3-from-catalog-python-create-detail.png[]
 +
 以上の手順で、blogアプリケーションをOpenShift4上にデプロイできました。
 +
@@ -122,18 +122,18 @@ image::images/ocp4-lab1-3-from-catalog-python-create-detail.png[]
 ====
 NOTE: [</> Developer] > [Topology] から、アプリケーションのアイコンをクリックすると、稼働状態を確認できます。ビルドおよびデプロイが完了するまでに少し時間(約30秒)がかかります。"Running" のステータスを確認できるまで待ちます。
 
-image::images/ocp4-lab1-3-topology.png[]
+image::images/ocp4ws-ops/ocp4-lab1-3-topology.png[]
 ====
 
 === 3-3. blogアプリケーションの状態を確認
 
 . [</> Developer] > [Topology] \-> [アプリケーションのアイコン] から、Pod名のリンクをクリックします。
 +
-image::images/ocp4-lab1-3-topology-pod.png[]
+image::images/ocp4ws-ops/ocp4-lab1-3-topology-pod.png[]
 +
 コンテナが作成され、起動していると以下のように表示されます。
 +
-image::images/ocp4-lab1-3-topology-pod-detail.png[]
+image::images/ocp4ws-ops/ocp4-lab1-3-topology-pod-detail.png[]
 +
 [TIPS]
 ====
@@ -141,7 +141,7 @@ NOTE: 前のLab1-1でプロジェクトのリソース状況を確認した時�
 さらに、Pod内のコンテナ内でコマンド実行も行えます。下図のように [Terminal] を選択するとブラウザ上でターミナル内操作が行なえます。 +
 また、Pod内に複数コンテナが存在する場合はプルダウンメニューで選択するだけでコンテナを切替えてターミナル操作が可能です。問題判別を行う際には、手間を省いてくれる意外と嬉しい機能です。
 
-image::images/ocp4-lab1-3-topology-pod-terminal.png[]
+image::images/ocp4ws-ops/ocp4-lab1-3-topology-pod-terminal.png[]
 ====
 
 === 3-4. 外部からアクセスするための Route を作成
@@ -150,11 +150,11 @@ image::images/ocp4-lab1-3-topology-pod-terminal.png[]
 
 . コンソールを Administation Console に切り替えます。
 +
-image::images/ocp4-lab1-3-create-route-admin-console.png[]
+image::images/ocp4ws-ops/ocp4-lab1-3-create-route-admin-console.png[]
 
 . [Administrator] > [Networking] > [Routes] > [Create Route] を選択します。
 +
-image::images/ocp4-lab1-3-create-route.png[]
+image::images/ocp4ws-ops/ocp4-lab1-3-create-route.png[]
 
 . *Name*、対象アプリ用の**Service**、*Port* を指定します。
  ** Name: `任意の名前 (例: blog)`
@@ -162,7 +162,7 @@ image::images/ocp4-lab1-3-create-route.png[]
  ** Target Port: `8080 → 8080(TCP)`
 
 +
-image::images/ocp4-lab1-3-create-route-detail.png[]
+image::images/ocp4ws-ops/ocp4-lab1-3-create-route-detail.png[]
 +
 
 [TIPS]
@@ -180,9 +180,9 @@ Developer Catalogで選択したテンプレートは、Kubernetes上でアプ�
 ====
 NOTE: 作成したRouteを参照する場合は、[Administrator] > [Networking] > [Routes] > [Router名] のように辿ることで確認できます。
 
-image::images/ocp4-lab1-3-create-route-blog.png[]
+image::images/ocp4ws-ops/ocp4-lab1-3-create-route-blog.png[]
 
-image::images/ocp4-lab1-3-create-route-result.png[]
+image::images/ocp4ws-ops/ocp4-lab1-3-create-route-result.png[]
 ====
 
 === 3-5. アプリケーションの動作確認
@@ -190,15 +190,15 @@ image::images/ocp4-lab1-3-create-route-result.png[]
 . [Networking] > [Routes] を選択し、blog用のRoute(例: `blog`)の行にある *Location欄のリンク* を開きます。
  例) `+http://blog-blog.apps.cluster-391b.391b.example.opentlc.com/+`
 +
-image::images/ocp4-lab1-3-create-route-confirm.png[]
+image::images/ocp4ws-ops/ocp4-lab1-3-create-route-confirm.png[]
 
 . blogアプリのサンプルページに自身のPod名が表示されていることを確認します。
 +
-image::images/ocp4-lab1-3-create-route-confirm-result.png[]
+image::images/ocp4ws-ops/ocp4-lab1-3-create-route-confirm-result.png[]
 +
 Pod名が分からない場合は、[Workloads] > [Pods] のPod一覧から確認しましょう。
 +
-image::images/ocp4-lab1-3-create-route-confirm-result-pod.png[]
+image::images/ocp4ws-ops/ocp4-lab1-3-create-route-confirm-result-pod.png[]
 
 == 4. [Trial works] - OpenShift4クラスターに他アプリケーションをデプロイ
 

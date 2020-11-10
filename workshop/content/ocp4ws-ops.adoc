@@ -17,9 +17,9 @@
 
 作業は以下の手順どおりに進めます。
 
-=== Lab1-1: link:ocp4ws-ops-1-1.adoc[OpenShift4クラスターへのログインと動作確認]
+==== Lab1-1: xref:ocp4ws-ops-1-1[OpenShift4クラスターへのログインと動作確認]
 
-=== Lab1-2: link:ocp4ws-ops-1-1.adoc[コンテナイメージのビルド&デプロイ]
+==== Lab1-2: link:ocp4ws-ops-1-2[コンテナイメージのビルド&デプロイ]
 
 
 == Lab2

@@ -7,7 +7,7 @@
 * C) クラスターを構成するNodeの確認 (3-2)
 * D) K8sワークロード の動作確認 (3-3)
 
-image::images/ocp4-Lab1-2_overview.png[]
+image::images/ocp4ws-ops/ocp4-Lab1-2_overview.png[]
 
 '''
 
@@ -70,7 +70,7 @@ oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }} {{ API_URL }}
 
 Privacy Errorが出た場合は、[Advanced] > [Proceed to oauth-openshift.apps.xxx... (unsafe)] のように選択して進めてください。
 
-image::images/ocp4-console-login-error.png[]
+image::images/ocp4ws-ops/ocp4-console-login-error.png[]
 
 == 3. OpenShift4クラスターの動作確認
 
@@ -80,15 +80,15 @@ OpenShift4コンソールで各自のプロジェクトを作成しましょう�
 
 . [Administrator] > [Home] > [Projects] > [Create Project] を選択します。
 +
-image::images/ocp4-console-create-project-1.png[]
+image::images/ocp4ws-ops/ocp4-console-create-project-1.png[]
 +
-image::images/ocp4-console-create-project-1-2.png[]
+image::images/ocp4ws-ops/ocp4-console-create-project-1-2.png[]
 +
 . プロジェクト名(例: `lab1-2` )を指定し、*Create* を選択します。
 +
-image::images/ocp4-console-create-project-2.png[]
+image::images/ocp4ws-ops/ocp4-console-create-project-2.png[]
 +
-image::images/ocp4-console-create-project-3.png[]
+image::images/ocp4ws-ops/ocp4-console-create-project-3.png[]
 
 === 3-1. プロジェクトのリソース利用状況の確認
 
@@ -97,35 +97,35 @@ image::images/ocp4-console-create-project-3.png[]
 
 . [Administrator] > [Home] > [Projects] > [自身のプロジェクト (例: lab1-2) ] を選択します。
 +
-image::images/ocp4-console-project.png[]
+image::images/ocp4ws-ops/ocp4-console-project.png[]
 +
 以下のような画面が表示されます。ただ、作成したばかりのプロジェクトなので特に情報がありません。
 +
-image::images/ocp4-console-project-status.png[]
+image::images/ocp4ws-ops/ocp4-console-project-status.png[]
 
 . 次に、[Administrator] > [Home] > [Projects] > [openshift-console] を選択します。
 +
-image::images/ocp4-console-project-openshift-console.png[]
+image::images/ocp4ws-ops/ocp4-console-project-openshift-console.png[]
 +
 openshift-consoleプロジェクトにおけるCPUやメモリなどのリソース利用状況が確認できました。 +
 さらに下方では、Podによるメモリ利用量と、利用量の大きい順にTOP10が一覧表示されています。
 +
-image::images/ocp4-console-project-openshift-console-status.png[]
+image::images/ocp4ws-ops/ocp4-console-project-openshift-console-status.png[]
 
 . openshift-consoleプロジェクトの利用状況について詳細に見ていきます。
 +
 グラフ内にカーソルを合わせて選択します。
 +
-image::images/ocp4-console-project-openshift-console-status-next.png[]
+image::images/ocp4ws-ops/ocp4-console-project-openshift-console-status-next.png[]
 +
 CPU利用量を示したグラフが表示されているはずです。OpenShiftのUIに組み込まれたPrometheusを使用しています。 +
  次に、[Prometheus UI] を選択して、Prometheusに直接アクセスしてみましょう。
 +
-image::images/ocp4-console-project-openshift-console-status-prometheus.png[]
+image::images/ocp4ws-ops/ocp4-console-project-openshift-console-status-prometheus.png[]
 +
 ログインを求められた場合は、OpenShift4クラスターへのログイン情報を使用します。
 +
-image::images/ocp4-console-project-openshift-console-status-login.png[]
+image::images/ocp4ws-ops/ocp4-console-project-openshift-console-status-login.png[]
 +
 Authorized Accessのページが表示されたら、[Allow selected permissions]を選択します。
 +
@@ -133,12 +133,12 @@ Authorized Accessのページが表示されたら、[Allow selected permissions
 ====
 NOTE: モニタリングツール(Prometheus)に対して、ReadOnlyで情報利用する許可を与えています。
 
-image::images/ocp4-console-project-openshift-console-status-allow.png[]
+image::images/ocp4ws-ops/ocp4-console-project-openshift-console-status-allow.png[]
 ====
 +
 openshift-consoleプロジェクト(=openshift-consoleネームスペース)内のコンテナCPU利用量のグラフが描画されました。
 +
-image::images/ocp4-console-project-openshift-console-status-prometheus-cpu-usage.png[]
+image::images/ocp4ws-ops/ocp4-console-project-openshift-console-status-prometheus-cpu-usage.png[]
 +
 [TIPS]
 ====
@@ -151,11 +151,11 @@ Prometheusに対して、以下のQueryを投げることで上図の情報を�
 +
 入力済のクエリを削除してブランクにしてから、[- insert metric at cursol -] を選択します。
 +
-image::images/ocp4-console-project-openshift-console-status-prometheus-add-1.png[]
+image::images/ocp4ws-ops/ocp4-console-project-openshift-console-status-prometheus-add-1.png[]
 +
 例では、[controller_runtime_reconcile_total] > Execute を選択します。
 +
-image::images/ocp4-console-project-openshift-console-status-prometheus-add-2.png[]
+image::images/ocp4ws-ops/ocp4-console-project-openshift-console-status-prometheus-add-2.png[]
 +
 以下図のように折れ線グラフが描画され、下部にはリクエストが一覧されています。カーソルをグラフなどに合わせて詳細情報を確認してみましょう。
 +
@@ -163,7 +163,7 @@ image::images/ocp4-console-project-openshift-console-status-prometheus-add-2.png
 ====
 NOTE: もしうまく描画されない場合は、検索クエリが正しく指定されているか("controller_runtime_reconcile_total")を確認してみましょう。
 
-image::images/ocp4-console-project-openshift-console-status-prometheus-add-3.png[]
+image::images/ocp4ws-ops/ocp4-console-project-openshift-console-status-prometheus-add-3.png[]
 ====
 +
 [TIPS]
@@ -173,7 +173,7 @@ NOTE: OpenShift4では、各プロジェクト(ネームスペース)に属す�
 +
 [Administrator] > [Monitoring] > [Dashboards]で Grafana UIの確認も可能です。
 +
-image::images/ocp4-console-project-openshift-console-monitoring.png[]
+image::images/ocp4ws-ops/ocp4-console-project-openshift-console-monitoring.png[]
 
 . 現在開いているタブ（Prometheus UI (あるいはGrafana)の可視化）は、**モニタリングやロギングなど短期間で更新のある可視化画面であるため、ブラウザに負荷がかかります。**このため、必ずクローズしておきましょう。
 
@@ -194,7 +194,7 @@ Nodeの状態について確認してみましょう。
 
 . [Administrator] > [Compute] > [Nodes] を選択します。
 +
-image::images/ocp4-lab1-2-node.png[]
+image::images/ocp4ws-ops/ocp4-lab1-2-node.png[]
 
 . 任意のWorkerを選択して詳細を確認します。
 +
@@ -203,47 +203,47 @@ image::images/ocp4-lab1-2-node.png[]
 NOTE: `ip-10-0-139-202.ap-southeast-1.compute.internal` のような名称で、Node群が一覧されています。また、Role欄を見ると `master`/``worker``の割当を確認できます。※Node数や名称は一例です。
 ====
 +
-image::images/ocp4-lab1-2-node-worker.png[]
+image::images/ocp4ws-ops/ocp4-lab1-2-node-worker.png[]
 +
 [Overview]タブでは、選択した単一のNodeのCPUやメモリなどのリソース利用状況が確認できます。 +
 プロジェクトと同様に、OpenShift4にデフォルト構成されているPrometheusが各メトリクスを抽出しています。
 +
-image::images/ocp4-lab1-2-node-worker-detail.png[]
+image::images/ocp4ws-ops/ocp4-lab1-2-node-worker-detail.png[]
 +
 [YAML]タブでは、OpenShift4上で管理されるNode情報をyaml形式で確認できます。ノード名やアノテーション、ラベルなどの記載があります。
 +
-image::images/ocp4-lab1-2-node-confirm-detail-yaml.png[]
+image::images/ocp4ws-ops/ocp4-lab1-2-node-confirm-detail-yaml.png[]
 +
 [Pods]タブでは、指定したNode上で動作するPod一覧を確認できます。 +
 例えば、``openshift-monitoringネームスペース``に属するgrafanaのPodや、alertManagerなどが動作していることが分かります。
 +
-image::images/ocp4-lab1-2-node-confirm-detail-pod.png[]
+image::images/ocp4ws-ops/ocp4-lab1-2-node-confirm-detail-pod.png[]
 +
 [Events]タブでは、Nodeに起こったイベントについて時系列に表示されます。現時点では何も起こっていないので出力はありませんが、Nodeのステータスが変わったり、例えば割当リソースが変わったりなどの変化が起こると出力されます。
 
 . Nodeに対する操作(Action)を以下図のようにメニューを開いて確認します。
 +
-image::images/ocp4-lab1-2-node-confirm-action.png[]
+image::images/ocp4ws-ops/ocp4-lab1-2-node-confirm-action.png[]
 +
 ラベルの追加や削除などの変更をUI上で簡易的に行えます。 +
 今回は編集しないので、*[Cancel]* を選択してクローズします。
 +
-image::images/ocp4-lab1-2-node-confirm-action-label.png[]
+image::images/ocp4ws-ops/ocp4-lab1-2-node-confirm-action-label.png[]
 +
 アノテーションの追加や削除などの変更をUI上で簡易的に行えます。 +
 今回は編集しないので、*[Cancel]* を選択してクローズします。
 +
-image::images/ocp4-lab1-2-node-confirm-action-annotation.png[]
+image::images/ocp4ws-ops/ocp4-lab1-2-node-confirm-action-annotation.png[]
 +
 Node構成について、yamlを直接編集して変更が行えます。 +
 今回は編集しないので、*[Cancel]* を選択してクローズします。
 +
-image::images/ocp4-lab1-2-node-confirm-action-node.png[]
+image::images/ocp4ws-ops/ocp4-lab1-2-node-confirm-action-node.png[]
 +
 [Mark as Unschedulable] を選択することで、今後新しいPodが該当Nodeにスケジューリングされないように設定できます。 +
 今回は編集しないので、*[Cancel]* を選択してクローズします。
 +
-image::images/ocp4-lab1-2-node-confirm-action-unschedulable.png[]
+image::images/ocp4ws-ops/ocp4-lab1-2-node-confirm-action-unschedulable.png[]
 
 コンソール上で、OpenShift4クラスターを構成するNodeの数や種類、付与されたラベル、リソース利用状況、あるNode上で動作中のPod、Nodeの構成変更、などについて確認しました。
 
