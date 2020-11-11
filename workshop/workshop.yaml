@@ -7,6 +7,8 @@ modules:
   - ocp4ws-ops
   - ocp4ws-ops-1-1
   - ocp4ws-ops-1-2
+  - ocp4ws-ops-2-1
+  - ocp4ws-ops-2-2
   - ocs4
   - option-placeholder
   - installation

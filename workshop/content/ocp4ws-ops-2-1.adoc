@@ -41,7 +41,7 @@ ssh -l {{ SSH_USERNAME }} {{ BASTION_FQDN }} -o ServerAliveInterval=120
 oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }} {{ API_URL }} 
 ----
 
-. 次に，OpenShift4クラスターを構成するノードを確認します。
+. 次に、OpenShift4クラスターを構成するノードを確認します。
 +
 [source,bash,role="execute"]
 ----
@@ -64,8 +64,8 @@ oc get node
 +
 [TIPS]
 ====
-NOTE: 上記のように，複数台のMasterとWorkerノードで構成されており，STATUSが Readyであることを確認します。
-なお，ハンズオン環境においては，ノード台数が異なる場合があります。
+NOTE: 上記のように、複数台のMasterとWorkerノードで構成されており、STATUSが Readyであることを確認します。
+なお、ハンズオン環境においては、ノード台数が異なる場合があります。
 ====
 
 === 2-2. アプリケーションのビルド
@@ -100,9 +100,9 @@ $ oc get project | grep jmx
 jmx                                                               Active
 ----
 +
-上記のように，作成したプロジェクト名が出力されることを確認します。
+上記のように、作成したプロジェクト名が出力されることを確認します。
 
-. アプリケーションをリポジトリからCloneして，「jboss-eap-prometheus」イメージをビルドします。
+. アプリケーションをリポジトリからCloneして、「jboss-eap-prometheus」イメージをビルドします。
 +
 [source,bash,role="execute"]
 ----
@@ -182,16 +182,16 @@ jboss-eap-prometheus   image-registry.openshift-image-registry.svc:5000/jmx/jbos
 
 ----
 +
-OpenShift4コンソールにログインして，[Builds]>[Image Streams]から，ビルドしたイメージがImageStreamに登録されていることも確認しましょう。
+OpenShift4コンソールにログインして、[Builds]>[Image Streams]から、ビルドしたイメージがImageStreamに登録されていることも確認しましょう。
 +
-image::images/ocp4-i-lab1-1-imagestream-jboss.png[]
+image::images/ocp4ws-ops/ocp4-i-lab1-1-imagestream-jboss.png[]
 
 === 2-3. アプリケーションのデプロイ
 
 . アプリケーションの展開
 +
-ここでは，登録した「jboss-eap-prometheus」を利用して，アプリケーションを展開します。 +
- 展開の際には，Java Agent用JARファイルやJMX Exporter設定ファイルのパスを環境変数(jmx-prometheus.jar=9404)で指定しておきましょう。
+ここでは、登録した「jboss-eap-prometheus」を利用して、アプリケーションを展開します。 +
+ 展開の際には、Java Agent用JARファイルやJMX Exporter設定ファイルのパスを環境変数(jmx-prometheus.jar=9404)で指定しておきましょう。
 +
 [source,bash,role="execute"]
 ----
@@ -224,7 +224,7 @@ $ oc new-app -i jboss-eap-prometheus:latest \
 
 . 展開したアプリケーションの確認
 +
-この時点で「jboss-eap-prometheus-1」がRunning状態になれば，デプロイ成功です。 +
+この時点で「jboss-eap-prometheus-1」がRunning状態になれば、デプロイ成功です。 +
  JMX Exporter はデフォルトで9404ポートを公開します。
 +
 [source,bash,role="execute"]
@@ -300,7 +300,7 @@ tcp-8080   tcp-8080-jmx.XXX.openshiftworkshop.com          jboss-eap-prometheus 
 
 Host/PortのURLにブラウザ上からアクセスすると、アプリケーションコンテンツが確認できます。
 
-image::images/jboss-eap-prometheus-8080.jpg[Jboss Application]
+image::images/ocp4ws-ops/jboss-eap-prometheus-8080.jpg[Jboss Application]
 
 次に「jboss-eap-prometheus」のPromtheus Exporter(tcp-9404)ポートを、ルータに接続します。
 
@@ -326,6 +326,6 @@ tcp-9404   tcp-9404-jmx.XXX.openshiftworkshop.com          jboss-eap-prometheus 
 
 Host/PortのURLにブラウザ上からアクセスすると、JMX Exporterから取得したPromSQLのクエリが確認できます。
 
-image::images/jboss-eap-prometheus-9404.jpg[Jboss Application]
+image::images/ocp4ws-ops/jboss-eap-prometheus-9404.jpg[Jboss Application]
 
 これで、JMX Exporterの設定は完了です。次にlink:ocp4ws-ops-2-2[Prometheus Operator]の作業に進みます。

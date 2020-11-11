@@ -6,9 +6,13 @@ modules:
   ocp4ws-ops:
     name: 演習1 :OpenShift 4 Ops ハンズオン
   ocp4ws-ops-1-1:
-    name: 　Lab1-1
+    name: 　Lab1-1 OpenShift4クラスターへのログインと動作確認
   ocp4ws-ops-1-2:
-    name: 　Lab1-2
+    name: 　Lab1-2 コンテナイメージのビルドとデプロイ
+  ocp4ws-ops-2-1:
+    name: 　Lab2-1 Prometheus JMX Exporterの展開
+  ocp4ws-ops-2-2:
+    name: 　Lab2-2 Prometheus Operatorの展開
   ocs4:
     name: 演習2 :OpenShift Container Storage 4 ハンズオン
   option-placeholder:
