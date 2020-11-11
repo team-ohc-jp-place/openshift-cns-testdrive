@@ -1,4 +1,4 @@
-= 演習1 Lab1-1 OpenShift4クラスターへのログインと動作確認
+= 演習1 Lab1-1: OpenShift4クラスターへのログインと動作確認
 
 各自のOpenShift4クラスターに実際に接続し、クラスター内コンポーネントの動作確認を次の手順で行います。
 
@@ -26,7 +26,7 @@ image::images/ocp4ws-ops/ocp4-Lab1-2_overview.png[]
  ** クラスター設定やネームスペース、ロール管理などのAdmin作業
  ** etc.
 
-=== 1-1. 事前準備
+=== 1-2. 事前準備
 * 踏み台サーバー(Bastion Server)へのアクセス情報
 * OpenShift4クラスターへのアクセス情報
 
@@ -435,9 +435,9 @@ downloads   ClusterIP   172.30.220.192   <none>        80/TCP    16h
 
 ocコマンドは、Kubernetesを拡張したOpenShift4の制御をシンプルに行うために用意されているCLIですが、kubectlと同じ制御が行えます。例えば、``$ kubectl describe po``と同じ操作を `$ oc describe po` で行えます。余談ですが、もちろんkubectlコマンドをOpenShift4で使うこともできます。
 
-OpenShift4によって拡張された機能については、次のハンズオン(xref:ocp4ws-ops-1-2.adoc[コンテナイメージのビルドとデプロイ])で体験できます。
+OpenShift4によって拡張された機能については、次のハンズオン(link:ocp4ws-ops-1-2[コンテナイメージのビルドとデプロイ])で体験できます。
 
 '''
 
 以上で、Lab1-1: OpenShift4クラスターへのログインと動作確認は完了です。 +
-次に xref:ocp4ws-ops-1-2.adoc[Lab1-2: コンテナイメージのビルドとデプロイ] のハンズオンに進みます。
+次に link:ocp4ws-ops-1-2[Lab1-2: コンテナイメージのビルドとデプロイ] のハンズオンに進みます。
