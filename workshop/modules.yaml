@@ -13,10 +13,12 @@ modules:
     name: 　Lab2-1 Prometheus JMX Exporterの展開
   ocp4ws-ops-2-2:
     name: 　Lab2-2 Prometheus Operatorの展開
+  ocp4ws-ops-2-3:
+    name: 　Lab203 Custom Resource Definitionの設定
   ocs4:
     name: 演習2 :OpenShift Container Storage 4 ハンズオン
   option-placeholder:
-    name: --------
+    name: (オプション)OpenShift 4 ベーシック演習
   installation:
     name: OpenShiftクラスタのインストールの検証
   app-mgmt-basics:
