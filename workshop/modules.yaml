@@ -4,51 +4,29 @@ modules:
   environment:
     name: ハンズオン演習環境の紹介
   ocp4ws-ops:
-    name: 演習1 :OpenShift 4 Ops ハンズオン
+    name: 演習1 OpenShift 4 Ops ハンズオン
   ocp4ws-ops-1-1:
-    name: 　Lab1-1 OpenShift4クラスターへのログインと動作確認
+    name: 　Lab1-1. OpenShift4クラスターへのログインと動作確認
   ocp4ws-ops-1-2:
-    name: 　Lab1-2 コンテナイメージのビルドとデプロイ
+    name: 　Lab1-2. コンテナイメージのビルドとデプロイ
   ocp4ws-ops-2-1:
-    name: 　Lab2-1 Prometheus JMX Exporterの展開
+    name: 　Lab2-1. Prometheus JMX Exporterの展開
   ocp4ws-ops-2-2:
-    name: 　Lab2-2 Prometheus Operatorの展開
+    name: 　Lab2-2. Prometheus Operatorの展開
   ocp4ws-ops-2-3:
-    name: 　Lab203 Custom Resource Definitionの設定
+    name: 　Lab2-3. Custom Resource Definitionの設定
   ocs4:
-    name: 演習2 :OpenShift Container Storage 4 ハンズオン
+    name: 演習2 OpenShift Container Storage ハンズオン
+  ocs4-1:
+    name: 　Lab1. OpenShift Container Storage(OCS)をデプロイするためのnodeを準備する
+  ocs4-2:
+    name: 　Lab2. OCSクラスターを作成する
+  ocs4-3:
+    name: 　Lab3. OCSが提供するRWO PVを使用する
+  ocs4-4:
+    name: 　Lab4. CephFSボリュームを使ってRWX PVを使用する
   option-placeholder:
-    name: (オプション)OpenShift 4 ベーシック演習
-  installation:
-    name: OpenShiftクラスタのインストールの検証
-  app-mgmt-basics:
-    name: アプリケーション管理の基礎
-  app-storage-basics:
-    name: アプリケーションストレージの基礎
-    requires:
-      - app-mgmt-basics
-  machinesets:
-    name: MachineSets, Machines, and Nodes
-  infra-nodes:
-    name: OpenShift インフラストラクチャノード
-  logging:
-    name: OpenShift ログ集約
-  ldap-groupsync:
-    name: 外部認証プロバイダ(LDAP)の設定
-  monitoring-basics:
-    name: OpenShift Monitoring
-  template-quota-limits:
-    name: プロジェクト・リクエスト・テンプレートとクォータ/制限
-  cluster-metering:
-    name: クラスタのメータリング
-  networking:
-    name: OpenShift の Network Policy ベースの SDN
-  disabling-project-self-provisioning:
-    name: Projectのセルフプロビジョニングの無効化
-  clusterresourcequota:
-    name: クラスタリソースのクォータ
-  taints-and-tolerations:
-    name: Taint と Toleration
+    name: --- オプション演習 ---
 config:
     template_engine: liquid.js  
     vars:

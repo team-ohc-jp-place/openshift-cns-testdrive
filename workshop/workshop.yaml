@@ -11,19 +11,7 @@ modules:
   - ocp4ws-ops-2-2
   - ocp4ws-ops-2-3
   - ocs4
-  - option-placeholder
-  - installation
-  - app-mgmt-basics
-  - app-storage-basics
-  - machinesets
-  - infra-nodes
-  - logging
-  - ldap-groupsync
-  - monitoring-basics
-  - template-quota-limits
-  - networking
-  - disabling-project-self-provisioning
-  - clusterresourcequota
-  - cluster-metering
-  - taints-and-tolerations
-  
+  - ocs4-1
+  - ocs4-2
+  - ocs4-3
+  - ocs4-4

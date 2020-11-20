@@ -1,0 +1,294 @@
+:experimental:
+
+= 演習2 Lab3: OCSが提供するRWO PVを使用する
+
+== Labの概要
+このLabでは作成したOCSクラスターからReadWriteOnce(RWO)のPersistent Volume(PV)を作成し、アプリケーションから使用します。 +
+RWO PVは、ひとつのworker node上で稼働するアプリケーションPodにBindされ、PodがマウントすることでアプリケーションはPVにRead/Writeすることができます。 +
+通常PVをどのnodeにアタッチするかを意識することはありませんが、RWO PVはひとつのworker nodeにのみアタッチされます。ReadWriteOnceの"Once"はこれを意味します。 +
+複数のworker nodeにアタッチし、その上で稼働する複数のアプリケーションPodが共有してRead-Writeすることはできません。これにはRWX(ReadWriteMany)というタイプのPVが必要となります。RWX PVは次のLabで学習します。 +
+
+=== このLabで学習する内容
+
+* PVC(Persistent Volume Claim)を発行し、PVが作られることを確認する
+* RWO(ReadWriteOnce) PVCを使ったアプリケーションをデプロイする
+* 作成したPVの実体であるCeph RBDボリュームを確認する
+
+
+[[labexercises]]
+
+== PVC(Persistent Volume Claim)を発行し、PVが作られることを確認する
+
+アプリケーションがPVを利用する典型的な方法の1つに、PVC(Persistent Volume Claim)を発行するものがあります。 +
+PVCは"Claim"という名の通り、OCPクラスターに対してPVの要求を行うものです。PVCを受け取ったOCPクラスターは、要求の内容に合致するPVを探してPVCに返答します。
+
+つまり、通常はPVCが発行される前にPVが作られている事が必要となります。ただし、*Dynamic Provisioning* に対応しているストレージの場合は、PVCが発行された後にその要求通りのPVをリアルタイムに作成してPVCに返すことができます。
+
+試しにシンプルなPVCを発行してみましょう。まず、PVを確認してみます。
+
+[source,role="execute"]
+----
+oc get pv
+----
+.出力例
+----
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                                STORAGECLASS                  REASON   AGE
+pvc-039b458a-7614-4ff5-833a-41b5561c47ff   50Gi       RWO            Delete           Bound    openshift-storage/db-noobaa-db-0                     ocs-storagecluster-ceph-rbd            19h
+pvc-3960cb8b-c1b3-4bf1-9175-146429585399   10Gi       RWO            Delete           Bound    openshift-storage/rook-ceph-mon-c                    gp2                                    19h
+pvc-5e08a53f-f62b-4d1a-a563-71fdab68f718   2Ti        RWO            Delete           Bound    openshift-storage/ocs-deviceset-gp2-1-data-0-7vht6   gp2                                    19h
+pvc-c77c8837-92c2-4eed-961c-0c89eb481076   2Ti        RWO            Delete           Bound    openshift-storage/ocs-deviceset-gp2-0-data-0-sqzdk   gp2                                    19h
+pvc-d1af3be5-5bc4-429a-af0d-d515c4d834fa   10Gi       RWO            Delete           Bound    openshift-storage/rook-ceph-mon-b                    gp2                                    19h
+pvc-d1b2f456-2ae3-4355-bfcd-565cf9319054   2Ti        RWO            Delete           Bound    openshift-storage/ocs-deviceset-gp2-2-data-0-xrq6d   gp2                                    19h
+pvc-fa0dbb7a-1796-4bc0-a495-2b4af4f7fa4f   10Gi       RWO            Delete           Bound    openshift-storage/rook-ceph-mon-a                    gp2                                    19h
+----
+
+いくつかのPVが表示されますが、これらはOCSクラスターを構成するために作られたPVです。ユーザーアプリケーション向けにはPVはまだありません。
+
+それでは下のようにPVCを作成します。 +
+OCSをバックエンドとする `ocs-storagecluster-ceph-rbd` StorageClass に対して、1GiBのRWO PVを要求する内容です。
+
+[source,role="execute"]
+----
+cat << EOF | oc apply -f -
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: example
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ocs-storagecluster-ceph-rbd
+  resources:
+    requests:
+      storage: 1Gi
+EOF
+----
+
+次のコマンドで"example"という名前のPVCが作成されていることが確認できます。
+
+[source,role="execute"]
+----
+oc get pvc -n default
+----
+.出力例
+----
+NAME      STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS                  AGE
+example   Bound    pvc-f87e20a8-cbd0-4e7a-9789-86eee0ae9691   1Gi        RWO            ocs-storagecluster-ceph-rbd   5s
+----
+
+再度PVを確認してみると、先程はなかったPVが作成されていることが分かります。
+
+[source,role="execute"]
+----
+oc get pv
+----
+.出力例
+----
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                                STORAGECLASS                  REASON   AGE
+...(省略)
+pvc-f87e20a8-cbd0-4e7a-9789-86eee0ae9691   1Gi        RWO            Delete           Bound    default/example                                      ocs-storagecluster-ceph-rbd            16s
+...(省略)
+----
+
+これはOCSが *Dynamic Provisioning* に対応しているため、PVCの発行後自動的にOCSにボリュームを作るよう命令し、そのボリュームがPVとして登録されるからです。
+
+== RWO(ReadWriteOnce) PVCを使ったアプリケーションをデプロイする
+
+このセクションでは、`ocs-storagecluster-ceph-rbd` StorageClassを使ってRWO(ReadWriteOnce) Presistent Volume Claimを作成し、RailsアプリケーションとPostgreSQLデータベースをデプロイします。
+
+NOTE: Rails + PostgreSQLのデプロイを開始できるように、前のセクションをすべて完了したことを確認してください。
+
+OpenShift rails-pgsql-persistentテンプレートに基づいたテンプレートファイルを次のリンク先に作成しています。
+
+`https://raw.githubusercontent.com/tutsunom/ocs-training/jp/ocp4ocs4/configurable-rails-app.yaml`
+
+このファイルには、PVCが使用するStorageClassをエンドユーザーが指定できる追加のパラメーター `STORAGE_CLASS` が含まれています。ダウンロードして確認してみて下さい。
+
+以下のコマンドでアプリケーションのデプロイを開始します。
+
+[source,role="execute"]
+----
+oc new-project my-database-app
+oc new-app -f {{ HOME_PATH }}/support/ocslab_rails-app.yaml -p STORAGE_CLASS=ocs-storagecluster-ceph-rbd -p VOLUME_CAPACITY=5Gi
+----
+
+デプロイが始まったら `oc status` コマンドでデプロイの様子を監視できます。
+
+[source,role="execute"]
+----
+oc status
+----
+.出力例
+----
+In project my-database-app on server https://172.30.0.1:443
+
+svc/postgresql - 172.30.44.10:5432
+  dc/postgresql deploys openshift/postgresql:10
+    deployment #1 running for 5 seconds - 0/1 pods
+
+http://rails-pgsql-persistent-my-database-app.apps.cluster-a26e.sandbox449.opentlc.com (svc/rails-pgsql-persistent)
+  dc/rails-pgsql-persistent deploys istag/rails-pgsql-persistent:latest <-
+    bc/rails-pgsql-persistent source builds https://github.com/sclorg/rails-ex.git on openshift/ruby:2.5
+      build #1 pending for 6 seconds
+    deployment #1 waiting on image or update
+
+View details with 'oc describe <resource>/<name>' or list everything with 'oc get all'.
+----
+
+以下に示すように、2つのpodが `Running` STATUSで、4つのpodが `Completed` STATUSになるまで待ちます。
+このステップには5分以上かかる場合があります。
+
+[source,role="execute"]
+----
+watch oc get pods -n my-database-app
+----
+.出力例:
+----
+NAME                                READY   STATUS      RESTARTS   AGE
+postgresql-1-deploy                 0/1     Completed   0          5m48s
+postgresql-1-lf7qt                  1/1     Running     0          5m40s
+rails-pgsql-persistent-1-build      0/1     Completed   0          5m49s
+rails-pgsql-persistent-1-deploy     0/1     Completed   0          3m36s
+rails-pgsql-persistent-1-hook-pre   0/1     Completed   0          3m28s
+rails-pgsql-persistent-1-pjh6q      1/1     Running     0          3m14s
+----
+kbd:[Ctrl+C] を押すと終了できます。
+
+次に、PVCを確認します。先程のテンプレートファイルの中にPVCのマニフェストが記載されているので、PVCが発行されています。PVCが作られていることを確認しましょう。
+
+[source,role="execute"]
+----
+oc get pvc -n my-database-app
+----
+
+OCSでRWO PVCで作られるPVの実体は、`ocs-storagecluster-cephblockpool` プール内に作られるCeph RBD(RADOS Block Device) imageです。 +
+アプリケーションがPersistent VolumeとしてCeph RBDボリュームを使用しているかどうかテストできます。
+
+[source,role="execute"]
+----
+oc get route -n my-database-app
+----
+.出力例:
+----
+NAME                     HOST/PORT                                                                         PATH   SERVICES                 PORT    TERMINATION   WILDCARD
+rails-pgsql-persistent   rails-pgsql-persistent-my-database-app.apps.cluster-a26e.sandbox449.opentlc.com          rails-pgsql-persistent
+----
+
+`rails-pgsql-persistent` routeをブラウザウィンドウにコピーし、末尾に `/articles` を追加したURLにアクセスします。
+
+*Example*  `http://rails-pgsql-persistent-my-database-app.apps.cluster-a26e.sandbox449.opentlc.com/articles`
+
+Webページの *New Article* をクリックし、次の `username` と `password` を入力することで記事やコメントを作成することができます。
+
+[source,ini]
+----
+username: openshift
+password: secret
+----
+
+作成された記事とコメントはPostgreSQLデータベースに保存されます。PostgreSQLデータベースは、アプリケーションのデプロイ中に `ocs-storagecluster-ceph-rbd` *StorageClass* を使ってプロビジョニングされたCeph RBDボリュームにテーブルスペースを保存します。 +
+そのため、PostgreSQLのPodを削除してもデータが失われることはありません。試しにPostgreSQLのPodを削除してみましょう。 +
+PostgreSQLのPodはDeploymentConfigによって削除されても自動的に再作成され、すでに存在するPVを自動でマウントするるようになっています。
+
+[source,role="execute"]
+----
+oc delete $(oc get pod -l name=postgresql -n my-database-app -o name) -n my-database-app
+----
+
+.ターミナルのプロンプトが戻ってくるまで待って下さい。
+CAUTION: プロンプトが戻ってくるまで数分かかる場合があります。
+
+PostgreSQLのPodが再作成されたら、再びRailsのWebアプリケーションにアクセスしてみて下さい。キャッシュを消しても先に書いた記事が残っていることが確認できます。
+
+=== 作成したPVの実体であるCeph RBDボリュームを確認する
+
+先程作成したPVは、`ocs-storagecluster-cephblockpool` プール内に作られるCeph RBD(RADOS Block Device)ボリュームです。ここではPVとCeph RBDボリュームとがどのように対応しているか確認してみます。
+
+ここでtoolboxにログインして、`ocs-storagecluster-cephblockpool` をもう一度見てみましょう。
+
+[source,role="execute"]
+----
+TOOLS_POD=$(oc get pods -n openshift-storage -l app=rook-ceph-tools -o name)
+oc rsh -n openshift-storage $TOOLS_POD
+----
+
+下記のようにアプリケーションのデプロイ前と同じCephコマンドを実行し、前のセクションの結果と比較します。
+`ocs-storagecluster-cephblockpool` のオブジェクト数が増えていることに注意して下さい。 +
+また、3つ目のコマンドはCeph RBDボリュームをリストする処理をしますが、2つ表示されるはずです。
+
+[source,role="execute"]
+----
+ceph df
+----
+[source,role="execute"]
+----
+rados df
+----
+[source,role="execute"]
+----
+rbd -p ocs-storagecluster-cephblockpool ls | grep vol
+----
+kbd:[Ctrl+D] を押すか、 `exit` を実行してtoolboxから出ることができます。
+
+[source,role="execute"]
+----
+exit
+----
+
+どのPVがどのCeph RBDに対応するかの同定を行ってみましょう。 +
+次のコマンドを実行してPVの `Volume Handle` を確認します。
+
+[source,role="execute"]
+----
+oc get pv -o 'custom-columns=NAME:.spec.claimRef.name,PVNAME:.metadata.name,STORAGECLASS:.spec.storageClassName,VOLUMEHANDLE:.spec.csi.volumeHandle'
+----
+.出力例:
+----
+NAME                      PVNAME                                     STORAGECLASS                  VOLUMEHANDLE
+ocs-deviceset-0-0-d2ppm   pvc-2c08bd9c-332d-11ea-a32f-061f7a67362c   gp2                           <none>
+ocs-deviceset-1-0-9tmc6   pvc-2c0a0ed5-332d-11ea-a32f-061f7a67362c   gp2                           <none>
+ocs-deviceset-2-0-qtbfv   pvc-2c0babb3-332d-11ea-a32f-061f7a67362c   gp2                           <none>
+db-noobaa-core-0          pvc-4610a3ce-332d-11ea-a32f-061f7a67362c   ocs-storagecluster-ceph-rbd   0001-0011-openshift-storage-0000000000000001-4a74e248-332d-11ea-9a7c-0a580a820205
+postgresql                pvc-874f93cb-3330-11ea-90b1-0a10d22e734a   ocs-storagecluster-ceph-rbd   0001-0011-openshift-storage-0000000000000001-8765a21d-3330-11ea-9a7c-0a580a820205
+rook-ceph-mon-a           pvc-d462ecb0-332c-11ea-a32f-061f7a67362c   gp2                           <none>
+rook-ceph-mon-b           pvc-d79d0db4-332c-11ea-a32f-061f7a67362c   gp2                           <none>
+rook-ceph-mon-c           pvc-da9cc0e3-332c-11ea-a32f-061f7a67362c   gp2                           <none>
+----
+
+`VOLUMEHANDLE` カラムの後半部分は、Ceph RBDの名前と一致していることがわかります。この前に `csi-vol-` をつけることで完全なRBDを取得することができます。 +
+
+[source,role="execute"]
+----
+CSIVOL=$(oc get pv $(oc get pv | grep my-database-app | awk '{ print $1 }') -o jsonpath='{.spec.csi.volumeHandle}' | cut -d '-' -f 6- | awk '{print "csi-vol-"$1}')
+echo $CSIVOL
+----
+
+例えば、toolboxと組み合わせてCeph RBDボリュームの詳細を確認できます。
+
+[source,role="execute"]
+----
+TOOLS_POD=$(oc get pods -n openshift-storage -l app=rook-ceph-tools -o name)
+oc rsh -n openshift-storage $TOOLS_POD rbd -p ocs-storagecluster-cephblockpool info $CSIVOL
+----
+
+.出力例:
+----
+rbd image 'csi-vol-8765a21d-3330-11ea-9a7c-0a580a820205':
+        size 5 GiB in 1280 objects
+        order 22 (4 MiB objects)
+        snapshot_count: 0
+        id: 17e811c7f287
+        block_name_prefix: rbd_data.17e811c7f287
+        format: 2
+        features: layering
+        op_features:
+        flags:
+        create_timestamp: Thu Jan  9 22:36:51 2020
+        access_timestamp: Thu Jan  9 22:36:51 2020
+        modify_timestamp: Thu Jan  9 22:36:51 2020
+----
+
+---
+以上で、「Lab3: OCSが提供するRWO PVを使用する」は完了です。 +
+次は link:ocs4-4[Lab4: CephFSボリュームを使ってRWX PVを使用する] に進みます。
