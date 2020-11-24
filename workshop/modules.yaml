@@ -28,7 +28,9 @@ modules:
   option-placeholder:
     name: --- オプション演習 ---
   installation:
+    name:
   app-mgmt-basics:
+    name:
 config:
     template_engine: liquid.js  
     vars:
