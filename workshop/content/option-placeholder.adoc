@@ -1,7 +1,6 @@
 以下のラボはオプションのLabです。 +
 演習1, 演習2の両方が終わった方や、より詳しくなOpenShiftに関する概念を学習したい方は、以下のLabで学ぶことができるでしょう。
 
-link:ocs4-1[OpenShift Container Storageをデプロイするためのnodeを準備する] +
 link:installation[OpenShiftクラスタのインストールの検証] +
 link:app-mgmt-basics[アプリケーション管理の基礎] +
 link:app-storage-basics[アプリケーションストレージの基礎] +
