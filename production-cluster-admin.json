@@ -85,12 +85,12 @@
         {
             "name": "CONSOLE_IMAGE",
             "value": "quay.io/openshift/origin-console:4.5",
-            "required": true
+            "required": false
         },
         {
             "name": "CONSOLE_BRANDING",
             "value": "openshift",
-            "required": true
+            "required": false
         }
     ],
     "objects": [
