@@ -27,6 +27,8 @@ modules:
     name: 　Lab4. CephFSボリュームを使ってRWX PVを使用する
   option-placeholder:
     name: --- オプション演習 ---
+  installation:
+  app-mgmt-basics:
 config:
     template_engine: liquid.js  
     vars:

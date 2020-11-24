@@ -5,7 +5,7 @@ link:installation[OpenShiftクラスタのインストールの検証] +
 link:app-mgmt-basics[アプリケーション管理の基礎] +
 link:app-storage-basics[アプリケーションストレージの基礎] +
 link:machinesets[MachineSets, Machines, and Nodes] +
-link:infra-nodes[OpenShift インフラストラクチャノー +ド]
+link:infra-nodes[OpenShift インフラストラクチャノード] +
 link:logging[OpenShift ログ集約] +
 link:ldap-groupsync[外部認証プロバイダ(LDAP)の設定] +
 link:monitoring-basics[OpenShift Monitoring] +
