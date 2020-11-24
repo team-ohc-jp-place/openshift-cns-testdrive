@@ -12,6 +12,6 @@ link:monitoring-basics[OpenShift Monitoring] +
 link:template-quota-limits[プロジェクト・リクエスト・テンプレートとクォータ/制限] +
 link:networking[OpenShift の Network Policy ベースの SDN] +
 link:disabling-project-self-provisioning[Projectのセルフプロビジョニングの無効化] +
-link:clusterresourcequota[Projectのセルフプロビジョニングの無効化] +
+link:clusterresourcequota[クラスタリソースのクォータ] +
 link:cluster-metering[クラスタのメータリング] +
 link:taints-and-tolerations[Taint と Toleration]
