@@ -355,7 +355,7 @@ Now using project "lab1-2" on server "https://api.group00-ocp4ws-basic.capsmalt.
 [TIPS]
 ====
 NOTE: `$ oc project` でプロジェクト（ネームスペース）を指定しておくことで、``-n lab1-2`` のようにコマンド実行時に毎度ネームスペース指定をする必要が無くなるため幾分便利になります。 +
-※ただし、本ハンズオンの実行例においては、``$ oc project +++<プロジェクト名>+++` の実行有無に関係無く `-n` オプションを付与しています。+++</プロジェクト名>+++
+※ただし、本ハンズオンの実行例においては、``$ oc project +++<プロジェクト名>+++` の実行有無に関係無く `-n` オプションを付与しています。
 ====
 +
 . 自身のプロジェクト内のワークロードを確認します。
@@ -365,7 +365,8 @@ NOTE: `$ oc project` でプロジェクト（ネームスペース）を指定�
 CAUTION: コマンド実行時は、`-n <各自のプロジェクト名>` に読み替えてください。
 ====
 +
-[source,bash,role="copypasete"]
+
+[source,bash,role="copypaste"]
 ----
 oc get po -n <Replace-with-you-project>
 ----
