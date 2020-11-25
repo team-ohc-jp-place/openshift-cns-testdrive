@@ -218,4 +218,5 @@ image::images/ocs/uploader_screen_upload.png[]
 ---
 以上で、「Lab4: CephFSボリュームを使ってRWX PVを使用する」は完了です。
 
-時間があまった方は、link:ocs4-5[オプションLab]で、
+時間があまった方は、link:ocs4-5[オプションLab]を用意していますので、こちらも試してみて下さい。 +
+オプションLabでは、オブジェクトストレージの利用やOCSクラスターの拡張など、advancedな内容を学習することができます。
