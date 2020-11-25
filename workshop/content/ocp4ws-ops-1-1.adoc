@@ -57,7 +57,7 @@ oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }} {{ API_URL }}
 
 === 2-2. OpenShift4 Webコンソールへのログイン
 
-右画面のConsoleタブをクリックするか、次のリンクをクリックしてブラウザ(Chrome or Firefox)でOpenShift4 Webコンソールにログインします。
+次のリンクをクリックしてブラウザ(Chrome or Firefox)でOpenShift4 Webコンソールにログインします。
 
 {{ MASTER_URL }}
 
@@ -84,7 +84,7 @@ image::images/ocp4ws-ops/ocp4-console-create-project-1.png[]
 +
 image::images/ocp4ws-ops/ocp4-console-create-project-1-2.png[]
 +
-. プロジェクト名(例: `lab1-2` )を指定し、*Create* を選択します。
+. 好きなプロジェクト名(例: `lab1-2` )を指定し、*Create* を選択します。
 +
 image::images/ocp4ws-ops/ocp4-console-create-project-2.png[]
 +
