@@ -8,7 +8,7 @@
 RWX PVは、複数のworker nodeで稼働する複数のアプリケーションPodが共有してRead-Writeすることができます。イメージとしてはNAS(Network Attached Storage)やファイルサーバーといったファイルストレージのようなもので、ストレージ側でファイルロックなどの排他制御が行われます。 +
 実際、OpenShiftあるいはKubernetesでRWX PVを提供できるストレージのほとんどはファイルストレージです。一度調べてみるとよいでしょう。
 
-=== この演習で学習する内容
+=== このLabで学習する内容
 
 * CephFSが提供するRWX PVを作成し、アプリケーションから使用する
 
@@ -217,3 +217,5 @@ image::images/ocs/uploader_screen_upload.png[]
 
 ---
 以上で、「Lab4: CephFSボリュームを使ってRWX PVを使用する」は完了です。
+
+時間があまった方は、link:ocs4-5[オプションLab]で、
