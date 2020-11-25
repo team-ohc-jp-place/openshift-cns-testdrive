@@ -31,6 +31,30 @@ modules:
     name:
   app-mgmt-basics:
     name:
+  app-storage-basics:
+    name:
+  machinesets:
+    name:
+  infra-nodes:
+    name:
+  logging:
+    name:
+  ldap-groupsync:
+    name:
+  monitoring-basics:
+    name:
+  template-quota-limits:
+    name:
+  cluster-metering:
+    name:
+  networking:
+    name:
+  disabling-project-self-provisioning:
+    name:
+  clusterresourcequota:
+    name:
+  taints-and-tolerations:
+    name:
 config:
     template_engine: liquid.js  
     vars:
