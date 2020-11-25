@@ -18,6 +18,12 @@ IPI(Installer Provisioned Infrastructure)方式でインストールしたOpenSh
 
 [[labexercises]]
 
+== 1-0. Bastionサーバーからログアウトする
+
+**もしBastionサーバーにログインしている場合は、ログアウトして下さい。** +
+Bastionサーバー上では以下の作業ができないものがあります。
+
+
 == 1-1. OCPクラスターでMachine Setを作成してworker nodeを追加する
 
 このセクションでは、OCS用に3つの *Machine Set* を追加します。 +
