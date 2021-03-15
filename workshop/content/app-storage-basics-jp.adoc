@@ -1,0 +1,299 @@
+=  アプリケーションストレージの基礎
+:experimental:
+
+<<<<<<< HEAD
+== 演習の概要
+OpenShiftの *Pod* がデータベースをホストするなど、信頼性の高いストレージを必要とする場合があります。 +
+こういった場合は、*Pod* に *永続的な(Persistent) Volume* を供給する必要があります。なぜならば *Pod*(コンテナ) 内部に保存されるデータは、*Pod* が消えると失われてしまうためです。 +
+*Persistent Volume* は一般的には、外部ストレージシステムから供給され、*Pod* が消えても存続するストレージです。したがってストレージ内に保存したデータは失われることはありません。
+
+この演習では、この *Persistent Volume* について学びます。
+
+---
+
+=== Persistent Volume Claims
+[WARNING]
+=======
+[Warning]
+>>>>>>> upstream/ocp4-dev
+====
+これらの演習を行うには、「アプリケーション管理の基礎」の演習で紹介されているアプリケーションがすでにデプロイされている必要があります。
+====
+
+`mapit` アプリケーションは現在、永続的なストレージを利用していません。*Pod* が消えると、コンテナ内のすべてのコンテンツも消えてしまいます。 +
+この概念については後で詳しく説明します。
+
+コンテナ内の `/app-storage` ディレクトリに使う _永続ストレージ(Persistent Storage)_ を必要とする `mapit` アプリケーションを想像してみましょう。
+
+[Note]
+====
+コンテナの内部ファイルシステムを構成するディレクトリは、コンテナイメージのread-onlyレイヤーと、イメージからコンテナインスタンスが起動されるとすぐに追加されるwritableな最上位レイヤーを重ね合わせたものです。 +
+writableなレイヤーは、コンテナが削除されると破棄されます。これは動的なコンテナオーケストレーション環境では普通に起きることです。
+====
+
+<<<<<<< HEAD
+OpenShiftに外部の永続ストレージを表す `PersistentVolume` オブジェクトを作成し、それをコンテナのファイルシステム内に *Mount* するよう指示する方法を以下に示します。
+=======
+You should be in the `app-management` project from the previous lab. To
+make sure, run the following command:
+
+[source,bash,role="execute"]
+----
+oc project app-management
+----
+
+### Adding Persistent Volume Claims
+Here's how you would instruct OpenShift to create a `PersistentVolume`
+object, which represents external, persistent storage, and have it *mounted*
+inside the container's filesystem:
+>>>>>>> upstream/ocp4-dev
+
+[source,bash,role="execute"]
+----
+oc set volume deploy/mapit --add --name=mapit-storage -t pvc --claim-mode=ReadWriteOnce --claim-size=1Gi --claim-name=mapit-storage --mount-path=/app-storage
+----
+
+出力は次のようになります。
+
+----
+deployment.apps/mapit volume updated
+----
+
+<<<<<<< HEAD
+最初のステップでは、*PersistentVolumeClaim* が作成されました。このオブジェクトは、ユーザーからOpenShiftへの一定の容量を持つ特定の種類のストレージのリクエストを表しています。
+次に、`mapit` の *DeploymentConfig* を更新して、このストレージを参照し、*Pod* 内の `/app-storage` ディレクトリで利用できるようにしています。
+
+このように新しい *DeploymentConfig* が表示されます。
+=======
+In the first step a *PersistentVolumeClaim* was created. This object
+represents a request for storage of a certain kind, with a certain capacity
+from the user to OpenShift.
+
+Next the `Deployment` of `mapit` is updated to reference this storage
+and make it available under the `/app-storage` directory inside the pod.
+
+You can see the new `Deployment` like this:
+>>>>>>> upstream/ocp4-dev
+
+[source,bash,role="execute"]
+----
+oc get deploy mapit
+----
+
+<<<<<<< HEAD
+出力を見ると、ストレージの更新によって新しいリビジョンが作成されたことがわかります。
+=======
+The output will show that a new deployment was created by inspecting the `AGE` column.
+>>>>>>> upstream/ocp4-dev
+
+----
+NAME    READY   UP-TO-DATE   AVAILABLE   AGE
+mapit   1/1     1            1           14m
+----
+
+<<<<<<< HEAD
+タイミングによっては、新しい *Pod* が生成されていることがわかるかもしれません。
+=======
+Likely, depending when you ran the command, you may or may not see that the new pod is still being spawned:
+>>>>>>> upstream/ocp4-dev
+
+[source,bash,role="execute"]
+----
+oc get pod
+----
+
+----
+NAME             READY     STATUS              RESTARTS   AGE
+mapit-3-ntd9w    1/1       Running             0          9m
+mapit-4-d872b    0/1       ContainerCreating   0          5s
+mapit-4-deploy   1/1       Running             0          10s
+----
+
+<<<<<<< HEAD
+*DeploymentConfig* を見てみましょう。
+=======
+Take a look at the `Deployment` now:
+>>>>>>> upstream/ocp4-dev
+
+[source,bash,role="execute"]
+----
+oc describe deploy mapit
+----
+
+新しいストレージについて、`Mounts` と `Volumes` の両方の詳細が表示されているのがわかります。
+
+----
+...
+    Mounts:
+      /app-storage from mapit-storage (rw)
+  Volumes:
+   mapit-storage:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  mapit-storage
+    ReadOnly:   false
+...
+----
+
+しかし、この裏では何が起こっているのでしょうか?
+
+### Storage Classes
+OpenShift 4を最初にインストールしたときに、AWS EBS用のダイナミックストレージプロバイダが設定されていました。この *StorageClass* を見てみましょう。
+
+[source,bash,role="execute"]
+----
+oc get storageclass
+----
+
+以下のように表示されます。
+
+----
+NAME            PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+gp2 (default)   kubernetes.io/aws-ebs   Delete          WaitForFirstConsumer   true                   47m
+gp2-csi         ebs.csi.aws.com         Delete          WaitForFirstConsumer   true                   47m
+----
+
+*StorageClass* を指定していない *PersistentVolumeClaim* では、デフォルトの *StorageClass* が使用されます。この場合では、デフォルトはEBS Provisionerで、リクエストされたサイズ(この例では1Gi)のEBS GP2 Volumeを作成します。
+
+[Note]
+====
+You'll note that there is also a `gp2-csi`. This implements the
+https://github.com/container-storage-interface/spec[CSI interface],
+which stands for "Container Storage Interface". This specification enables
+storage vendors to develop their plugins once, and have it work across
+various container orchestration systems.
+====
+
+### Persistent Volume (Claims)
+先ほど実行した `oc set volume` コマンドは、`claim` を参照しています。 +
+Kubernetes環境のストレージは、Volume Claim と Volume のシステムを使用します。ユーザが *PersistentVolumeClaim* を作成し、Kubernetesはそれにマッチする *PersistentVolume* を見つけようとします。 +
+*PersistentVolume* が存在しない場合は、要求を満たすことができるDynamic Provisionerがあれば、*PersistentVolume* が動的に作成されます。
+
+以下を実行します。
+
+[source,bash,role="execute"]
+----
+oc get persistentvolume
+----
+
+以下のように表示されます。
+
+----
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                          STORAGECLASS   REASON   AGE
+pvc-4397c6be-9f53-490e-960d-c1b77de6000c   1Gi        RWO            Delete           Bound    app-management/mapit-storage   gp2                     12m
+----
+
+これは、先ほどのClaimの結果として作成された *Persistent Volume* です。この `app-management` *Project* に存在するClaimにBindされている(*Bound*)ことに注意してください。
+
+[source,bash,role="execute"]
+----
+oc get persistentvolumeclaim -n app-management
+----
+
+以下のように表示されます。
+
+----
+NAME            STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+mapit-storage   Bound    pvc-4397c6be-9f53-490e-960d-c1b77de6000c   1Gi        RWO            gp2            14m
+----
+
+### 永続ストレージのテスト
+
+<<<<<<< HEAD
+`oc get pods` を使って *Pod* の名前を取得してから、`oc` クライアントのリモートシェル機能で *Pod* にログインします。
+=======
+Log on to the pod using the remote-shell capability of the `oc` client:
+>>>>>>> upstream/ocp4-dev
+
+[source,bash,role="execute"]
+----
+oc rsh $(oc get pods -l deployment=mapit -o name)
+----
+
+*コンテナのシェルセッションにいる状態で*、コンテナの名前空間でルートディレクトリの内容をリストアップします。
+
+[source,bash,role="execute"]
+----
+ls -ahl /
+----
+
+`/app-storage` という名前のディレクトリがあります。
+
+----
+total 20K
+drwxr-xr-x.   1 root  root         81 Apr 12 19:11 .
+drwxr-xr-x.   1 root  root         81 Apr 12 19:11 ..
+-rw-r--r--.   1 root  root        16K Dec 14  2016 anaconda-post.log
+drwxrwsr-x.   3 root  1000570000 4.0K Apr 12 19:10 app-storage <1>
+lrwxrwxrwx.   1 root  root          7 Dec 14  2016 bin -> usr/bin
+drwxrwxrwx.   1 jboss root         45 Aug  4  2017 deployments
+drwxr-xr-x.   5 root  root        360 Apr 12 19:11 dev
+drwxr-xr-x.   1 root  root         93 Jan 18  2017 etc
+drwxr-xr-x.   2 root  root          6 Nov  5  2016 home
+lrwxrwxrwx.   1 root  root          7 Dec 14  2016 lib -> usr/lib
+lrwxrwxrwx.   1 root  root          9 Dec 14  2016 lib64 -> usr/lib64
+drwx------.   2 root  root          6 Dec 14  2016 lost+found
+drwxr-xr-x.   2 root  root          6 Nov  5  2016 media
+drwxr-xr-x.   2 root  root          6 Nov  5  2016 mnt
+drwxr-xr-x.   1 root  root         19 Jan 18  2017 opt
+dr-xr-xr-x. 183 root  root          0 Apr 12 19:11 proc
+dr-xr-x---.   2 root  root        114 Dec 14  2016 root
+drwxr-xr-x.   1 root  root         21 Apr 12 19:11 run
+lrwxrwxrwx.   1 root  root          8 Dec 14  2016 sbin -> usr/sbin
+drwxr-xr-x.   2 root  root          6 Nov  5  2016 srv
+dr-xr-xr-x.  13 root  root          0 Apr 10 14:34 sys
+drwxrwxrwt.   1 root  root         92 Apr 12 19:11 tmp
+drwxr-xr-x.   1 root  root         69 Dec 16  2016 usr
+drwxr-xr-x.   1 root  root         41 Dec 14  2016 var
+----
+<1> これはコンテナ内の永続ストレージが表示される場所です。
+
+Amazon EBSのVolumeはRead-Write-Onceです。EBSはブロックストレージなので、一度に1つのEC2インスタンスにしかアタッチできません。これは一度に1つのコンテナでしかEBSベースの *PersistentVolume* を使用できないということを意味します。(この性質をRead-Write-Onceと呼びます)
+
+リモートシェルセッション内で以下を実行します。
+
+[source,bash,role="execute"]
+----
+echo "Hello World from OpenShift" > /app-storage/hello.txt
+exit
+----
+
+次に、ファイルが存在することを確認します。
+
+[source,bash,role="execute"]
+----
+oc rsh $(oc get pods -l deployment=mapit -o name) cat /app-storage/hello.txt
+----
+
+ここで、永続ストレージが本当に動作するか確認するためにPodを削除してみます。
+
+[source,bash,role="execute"]
+----
+oc delete pods -l deployment=mapit && oc get pod
+----
+
+<<<<<<< HEAD
+しばらくすると、新しい *Pod* が準備され、実行できるようになります。その名前を探して、もう一度ファイルを確認してください。
+=======
+After some time, your new pod will be ready and running. Once it's
+running, check the file:
+>>>>>>> upstream/ocp4-dev
+
+[source,bash,role="execute"]
+----
+oc rsh $(oc get pods -l deployment=mapit -o name) cat /app-storage/hello.txt
+----
+
+ファイルがあることが確認できるでしょう。*Pod* が消えてもストレージとそのデータは保存されていることが分かります。 +
+新しい *Pod* は古い *Pod* と同じノードで実行されていない可能性もありますが、問題なく *Persistent Volume* は使えています。 +
+これはユーザーが意識しない形で、KubernetesとOpenShiftが自動的に外部ストレージを適切なタイミングで適切な場所にアタッチしたことを意味します。
+
+<<<<<<< HEAD
+また、Read-Write-Manyなストレージが必要な場合は、ファイルベースのストレージソリューションが利用できます。 +
+OpenShift Container Storageは、OpenShiftの内部で動作するハイパーコンバージドなストレージソリューションです。ローカルに接続されたストレージデバイスをストレージプールにして、そこからVolumeを作成することで、ファイル、ブロック、さらにはオブジェクトストレージを提供することができます。
+=======
+If you needed read-write-many storage, file-based storage solutions can
+provide it. OpenShift Container Storage is a hyperconverged storage solution
+that can run inside OpenShift and provide file, block and even object storage
+by turning locally attached storage devices into storage pools and then
+creating volumes out of them.
+>>>>>>> upstream/ocp4-dev

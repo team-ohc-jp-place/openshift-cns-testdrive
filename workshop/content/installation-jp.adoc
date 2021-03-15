@@ -1,0 +1,338 @@
+= OpenShiftクラスタのインストールの検証
+// Activate experimental attribute for Keyboard Shortcut keys
+:experimental:
+
+== 演習の概要
+OpenShift 4のInstaller-provisioned infrastructure (IPI) インストールでは、意図的に設定する範囲を狭くしています。これは、シンプルさと確実な成功を目指して設計されているためです。これまでインストーラで処理されていた項目や構成の多くは、control planeと基本的なワーカーのインストールが完了した直後に実行される、「Day 2」の操作となることでしょう。インストーラは、特定のプラットフォーム上でクラスタをプロビジョニングするためのガイドを提供します。
+
+このIPIインストールはすでに実行されており、クラスタはデフォルト状態になっています。
+
+---
+
+### ログイン
+クラスタのインストール状況を確認するには、以下のようにインストールされている踏み台ホストにSSHで接続します。
+
+[source,bash,role="execute"]
+----
+ssh -l {{ SSH_USERNAME }} {{ BASTION_FQDN }} -o ServerAliveInterval=120
+----
+
+あなたの ssh パスワードはこれです。
+
+[source,bash,role="copypaste"]
+----
+{{ SSH_PASSWORD }}
+----
+
+<<<<<<< HEAD
+ホスト名に4桁の英数字文字列(例:f4a3)があることに気づくでしょう。この文字列が `GUID` です。`GUID` はよく使うものなので、環境変数としてエクスポートしておくのがよいです。
+=======
+Once you've SSH-ed into the bastion host, become the `ec2-user`:
+
+[source,bash,role="execute"]
+----
+sudo su - ec2-user
+----
+
+You'll notice that there is a 4-digit alphanumeric string (eg: f4a3) in the hostname. This
+string is your `GUID`. Since you will often use `GUID`, it makes sense to
+export it as an environment variable:
+>>>>>>> upstream/ocp4-dev
+
+[source,bash,role="execute"]
+----
+export GUID=`hostname | cut -d. -f2`
+----
+
+### マスターのコンポーネント
+.OpenShift Master's 4 main responsibilities.
+image::images/openshift_master_4_responsibilities.png[]
+
+
+#### API/認証
+Kubernetes APIサーバーは、Kubernetesクラスタを構成するリソースを検証し、設定します。
+
+Kubernetes APIサーバーとインタラクションするための一般的なものは以下の通りです。
+
+* OpenShift Webコンソール
+* OpenShift `oc` コマンドラインツール
+* OpenShift ノード
+* Kubernetes コントローラ
+
+APIサーバーとのすべてのやり取りは、TLS を使用して安全に保護されています。さらに、すべてのAPIコールは認証されていて(ユーザがユーザ自身と確認できる)、認可されている(ユーザがリクエストしたAPIコールの権限を持っている)必要があります。
+
+#### データストア
+OpenShift Data Store (etcd) はマスターの状態を永続的に保存し、他のコンポーネントが希望する状態にする変更をetcdで監視します。etcdはオプションで高可用性を構成することができ、通常は2n+1でデプロイされます。
+
+[Note]
+====
+etcdはクラスタの状態を保存します。ユーザアプリケーションのデータを保存するためには使用されません。
+====
+
+#### スケジューラ
+Podスケジューラは、クラスタ内のノードへの新しいPodの配置を決定します。
+
+スケジューラは非常に柔軟で、クラスタの物理的なトポロジー(ラック、データセンターなど)を考慮に入れることができます。
+
+#### ヘルスチェック/スケーリング
+各PodはLiveness ProbeとReadiness Probeの両方を登録することができます。
+
+Liveness ProbeはPodが健康かどうかをシステムに知らせます。Podが正常でない場合は、自動的に再起動することができます。
+
+Readiness ProbeはPodがトラフィックを受ける準備ができているかどうかをシステムに知らせます。これは例えば、クラスタがPodをロードバランサに入れるタイミングを知るために使用できます。
+
+<<<<<<< HEAD
+OpenShift Masterの責任範囲の詳細については、製品ドキュメントのlink:https://docs.openshift.com/container-platform/3.11/architecture/infrastructure_components/kubernetes_infrastructure.html[infrastructure components section] を参照してください。
+=======
+For more information on the OpenShift Master's areas of responsibility, please refer to
+the
+link:https://docs.openshift.com/container-platform/4.6/architecture/control-plane.html[infrastructure components section] of the product documentation.
+>>>>>>> upstream/ocp4-dev
+
+### インストールで作られる成果物
+OpenShift 4は2つのスーパーユーザでインストールします。
+
+* `kubeadmin`(`kube:admin` のエイリアス)
+* `system:admin`
+
+なぜ2つなのか？それは、`system:admin` は証明書を使ってログインするユーザーであり、パスワードを持っていないからです。そのため、このスーパーユーザーでは(パスワードが必要な)Webコンソールにログインすることができません。
+
+追加のユーザがクラスタを認証して使えるようにしたい場合は、以前に説明したようにCustomResourcesとOperatorsを使用して必要な認証メカニズムを設定する必要があります。ラボの演習の1つとして、LDAPベースの認証を設定します。
+
+### インストールの検証
+基本的なテストをいくつか行ってみましょう。管理者として、OpenShiftとのやりとりのほとんどはコマンドラインから行います。`oc` プログラムはOpenShift APIと対話するコマンドラインインターフェースです。
+
+#### OpenShiftへのログイン
+インストールが完了すると、インストーラはクラスタ環境にアクセスするために必要な様々なURLとパスワードを含むいくつかの成果物を残しました。インストールプログラムは `ec2-user` アカウントで実行されています。
+
+[source,bash,role="execute"]
+----
+ls -al ~/cluster-$GUID
+----
+
+以下のように表示されます。
+
+----
+total 3008
+drwxrwxr-x.  4 ec2-user ec2-user     273 Nov 18 01:48 .
+drwx------. 13 ec2-user ec2-user    4096 Nov 18 02:55 ..
+drwxr-x---.  2 ec2-user ec2-user      50 Nov 18 01:15 auth
+-rw-rw----.  1 ec2-user ec2-user    4197 Nov 18 01:15 install-config.yaml.bak
+-rw-r-----.  1 ec2-user ec2-user     283 Nov 18 01:15 metadata.json
+-rw-rw-r--.  1 ec2-user ec2-user  149886 Nov 18 01:48 .openshift_install.log
+-rw-rw-r--.  1 ec2-user ec2-user   11746 Nov 18 01:48 .openshift_install.log.gz
+-rw-r-----.  1 ec2-user ec2-user 2403044 Nov 18 01:21 .openshift_install_state.json
+-rw-r-----.  1 ec2-user ec2-user    1576 Nov 18 01:15 terraform.aws.auto.tfvars.json
+-rw-r--r--.  1 ec2-user ec2-user  168006 Nov 18 01:30 terraform.tfstate
+-rw-r-----.  1 ec2-user ec2-user  318587 Nov 18 01:15 terraform.tfvars.json
+drwxr-x---.  2 ec2-user ec2-user      62 Nov 18 01:15 tls
+----
+
+OpenShift 4 IPIのインストールでは、クラウドプロバイダーのリソースの一部を作成するためにTerraformが埋め込まれています。その出力の一部をここで見ることができます。重要なファイルは `.openshift_install.log` です。最後の数行には、環境へのアクセス方法を把握するための出力が含まれています。
+
+[source,bash,role="execute"]
+----
+tail -n5 ~/cluster-$GUID/.openshift_install.log
+----
+
+以下のように表示されます。
+
+----
+time="2019-04-08T14:49:34Z" level=info msg="Install complete!"
+time="2019-04-08T14:49:34Z" level=info msg="Run 'export KUBECONFIG=/home/ec2-user/cluster-f4a3/auth/kubeconfig' to manage the cluster with 'oc', the OpenShift CLI."
+time="2019-04-08T14:49:34Z" level=info msg="The cluster is ready when 'oc login -u kubeadmin -p SxUr2-tQ2py-c6jq2-YtjW3' succeeds (wait a few minutes)."
+time="2019-04-08T14:49:34Z" level=info msg="Access the OpenShift web-console here: https://console-openshift-console.apps.cluster-f4a3.f4a3.openshiftworkshop.com"
+time="2019-04-08T14:49:34Z" level=info msg="Login to the console with user: kubeadmin, password: SxUr2-tQ2py-c6jq2-YtjW3"
+----
+
+インストールは別のシステムユーザで実行され、成果物のフォルダはあなたの `lab-user` フォルダに読み取り専用でマウントされています。`export` コマンドを与えてくれましたが、表示されているパスへの書き込み権限がありません。`oc` コマンドは `KUBECONFIG` ファイルに書き込もうとしますが、それはできません。
+
+インストールプロセスでは、必要な設定を `~/.kube/config` にコピーしているので、すでにログインしています。以下のようにしてみてください。
+
+[source,bash,role="execute"]
+----
+oc whoami
+----
+
+`oc` ツールが既にパスに入っていて、実行可能な状態になっているはずです。
+
+#### クラスタのバージョンを調べる
+まず、以下を実行してOpenShiftクラスタの現在のバージョンを確認します。
+
+[source,bash,role="execute"]
+----
+oc get clusterversion
+----
+
+以下のような出力が表示されます。
+
+----
+NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
+<<<<<<< HEAD
+version   4.3.1     True        False         15m     Cluster version is 4.3.1
+----
+=======
+version   4.6.3     True        False         71m     Cluster version is 4.6.3
+```
+>>>>>>> upstream/ocp4-dev
+
+詳細については、以下のコマンドを実行します。
+
+[source,bash,role="execute"]
+----
+oc describe clusterversion
+----
+
+これを実行すると、利用可能なアップデートなどの追加の詳細が表示されます。
+
+----
+Name:         version
+Namespace:
+Labels:       <none>
+Annotations:  <none>
+API Version:  config.openshift.io/v1
+Kind:         ClusterVersion
+Metadata:
+  Creation Timestamp:  2020-11-10T15:59:59Z
+  Generation:          1
+  Managed Fields:
+    API Version:  config.openshift.io/v1
+    Fields Type:  FieldsV1
+    fieldsV1:
+      f:spec:
+        .:
+        f:channel:
+        f:clusterID:
+        f:upstream:
+    Manager:      cluster-bootstrap
+    Operation:    Update
+    Time:         2020-11-10T15:59:59Z
+    API Version:  config.openshift.io/v1
+    Fields Type:  FieldsV1
+    fieldsV1:
+      f:status:
+        .:
+        f:availableUpdates:
+        f:conditions:
+        f:desired:
+          .:
+          f:channels:
+          f:image:
+          f:url:
+          f:version:
+        f:history:
+        f:observedGeneration:
+        f:versionHash:
+    Manager:         cluster-version-operator
+    Operation:       Update
+    Time:            2020-11-10T16:30:21Z
+  Resource Version:  26775
+  Self Link:         /apis/config.openshift.io/v1/clusterversions/version
+  UID:               aeecffc3-c364-425a-a324-01d32f019630
+Spec:
+  Channel:     stable-4.6
+  Cluster ID:  e4ab25a7-7729-4b81-8770-274a531ea0d3
+  Upstream:    https://api.openshift.com/api/upgrades_info/v1/graph
+Status:
+  Available Updates:  <nil>
+  Conditions:
+    Last Transition Time:  2020-11-10T16:30:21Z
+    Message:               Done applying 4.6.1
+    Status:                True
+    Type:                  Available
+    Last Transition Time:  2020-11-10T16:30:21Z
+    Status:                False
+    Type:                  Failing
+    Last Transition Time:  2020-11-10T16:30:21Z
+    Message:               Cluster version is 4.6.1
+    Status:                False
+    Type:                  Progressing
+    Last Transition Time:  2020-11-10T15:59:59Z
+    Status:                True
+    Type:                  RetrievedUpdates
+  Desired:
+    Channels:
+      candidate-4.6
+      fast-4.6
+      stable-4.6
+    Image:    quay.io/openshift-release-dev/ocp-release@sha256:d78292e9730dd387ff6198197c8b0598da340b
+e7678e8e1e4810b557a926c2b9
+    URL:      https://access.redhat.com/errata/RHBA-2020:4196
+    Version:  4.6.1
+  History:
+    Completion Time:    2020-11-10T16:30:21Z
+    Image:              quay.io/openshift-release-dev/ocp-release@sha256:d78292e9730dd387ff6198197c8b
+0598da340be7678e8e1e4810b557a926c2b9
+    Started Time:       2020-11-10T15:59:59Z
+    State:              Completed
+    Verified:           false
+    Version:            4.6.1
+  Observed Generation:  1
+  Version Hash:         l4WEdVTgp58=
+Events:                 <none>
+----
+
+#### ノードを調べる
+以下のコマンドを実行すると、OpenShiftが知っている *Nodes* の一覧が表示されます。
+
+[source,bash,role="execute"]
+----
+oc get nodes
+----
+
+出力は以下のようになります。
+
+----
+NAME                                         STATUS   ROLES    AGE     VERSION
+ip-10-0-128-29.us-west-2.compute.internal    Ready    worker   4h16m   v1.19.0+d59ce34
+ip-10-0-154-253.us-west-2.compute.internal   Ready    master   4h26m   v1.19.0+d59ce34
+ip-10-0-162-126.us-west-2.compute.internal   Ready    worker   4h17m   v1.19.0+d59ce34
+ip-10-0-164-110.us-west-2.compute.internal   Ready    master   4h26m   v1.19.0+d59ce34
+ip-10-0-197-0.us-west-2.compute.internal     Ready    worker   4h17m   v1.19.0+d59ce34
+ip-10-0-203-93.us-west-2.compute.internal    Ready    master   4h26m   v1.19.0+d59ce34
+----
+
+3つのmasterと3つのworkerがあります。OpenShift *Master* はSDN（Software Defined Network）に参加する必要があるため、*Node* でもあります。追加の目的でノードが必要な場合は、IPIでクラウドプロバイダーのOperatorを活用すると、非常に簡単にノードを作成できます。OpenShiftのインフラコンポーネント(レジストリ、ルーターなど)を実行するためのノードを作成するのは、後の演習で行います。
+
+<<<<<<< HEAD
+#### Webコンソールを確認する
+OpenShiftでは、ユーザ、開発者、アプリケーション運用者、管理者が環境とインタラクションするためのWebコンソールを提供しています。クラスタ自体のアップグレードを含むクラスタ管理機能の多くは、Webコンソールを使用するだけで実行できます。
+=======
+Exit out of the `ec2-user` user shell.
+[source,role="execute"]
+----
+exit
+----
+
+#### Check the Web Console
+OpenShift provides a web console for users, developers, application
+operators, and administrators to interact with the environment. Many of the
+cluster administration functions, including upgrading the cluster itself, can
+be performed simply by using the web console.
+>>>>>>> upstream/ocp4-dev
+
+Webコンソールは実際にはOpenShift環境内でアプリケーションとして実行され、OpenShift Routerを介して公開されます。ルーターについては、この後の演習で詳しく説明します。今は、リンクをkbd:[Ctrl]+クリックするだけでOKです。
+
+{{ MASTER_URL }}
+
+#### sshのセッションを終了
+[source,role="execute"]
+----
+exit
+----
+誤って exit を何度も押してしまい、コンソールへの接続が閉じてしまった場合は、ウェブページを更新して再接続してください。
+
+[Warning]
+====
+<<<<<<< HEAD
+最初にWebコンソールにアクセスすると、ブラウザに自己署名証明書エラーが表示されます。OpenShiftをインストールすると、デフォルトでは、Webコンソールを含むOpenShift内のすべてのコンポーネント間通信に対してCA証明書とSSL証明書が生成されます。
+====
+=======
+You might receive a self-signed certificate error in your browser when you
+first visit the web console. When OpenShift is installed, by default, a CA
+and SSL certificates are generated for all inter-component communication
+within OpenShift, including the web console. Some lab instances were
+installed with Let's Encrypt certificates, so not all will get this
+warning.
+====
+>>>>>>> upstream/ocp4-dev
