@@ -12,7 +12,7 @@ Serviceの可視化設定をするときは、以下の手順で設定を行い�
 
 . **Custome Resource(CR)**の"Prometheus"を設定する
 . PrometheusのGUIを確認する
-. プロジェクト間通信を許可する
+. Project間通信を許可する
 . **Custome Resource(CR)**の"Service Monitor"を設定する
 
 === 1-5-1-2. 事前準備
@@ -208,7 +208,7 @@ image::images/ocp4ws-ops/prometheus-route.png[]
 
 image::images/ocp4ws-ops/non-target-prometheus.jpg[NoTargets]
 
-=== 1-5-2-3. プロジェクト間通信を許可
+=== 1-5-2-3. Project間通信を許可
 
 Prometheus Operatorを配置した"jmx-monitor"Projectと監視対象のアプリケーションを配置した"jmx"Projectの間で通信ができるよう、ネットワークポリシーを設定します。
 

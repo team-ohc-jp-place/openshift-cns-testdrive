@@ -19,7 +19,7 @@ RWX PVは、複数のworker nodeで稼働する複数のアプリケーション
 このセクションでは、`ocs-storagecluster-cephfs` *StorageClass* を使用して、同時に複数のポッドで使用できるRWX（ReadWriteMany）PVCを作成します。 +
 ここでは `File Uploader` と呼ばれるアプリケーションを使用します。
 
-はじめに新しいプロジェクトを作成します
+はじめに新しいProjectを作成します
 
 [source,role="execute"]
 ----

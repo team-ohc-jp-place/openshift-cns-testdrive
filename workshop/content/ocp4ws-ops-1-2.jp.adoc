@@ -2,7 +2,7 @@
 
 アプリケーションをOpenShift4クラスターで動作させます。Developer Catalogのテンプレートを使用してアプリケーションをデプロイします。
 
-* A) 新規プロジェクトの作成 (1-2-3-1)
+* A) 新規Projectの作成 (1-2-3-1)
 * B) カタログからデプロイ (1-2-3-2)
 * C) アプリのPod動作の確認 (1-2-3-3)
 * D) Routeの作成 (1-2-3-4)
@@ -51,11 +51,11 @@ S2I(Source-to-Image)というツールを使って以下の2つのコンポー�
 
 またOpenShift4は、カタログ機能(Developer Catalog)を備えています。JavaやPython、nginxなどのS2I Builder Imageをカタログ上で選択、あるいはカタログ上に追加でき、アプリケーションを簡単にOpenShift4上にデプロイできます。
 
-新規にプロジェクトを作成し、サンプルのコードとPython用のS2I Builder Imageを使ってコンテナイメージを作成し、アプリケーションをOpenShift4上にデプロイしてみましょう。
+新規にProjectを作成し、サンプルのコードとPython用のS2I Builder Imageを使ってコンテナイメージを作成し、アプリケーションをOpenShift4上にデプロイしてみましょう。
 
-=== 1-2-3-1. プロジェクト(Namespace)の作成
+=== 1-2-3-1. Project(Namespace)の作成
 
-OpenShift4 Webコンソールで各自のプロジェクトを作成しましょう。
+OpenShift4 Webコンソールで各自のProjectを作成しましょう。
 
 . Webコンソールを Developer Console に切り替えます。
 +
@@ -65,13 +65,13 @@ image::images/ocp4ws-ops/ocp4-lab1-3-developer-console.png[]
 +
 image::images/ocp4ws-ops/ocp4-  lab1-3-create-project.png[]
 
-. プロジェクト名(例: `blog` )を指定し、*Create* を選択します。
+. Project名(例: `blog` )を指定し、*Create* を選択します。
 +
 image::images/ocp4ws-ops/ocp4-lab1-3-create-project-blog.png[]
 +
 [TIPS]
 ====
-NOTE: OpenShift4ではプロジェクトを作成することで、新規Namespace(=プロジェクト名)が生成されます。NamespaceはK8sクラスターを論理的に分離させることが可能なK8sリソースの一種です。 +
+NOTE: OpenShift4ではProjectを作成することで、新規Namespace(=Project名)が生成されます。NamespaceはK8sクラスターを論理的に分離させることが可能なK8sリソースの一種です。 +
 例えば、アプリA用のNamespaceを``ns_appa``、アプリB用のNamespaceを``ns_appb``のように作成することで、同一のK8sクラスター内に存在する``ns_appa``と``ns_appb``が干渉しないように構成することも可能です。
 ====
 
@@ -141,7 +141,7 @@ image::images/ocp4ws-ops/ocp4-lab1-3-topology-pod-detail.png[]
 +
 [TIPS]
 ====
-NOTE: 前のLab1-1でプロジェクトのリソース状況を確認した時と同じように、Prometheus(+Grafana)のモニタリング状況を確認したり、yaml定義の確認、Eventの確認などができます。 +
+NOTE: 前のLab1-1でProjectのリソース状況を確認した時と同じように、Prometheus(+Grafana)のモニタリング状況を確認したり、yaml定義の確認、Eventの確認などができます。 +
 さらに、Pod内のコンテナ内でコマンド実行も行えます。下図のように [Terminal] を選択するとブラウザ上でターミナル内操作が行なえます。 +
 また、Pod内に複数コンテナが存在する場合はプルダウンメニューで選択するだけでコンテナを切替えてターミナル操作が可能です。問題判別を行う際には、手間を省いてくれる意外と嬉しい機能です。
 
