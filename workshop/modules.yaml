@@ -1,61 +1,61 @@
 modules:
-  introduction:
+  introduction.jp:
     name: ワークショップの概要
-  environment:
+  environment.jp:
     name: ハンズオン演習環境の紹介
-  ocp4ws-ops:
+  ocp4ws-ops.jp:
     name: 演習1 OpenShift 4 Ops ハンズオン
-  ocp4ws-ops-1-1:
+  ocp4ws-ops-1-1.jp:
     name: 　Lab1-1. OpenShift4クラスターへのログインと動作確認
-  ocp4ws-ops-1-2:
+  ocp4ws-ops-1-2.jp:
     name: 　Lab1-2. コンテナイメージのビルドとデプロイ
-  ocp4ws-ops-1-3:
+  ocp4ws-ops-1-3.jp:
     name: 　Lab1-3. Prometheus(1/3) JMX Exporterの展開
-  ocp4ws-ops-1-4:
+  ocp4ws-ops-1-4.jp:
     name: 　Lab1-4. Prometheus(2/3) Operatorの展開
-  ocp4ws-ops-1-5:
+  ocp4ws-ops-1-5.jp:
     name: 　Lab1-5. Prometheus(3/3) CRの設定
-  ocs4:
+  ocs4.jp:
     name: 演習2 OpenShift Container Storage ハンズオン
-  ocs4-1:
+  ocs4-1.jp:
     name: 　Lab2-1. OCS nodeの準備
-  ocs4-2:
+  ocs4-2.jp:
     name: 　Lab2-2. OCSクラスターの作成
-  ocs4-3:
+  ocs4-3.jp:
     name: 　Lab2-3. RWO PV
-  ocs4-4:
+  ocs4-4.jp:
     name: 　Lab2-4. RWX PV
-  ocs4-5:
+  ocs4-5.jp:
     name: 　OCS オプションLab
-  option-placeholder:
+  option-placeholder.jp:
     name: --- オプション演習 ---
-  installation:
+  installation.jp:
     name:
-  app-mgmt-basics:
+  app-mgmt-basics.jp:
     name:
-  app-storage-basics:
+  app-storage-basics.jp:
     name:
-  machinesets:
+  machinesets.jp:
     name:
-  infra-nodes:
+  infra-nodes.jp:
     name:
-  logging:
+  logging.jp:
     name:
-  ldap-groupsync:
+  ldap-groupsync.jp:
     name:
-  monitoring-basics:
+  monitoring-basics.jp:
     name:
-  template-quota-limits:
+  template-quota-limits.jp:
     name:
-  cluster-metering:
+  cluster-metering.jp:
     name:
-  networking:
+  networking.jp:
     name:
-  disabling-project-self-provisioning:
+  disabling-project-self-provisioning.jp:
     name:
-  clusterresourcequota:
+  clusterresourcequota.jp:
     name:
-  taints-and-tolerations:
+  taints-and-tolerations.jp:
     name:
 config:
     template_engine: liquid.js  
