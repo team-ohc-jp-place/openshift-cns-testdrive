@@ -1,7 +1,7 @@
 // Activate experimental attribute for Keyboard Shortcut keys
 :experimental:
 
-= 演習2 Lab1: OpenShift Container Storageをデプロイするためのnodeを準備する
+= Lab 2-1: OpenShift Container Storageをデプロイするためのnodeを準備する
 
 == Labの概要
 このLabでは Red Hat OpenShift Container Storage(OCS) 4をデプロイするための新しいnodeを準備します。 +
@@ -18,13 +18,12 @@ IPI(Installer Provisioned Infrastructure)方式でインストールしたOpenSh
 
 [[labexercises]]
 
-== 1-0. Bastionサーバーからログアウトする
+== 2-1-0. Bastionサーバーからログアウトする
 
 **もしBastionサーバーにログインしている場合は、ログアウトして下さい。** +
 Bastionサーバー上では以下の作業ができないものがあります。
 
-
-== 1-1. OCPクラスターでMachine Setを作成してworker nodeを追加する
+== 2-1-1. OCPクラスターでMachine Setを作成してworker nodeを追加する
 
 このセクションでは、OCS用に3つの *Machine Set* を追加します。 +
 はじめにOCPクラスターに3つのworker nodeがあることを確認します。
@@ -163,7 +162,7 @@ ip-10-0-170-49.us-east-2.compute.internal    Ready    worker   128m    v1.16.2
 
 NOTE: UPI(User Provisioned Infrastructure)方式でインストールしたOCPクラスターでは、Machine SetおよびMachineは利用できません。その場合は手作業でクラスターにnodeを追加して下さい。
 
-== 1-2. 追加したworker nodeにOCSで使用するためのラベルを付ける
+== 2-1-2. 追加したworker nodeにOCSで使用するためのラベルを付ける
 
 OCSを稼働させるnodeには、`cluster.ocs.openshift.io/openshift-storage` という特定のラベルが付いている必要があります。 +
 後段のLabで学習する、"OCS Operator"によって様々なOCSを構成するPodがデプロイされますが、これらのPodはこのラベルが付いているnodeで稼働するようになっているためです。
@@ -192,6 +191,6 @@ ip-10-0-162-215.us-east-2.compute.internal   Ready    worker   5m19s   v1.16.2
 ----
 
 ---
-以上で、「Lab1: OpenShift Container Storageをデプロイするためのnodeを準備する」は完了です。 +
-次は link:ocs4-2[Lab2: OCSクラスターを作成する] に進みます。
+以上で、「Lab 2-1: OpenShift Container Storageをデプロイするためのnodeを準備する」は完了です。 +
+次は link:ocs4-2[Lab 2-2: OCSクラスターを作成する] に進みます。
 

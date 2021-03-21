@@ -1,6 +1,6 @@
 :experimental:
 
-= 演習2 Lab3: OCSが提供するRWO PVを使用する
+= Lab 2-3: OCSが提供するRWO PVを使用する
 
 == Labの概要
 このLabでは作成したOCSクラスターからReadWriteOnce(RWO)のPersistent Volume(PV)を作成し、アプリケーションから使用します。 +
@@ -17,7 +17,7 @@ RWO PVは、ひとつのworker node上で稼働するアプリケーションPod
 
 [[labexercises]]
 
-== PVC(Persistent Volume Claim)を発行し、PVが作られることを確認する
+== 2-3-1. PVC(Persistent Volume Claim)の発行
 
 アプリケーションがPVを利用する典型的な方法の1つに、PVC(Persistent Volume Claim)を発行するものがあります。 +
 PVCは"Claim"という名の通り、OCPクラスターに対してPVの要求を行うものです。PVCを受け取ったOCPクラスターは、要求の内容に合致するPVを探してPVCに返答します。
@@ -93,7 +93,7 @@ pvc-f87e20a8-cbd0-4e7a-9789-86eee0ae9691   1Gi        RWO            Delete     
 
 これはOCSが *Dynamic Provisioning* に対応しているため、PVCの発行後自動的にOCSにボリュームを作るよう命令し、そのボリュームがPVとして登録されるからです。
 
-== RWO(ReadWriteOnce) PVCを使ったアプリケーションをデプロイする
+== 2-3-2. RWO(ReadWriteOnce) PVCを使ったアプリケーションをデプロイする
 
 このセクションでは、`ocs-storagecluster-ceph-rbd` StorageClassを使ってRWO(ReadWriteOnce) Presistent Volume Claimを作成し、RailsアプリケーションとPostgreSQLデータベースをデプロイします。
 
@@ -201,7 +201,7 @@ CAUTION: プロンプトが戻ってくるまで数分かかる場合があり�
 
 PostgreSQLのPodが再作成されたら、再びRailsのWebアプリケーションにアクセスしてみて下さい。キャッシュを消しても先に書いた記事が残っていることが確認できます。
 
-=== 作成したPVの実体であるCeph RBDボリュームを確認する
+== 2-3-3. 作成したPVの実体であるCeph RBDボリュームを確認する
 
 先程作成したPVは、`ocs-storagecluster-cephblockpool` プール内に作られるCeph RBD(RADOS Block Device)ボリュームです。ここではPVとCeph RBDボリュームとがどのように対応しているか確認してみます。
 
@@ -290,5 +290,5 @@ rbd image 'csi-vol-8765a21d-3330-11ea-9a7c-0a580a820205':
 ----
 
 ---
-以上で、「Lab3: OCSが提供するRWO PVを使用する」は完了です。 +
-次は link:ocs4-4[Lab4: CephFSボリュームを使ってRWX PVを使用する] に進みます。
+以上で、「Lab 2-3: OCSが提供するRWO PVを使用する」は完了です。 +
+次は link:ocs4-4[Lab 2-4: CephFSボリュームを使ってRWX PVを使用する] に進みます。

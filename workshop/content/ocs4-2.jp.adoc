@@ -1,6 +1,6 @@
 :experimental:
 
-= 演習2 Lab2: OCSクラスターを作成する
+= Lab 2-2: OCSクラスターを作成する
 
 == Labの概要
 このLabでは OpenShift Container Storage(OCS) Operatorをインストールし、OCSクラスターを作成します。 +
@@ -16,7 +16,7 @@ OCS OperatorのインストールとOCSクラスターの作成は、CLIでも�
 
 [[labexercises]]
 
-== 2-1. OCPクラスターにOCS Operatorをインストールする
+== 2-2-1. OCPクラスターにOCS Operatorをインストールする
 
 このセクションでは、Web ConsoleのOperatorHubからOCS Operatorをインストールします。 +
 
@@ -92,7 +92,7 @@ rook-ceph-operator-98b4c45c9-zxlxz       1/1     Running   0          2m6s
 
 以上で、OCS Operatorのインストールができました。
 
-== 2-2. OCS Operatorを使ってOCSクラスターを作成する
+== 2-2-2. OCS Operatorを使ってOCSクラスターを作成する
 
 それではOCPのPersistent Storageとなる、OCSクラスターを作成します。 +
 *Openshift Web Console* に戻ってOCSのインストールを確認してみましょう。
@@ -218,11 +218,11 @@ oc get storagecluster -n openshift-storage ocs-storagecluster -o jsonpath='{.sta
 
 以上で、OCSクラスターの作成ができました。
 
-== 2-3. 作成したOCSクラスター(Ceph)を確認する。
+== 2-2-3. 作成したOCSクラスター(Ceph)を確認する。
 このLabでは、作成したOCSクラスターを *Web Console* に作られるダッシュボードを使って確認します。 +
 また、CLIでOCSクラスターのコア部分であるCephを操作して、より詳細な構成を確認してみます。
 
-=== ストレージダッシュボードを使用する
+=== 2-2-3-1. ストレージダッシュボードを使用する
 
 このセクションでは、*Web Console* に含まれている、OCS独自のダッシュボードを使ってストレージクラスターのステータスを確認します。 +
 ダッシュボードは左側のメニューバーから *Home* -> *Overview* とクリックし、 `Persistent Storage` タブを選択することでアクセスできます。
@@ -273,7 +273,7 @@ oc get sc -n openshift-storage
 
 NOTE: NooBaaは `noobaa-core` Pod内部の `db` コンテナで利用するために `ocs-storagecluster-ceph-rbd` StorageClassを使用してPVCを作成しています。
 
-=== Rook-Ceph toolboxを利用してCephクラスターを確認する
+=== 2-2-3-2. Rook-Ceph toolboxを利用してCephクラスターを確認する
 
 このセクションでは、Rook-Ceph *toolbox* を利用して作成されたCephクラスターに対してcephコマンドを実行し、クラスター構成を確認します。
 
@@ -355,5 +355,5 @@ exit
 ----
 
 ---
-以上で、「Lab2: OCSクラスターを作成する」は完了です。 +
-次は link:ocs4-3[Lab3: OCSが提供するRWO PVを使用する] に進みます。
+以上で、「Lab 2-2: OCSクラスターを作成する」は完了です。 +
+次は link:ocs4-3[Lab 2-3: OCSが提供するRWO PVを使用する] に進みます。

@@ -7,9 +7,9 @@ modules:
   - ocp4ws-ops
   - ocp4ws-ops-1-1
   - ocp4ws-ops-1-2
-  - ocp4ws-ops-2-1
-  - ocp4ws-ops-2-2
-  - ocp4ws-ops-2-3
+  - ocp4ws-ops-1-3
+  - ocp4ws-ops-1-4
+  - ocp4ws-ops-1-5
   - ocs4
   - ocs4-1
   - ocs4-2

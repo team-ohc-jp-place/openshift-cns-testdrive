@@ -1,6 +1,6 @@
 # イントロダクション
 
-Welcome to *Container and Cloud Native Roadshow 2020 - Ops Track* !!
+Welcome to *Container and Cloud Native Roadshow 2021 - Ops Track* !!
 
 このイベントは、Red Hat OpenShift 4のハンズオンワークショップを通して、コンテナを利用したクラウドネイティブなインフラストラクチャの運用管理に関する基礎知識やプラクティスを学ぶイベントです。
 
@@ -8,7 +8,7 @@ Welcome to *Container and Cloud Native Roadshow 2020 - Ops Track* !!
 
 ## タイムテーブル
 
-本イベントの開催時間は、*11/27(金) 9:15〜13:00* です。 +
+本イベントの開催時間は、*3/26(金) 9:15〜13:00* です。 +
 次のようなタイムテーブルでの進行を予定しています。
 
 [options="header", cols="1,3", width=80%]

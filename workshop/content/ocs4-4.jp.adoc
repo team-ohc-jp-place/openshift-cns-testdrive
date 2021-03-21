@@ -1,7 +1,7 @@
 
 :experimental:
 
-= 演習2 Lab4: CephFSボリュームを使ってRWX PVを使用する
+= Lab 2-4: CephFSボリュームを使ってRWX PVを使用する
 
 == Labの概要
 このLabでは作成したOCSクラスターからReadWriteMany(RWX)のPVを作成し、アプリケーションから使用します。 +
@@ -14,7 +14,7 @@ RWX PVは、複数のworker nodeで稼働する複数のアプリケーション
 
 [[labexercises]]
 
-== CephFSが提供するRWX PVを作成し、アプリケーションから使用する
+== 2-4-1. CephFSが提供するRWX PVを作成し、アプリケーションから使用する
 
 このセクションでは、`ocs-storagecluster-cephfs` *StorageClass* を使用して、同時に複数のポッドで使用できるRWX（ReadWriteMany）PVCを作成します。 +
 ここでは `File Uploader` と呼ばれるアプリケーションを使用します。
@@ -216,7 +216,7 @@ image::images/ocs/uploader_screen_upload.png[]
 また、先のコマンドで確認したfile-uploader Podのmount pathに同じファイルが保存されていることを確認してみましょう。
 
 ---
-以上で、「Lab4: CephFSボリュームを使ってRWX PVを使用する」は完了です。
+以上で、「Lab 2-4: CephFSボリュームを使ってRWX PVを使用する」は完了です。
 
 時間があまった方は、link:ocs4-5[オプションLab]を用意していますので、こちらも試してみて下さい。 +
 オプションLabでは、オブジェクトストレージの利用やOCSクラスターの拡張など、advancedな内容を学習することができます。
