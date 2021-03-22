@@ -9,7 +9,6 @@
 - **Operatorの導入**
 - **Operatorとアプリケーションの連携**
 - **Custom Resourceの設定**
-- **Operatorに対するCLI操作**
 
 ---
 
@@ -25,7 +24,7 @@ Lab1-2では、シンプルなアプリケーションを使って、OpenShift4�
 
 この3つのLabでは、オープンソースのモニタリングツールである"Prometheus"を取り上げます。 +
 Javaアプリケーションの監視の基礎と、OpenShift4に付随する"Operator Hub"から**Operator**をインストールする方法を学ぶことができます。 +
-**Operator**で管理される**CR(Custom Resource)**が、**Pod**や**Service**などの複数のKubernetesオブジェクトを管理することで、**Operator**がアプリケーションと連携できることを見ることができるでしょう。
+**Operator**で管理される**CR(Custom Resource)**によって**Operator**がアプリケーションと連携できることを見ることができるでしょう。
 
 == ハンズオン環境
 
