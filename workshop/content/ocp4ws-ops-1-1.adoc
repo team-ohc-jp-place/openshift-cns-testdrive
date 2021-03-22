@@ -366,9 +366,15 @@ openshift-vsphere-infra                                                Active
 +
 . 1-1-3-1. で作成した自身のProjectを検索し、操作対象として切替えます。
 +
+[TIPS]
+====
+CAUTION: 作成したProjectの名前が"lab1-1"でない場合は、各自のProject名に置き替えてください。
+====
++
++
 [source,bash,role="copypaste"]
 ----
-oc get project | grep <Replace-with-your-project>
+oc get project | grep lab1-1
 ----
 +
 実行例)
@@ -382,7 +388,7 @@ Projectを切替えて操作してみましょう。
 +
 [source,bash,role="copypaste"]
 ----
-oc project <Replace-with-your-project>
+oc project lab1-1
 ----
 +
 実行例)
@@ -394,31 +400,25 @@ Now using project "lab1-1" on server "https://api.cluster-XXXX.XXXX.sandboxYYYY.
 +
 [TIPS]
 ====
-NOTE: `$ oc project` でProject（Namespace）を指定しておくことで、``-n lab1-1`` のようにコマンド実行時に毎度Namespace指定をする必要が無くなるため幾分便利になります。 +
-※ただし、本ハンズオンの実行例においては、``$ oc project +++<Project名>+++` の実行有無に関係無く `-n` オプションを付与しています。
+TIP: `$ oc project` でProject（Namespace）を指定しておくことで、``-n lab1-1`` のようにコマンド実行時に毎度Namespace指定をする必要が無くなるため幾分便利になります。 +
 ====
 +
 . 自身のProject内のワークロードを確認します。
 +
-[TIPS]
-====
-CAUTION: コマンド実行時は、`-n <各自のProject名>` に読み替えてください。
-====
-+
 
 [source,bash,role="copypaste"]
 ----
-oc get pod -n <Replace-with-you-project>
+oc get pod -n lab1-1
 ----
 +
 [source,bash,role="copypasete"]
 ----
-oc get deploy -n <Replace-with-you-project>
+oc get deploy -n lab1-1
 ----
 +
 [source,bash,role="copypasete"]
 ----
-oc get svc -n <Replace-with-you-project>
+oc get svc -n lab1-1
 ----
 +
 実行例)

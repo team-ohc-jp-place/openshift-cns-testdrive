@@ -63,7 +63,7 @@ image::images/ocp4ws-ops/ocp4-lab1-3-developer-console.png[]
 
 . [</> Developer] > [+Add] > [Project: プルダウンメニューを選択] > [Create Project] を選択します。
 +
-image::images/ocp4ws-ops/ocp4-  lab1-3-create-project.png[]
+image::images/ocp4ws-ops/ocp4-lab1-3-create-project.png[]
 
 . Project名(例: `blog` )を指定し、*Create* を選択します。
 +
@@ -71,7 +71,7 @@ image::images/ocp4ws-ops/ocp4-lab1-3-create-project-blog.png[]
 +
 [TIPS]
 ====
-NOTE: OpenShift4ではProjectを作成することで、新規Namespace(=Project名)が生成されます。NamespaceはK8sクラスターを論理的に分離させることが可能なK8sリソースの一種です。 +
+NOTE: OpenShift4ではProjectを作成することで、Projectと同じ名前のNamespaceが生成されます。NamespaceはK8sクラスターを論理的に分離させることが可能なK8sリソースの一種です。 +
 例えば、アプリA用のNamespaceを``ns_appa``、アプリB用のNamespaceを``ns_appb``のように作成することで、同一のK8sクラスター内に存在する``ns_appa``と``ns_appb``が干渉しないように構成することも可能です。
 ====
 
@@ -91,11 +91,11 @@ image::images/ocp4ws-ops/ocp4-lab1-3-from-catalog-python.png[]
 ====
 NOTE: Developer CatalogからPythonアプリケーションを作成することで以下のリソースが作成されます。
 
-* Build config
+* Build Config
  ** Gitリポジトリからソースコードをビルド
-* Image stream
+* Image Stream
  ** ビルド済イメージのトラッキング
-* Deployment config
+* Deployment Config
  ** イメージ変更の際に新リビジョンにロールアウト
 * Service
  ** クラスター内にワークロードを公開
