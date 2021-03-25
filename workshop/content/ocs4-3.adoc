@@ -215,7 +215,7 @@ oc rsh -n openshift-storage $TOOLS_POD
 
 下記のようにアプリケーションのデプロイ前と同じCephコマンドを実行し、前のセクションの結果と比較します。
 `ocs-storagecluster-cephblockpool` のオブジェクト数が増えていることに注意して下さい。 +
-また、3つ目のコマンドはCeph RBDボリュームをリストする処理をしますが、2つ表示されるはずです。
+また、3つ目のコマンドはCeph RBDボリュームをリストする処理をしますが、3つ表示されるはずです。
 
 [source,role="execute"]
 ----
