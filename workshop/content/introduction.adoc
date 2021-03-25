@@ -19,7 +19,8 @@ Welcome to *Container and Cloud Native Roadshow 2021 - Ops Track* !!
 |9:45 - 11:25|*_演習 1_* : Red Hat OpenShift 4 Ops ハンズオン
 |11:25 - 11:45|Break Time
 |11:45 - 12:00|*_レクチャー 2_* : Red Hat OpenShift Container Storage 4
-|12:00 - 13:00|*_演習 2_* : Red Hat OpenShift Container Storage 4 ハンズオン
+|12:00 - 12:55|*_演習 2_* : Red Hat OpenShift Container Storage 4 ハンズオン
+|12:55 - 13:00|クロージング
 |=========
 
 終了時刻となってもハンズオンの演習環境は終日利用できます。時間内に全て終わらなくても、引き続き演習を行うことができます。
