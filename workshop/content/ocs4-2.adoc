@@ -44,13 +44,13 @@ image::images/ocs/OCS4-OCP-OperatorHub-Filter.png[OCP OperatorHub Filter]
 表示された `OpenShift Container Storage Operator` を選択し、 *Install* ボタンを押します。
 
 .OCP OperatorHub Install OpenShift Container Storage
-image::images/ocs/OCS4.5-OCP-OperatorHub-Install.png[OCP OperatorHub Install]
+image::images/ocs/OCS4.6-OCP-OperatorHub-Install.png[OCP OperatorHub Install]
 
 次の画面で、設定が下図に示す通りであることを確認し、*Subscribe* をクリックします。
 
 
 .OCP Subscribe to OpenShift Container Storage
-image::images/ocs/OCS4.5-OCP-OperatorHub-Subscribe.png[OCP OperatorHub Subscribe]
+image::images/ocs/OCS4.6-OCP-OperatorHub-Subscribe.png[OCP OperatorHub Subscribe]
 
 CAUTION: `Installed Namespace` は上記のとおり、**"Operator recommended namespace: (PR) openshift-storage"** を選択して下さい。`openshift-storage` namespace以外では、OCSはインストールされません。 +
 
@@ -67,7 +67,7 @@ watch oc get csv -n openshift-storage
 .出力例:
 ----
 NAME                            DISPLAY                       VERSION   REPLACES   PHASE
-ocs-operator.v4.5.2             OpenShift Container Storage   4.5.2                Succeeded
+ocs-operator.v4.6.3             OpenShift Container Storage   4.6.3                Succeeded
 ----
 kbd:[Ctrl+C]を押すと終了できます。
 
@@ -84,6 +84,7 @@ oc get pods -n openshift-storage
 ----
 NAME                                     READY   STATUS    RESTARTS   AGE
 noobaa-operator-58d8fbb457-hg495         1/1     Running   0          2m6s
+ocs-metrics-exporter-54d5cc6c79-f4h79    1/1     Running   0          2m6s
 ocs-operator-66c778887d-8qkqm            1/1     Running   0          2m6s
 rook-ceph-operator-98b4c45c9-zxlxz       1/1     Running   0          2m6s
 ----
@@ -102,12 +103,12 @@ Operators* を選択します。Projectは `openshift-storage` を選択しま�
 以下のような画面になっているはずです。
 
 .Installed Operators in the openshift-storage namespace
-image::images/ocs/OCS4.5-installed-operators.png[Openshift showing the installed operators in namespace openshift-storage]
+image::images/ocs/OCS4.6-installed-operators.png[Openshift showing the installed operators in namespace openshift-storage]
 
 `Openshift Container Storage Operator` をクリックすると、次のようなOCS Operatorの詳細画面に移動します。
 
 .OCS configuration screen
-image::images/ocs/OCS4.5-config-screen-all.png[OCS configuration screen]
+image::images/ocs/OCS4.6-config-screen-all.png[OCS configuration screen]
 
 画面に表示される `Storage Cluster` の中にある、 *Create instance* をクリックします。 +
 次のような画面が表示されます。
@@ -173,6 +174,7 @@ noobaa-core-0                                                     1/1     Runnin
 noobaa-db-0                                                       1/1     Running     0          14m
 noobaa-endpoint-7f5fff7d49-554qs                                  1/1     Running     0          12m
 noobaa-operator-b77ccff86-4lvks                                   1/1     Running     0          93m
+ocs-metrics-exporter-54d5cc6c79-f4h79                             1/1     Running     0          93m
 ocs-operator-6dd9fd9d8d-8gpj5                                     1/1     Running     0          93m
 rook-ceph-crashcollector-ip-10-0-141-60-85445fcd84-4lcbv          1/1     Running     0          15m
 rook-ceph-crashcollector-ip-10-0-147-83-54cf7f47c9-msjgn          1/1     Running     0          16m

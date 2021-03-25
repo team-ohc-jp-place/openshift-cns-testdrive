@@ -37,9 +37,9 @@ oc get nodes -l node-role.kubernetes.io/worker -l '!node-role.kubernetes.io/mast
 
 ----
 NAME                                         STATUS   ROLES    AGE   VERSION
-ip-10-0-138-9.us-east-2.compute.internal     Ready    worker   77m   v1.16.2
-ip-10-0-150-39.us-east-2.compute.internal    Ready    worker   77m   v1.16.2
-ip-10-0-170-49.us-east-2.compute.internal    Ready    worker   77m   v1.16.2
+ip-10-0-138-9.us-east-2.compute.internal     Ready    worker   77m   v1.19.0+9c69bdc
+ip-10-0-150-39.us-east-2.compute.internal    Ready    worker   77m   v1.19.0+9c69bdc
+ip-10-0-170-49.us-east-2.compute.internal    Ready    worker   77m   v1.19.0+9c69bdc
 ----
 
 ここで *Machine Set* を使用して、さらに3つのworker nodeをクラスターに追加します。 +
@@ -150,12 +150,12 @@ oc get nodes -l node-role.kubernetes.io/worker -l '!node-role.kubernetes.io/mast
 .出力例:
 ----
 NAME                                         STATUS   ROLES    AGE     VERSION
-ip-10-0-131-209.us-east-2.compute.internal   Ready    worker   2m21s   v1.16.2
-ip-10-0-138-9.us-east-2.compute.internal     Ready    worker   128m    v1.16.2
-ip-10-0-150-39.us-east-2.compute.internal    Ready    worker   128m    v1.16.2
-ip-10-0-155-12.us-east-2.compute.internal    Ready    worker   2m22s   v1.16.2
-ip-10-0-162-215.us-east-2.compute.internal   Ready    worker   2m14s   v1.16.2
-ip-10-0-170-49.us-east-2.compute.internal    Ready    worker   128m    v1.16.2
+ip-10-0-131-209.us-east-2.compute.internal   Ready    worker   2m21s   v1.19.0+9c69bdc
+ip-10-0-138-9.us-east-2.compute.internal     Ready    worker   128m    v1.19.0+9c69bdc
+ip-10-0-150-39.us-east-2.compute.internal    Ready    worker   128m    v1.19.0+9c69bdc
+ip-10-0-155-12.us-east-2.compute.internal    Ready    worker   2m22s   v1.19.0+9c69bdc
+ip-10-0-162-215.us-east-2.compute.internal   Ready    worker   2m14s   v1.19.0+9c69bdc
+ip-10-0-170-49.us-east-2.compute.internal    Ready    worker   128m    v1.19.0+9c69bdc
 ----
 
 以上で、worker nodeの追加ができました。
@@ -185,9 +185,9 @@ oc get nodes -l cluster.ocs.openshift.io/openshift-storage=
 .出力例:
 ----
 NAME                                         STATUS   ROLES    AGE    VERSION
-ip-10-0-131-209.us-east-2.compute.internal   Ready    worker   5m25s   v1.16.2
-ip-10-0-155-12.us-east-2.compute.internal    Ready    worker   5m26s   v1.16.2
-ip-10-0-162-215.us-east-2.compute.internal   Ready    worker   5m19s   v1.16.2
+ip-10-0-131-209.us-east-2.compute.internal   Ready    worker   5m25s   v1.19.0+9c69bdc
+ip-10-0-155-12.us-east-2.compute.internal    Ready    worker   5m26s   v1.19.0+9c69bdc
+ip-10-0-162-215.us-east-2.compute.internal   Ready    worker   5m19s   v1.19.0+9c69bdc
 ----
 
 ---

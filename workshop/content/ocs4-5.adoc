@@ -23,9 +23,9 @@ noobaa status -n openshift-storage
 ----
 .Example output:
 ----
-INFO[0000] CLI version: 2.1.1                           
-INFO[0000] noobaa-image: noobaa/noobaa-core:5.3.0       
-INFO[0000] operator-image: noobaa/noobaa-operator:2.1.1 
+INFO[0000] CLI version: 5.6.0                           
+INFO[0000] noobaa-image: noobaa/noobaa-core:5.6.0       
+INFO[0000] operator-image: noobaa/noobaa-operator:5.6.0 
 INFO[0000] Namespace: openshift-storage                 
 INFO[0000]                                              
 INFO[0000] CRD Status:                                  
@@ -38,10 +38,10 @@ INFO[0000]
 INFO[0000] Operator Status:                             
 INFO[0000] ✅ Exists: Namespace "openshift-storage"      
 INFO[0000] ✅ Exists: ServiceAccount "noobaa"            
-INFO[0000] ✅ Exists: Role "ocs-operator.v4.3.0-379.ci-hl98v" 
-INFO[0000] ✅ Exists: RoleBinding "ocs-operator.v4.3.0-379.ci-hl98v-noobaa-dntmk" 
-INFO[0000] ✅ Exists: ClusterRole "ocs-operator.v4.3.0-379.ci-vwg96" 
-INFO[0000] ✅ Exists: ClusterRoleBinding "ocs-operator.v4.3.0-379.ci-vwg96-noobaa-sm9pv" 
+INFO[0000] ✅ Exists: Role "ocs-operator.v4.6.3-379.ci-hl98v" 
+INFO[0000] ✅ Exists: RoleBinding "ocs-operator.v4.6.3-379.ci-hl98v-noobaa-dntmk" 
+INFO[0000] ✅ Exists: ClusterRole "ocs-operator.v4.6.3-379.ci-vwg96" 
+INFO[0000] ✅ Exists: ClusterRoleBinding "ocs-operator.v4.6.3-379.ci-vwg96-noobaa-sm9pv" 
 INFO[0000] ✅ Exists: Deployment "noobaa-operator"       
 INFO[0000]                                              
 INFO[0000] System Status:                               
@@ -170,7 +170,7 @@ oc get obc test21obc -o yaml -n openshift-storage
 apiVersion: objectbucket.io/v1alpha1
 kind: ObjectBucketClaim
 metadata:
-  creationTimestamp: "2019-10-24T13:30:07Z"
+  creationTimestamp: "2021-03-24T13:30:07Z"
   finalizers:
   - objectbucket.io/finalizer
   generation: 2
@@ -207,7 +207,7 @@ data:
   AWS_SECRET_ACCESS_KEY: Wi9kcFluSWxHRzlWaFlzNk1hc0xma2JXcjM1MVhqa051SlBleXpmOQ==
 kind: Secret
 metadata:
-  creationTimestamp: "2019-10-24T13:30:07Z"
+  creationTimestamp: "2021-03-24T13:30:07Z"
   finalizers:
   - objectbucket.io/finalizer
   labels:
@@ -245,7 +245,7 @@ data:
   BUCKET_SUBREGION: ""
 kind: ConfigMap
 metadata:
-  creationTimestamp: "2019-10-24T13:30:07Z"
+  creationTimestamp: "2021-03-24T13:30:07Z"
   finalizers:
   - objectbucket.io/finalizer
   labels:
@@ -478,12 +478,12 @@ NOTE: 新しく追加したworker nodeにも `cluster.ocs.openshift.io/openshift
  - 左側のメニューから *Operators* -> *Installed Operators* をクリックする
  - `openshift-storage` Projectを選択する
  - `Openshift Container Storage Operator` をクリックする
- - 上部のナビゲーションバーで、右にスクロールして `Storage Cluster` をクリックする
-
-image::images/ocs/OCS4-OCP43-Storage-Cluster-overview-reachit.png[]
-
+ - 上部のナビゲーションバーで `Storage Cluster` をクリックする
  - 表示される `ocs-storagecluster` の右端にある3つのドットをクリックして、オプションメニューを表示する
  - `Add Capacity` を選択し、新しいダイアログを開く
+
+image::images/ocs/OCS4-OCP46-Storage-Cluster-overview-reachit.png[]
+
 
 .Add Capacity dialog
 image::images/ocs/OCS4-add-capacity.png[Add Capacity dialog]
@@ -652,16 +652,8 @@ image::images/ocs/metrics-alertinghomepage.png[OCP Alerting Homepage]
 
 NOTE: 定義された時間を超えて `Pending` が継続したアラートは、 `Firing` 状態に移行します。例えば `CephClusterWarningState` の場合は10分です。
 
-以下に示すように、表示されているアラートをその状態に基づいてフィルタリングすることができます。
-表示する状態をクリックするだけでフィルターを切り替えることができ、青でハイライトされた状態が表示されます。
-
-
-NOTE: 少なくとも1つの状態をハイライトする必要があります。
-
-.OCP Alerting Status Filtering
-image::images/ocs/metrics-alertingstatusfilter.png[OCP Alert Status Filtering]
-
-また以下に示すように、ウィンドウの右上にある *Filter* を使用して特定のアラートまたはアラートのセットを検索することで、名前でフィルタリングすることもできます。
+表示されているアラートをその状態に基づいてフィルタリングすることができます。表示する状態をクリックするだけでフィルターを切り替えることができます。 +
+また、ウィンドウにある *Filter* を使用して特定のアラートまたはアラートのセットを検索することで、名前でフィルタリングすることもできます。
 
 .OCP Alerting Name Filtering
 image::images/ocs/metrics-alertingnamefilter.png[OCP Alert Name Filtering]
