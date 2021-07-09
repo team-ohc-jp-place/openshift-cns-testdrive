@@ -34,3 +34,4 @@ build.hwm
 build.pwd
 build.pwi
 workshop-settings.sh
+.netrc
