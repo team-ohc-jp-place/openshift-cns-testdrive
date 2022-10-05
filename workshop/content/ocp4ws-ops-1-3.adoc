@@ -63,8 +63,8 @@ oc project
 実行例)
 +
 ----
-$ oc new-project userX-jmx
-Now using project "userX-jmx" on server "https://api.cluster-3adc.3adc.sandbox691.opentlc.com:6443".
+$ oc new-project user1-jmx
+Now using project "user1-jmx" on server "https://api.cluster-3adc.3adc.sandbox691.opentlc.com:6443".
 
 You can add applications to this project with the 'new-app' command. For example, try:
 
@@ -75,7 +75,7 @@ to build a new example application in Ruby. Or use kubectl to deploy a simple Ku
     kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
 
 $ oc project
-Using project "userX-jmx" on server "https://api.cluster-8a39.8a39.sandbox135.opentlc.com:6443".
+Using project "user1-jmx" on server "https://api.cluster-8a39.8a39.sandbox135.opentlc.com:6443".
 ----
 +
 . アプリケーションをリポジトリからCloneして、「jboss-eap-prometheus」イメージをビルドします。
