@@ -14,16 +14,16 @@ Prometheus Operatorは次の機能を提供します。
 === 1-4-1-2. 事前準備
 
 * 事前にJMX Exporterを用意しておく。
-* 「OpenShift Webコンソール」のアドレス +
+* OpenShiftクラスターへのアクセス情報
 
 == 1-4-2. Prometheus Operatorの展開
 
 === 1-4-2-1. Project作成
-Prometheus Operator用の"jmx-monitor"という名前のProjectを作成します。**以降のLab1-4の作業は全て"jmx-monitor"Projectで行います**。念のため``oc project``コマンドで現在指定しているProjectが"jmx-monitor"であることを確認して下さい。
+Prometheus Operator用の"userX-jmx-monitor"という名前のProjectを作成します。**以降のLab1-4の作業は全て"userX-jmx-monitor"Projectで行います**。念のため``oc project``コマンドで現在指定しているProjectが"userX-jmx-monitor"であることを確認して下さい。
 
 [source,bash,role="execute"]
 ----
-oc new-project jmx-monitor 
+oc new-project userX-jmx-monitor 
 ----
 [source,bash,role="execute"]
 ----
@@ -33,8 +33,8 @@ oc project
 実行例)
 
 ----
-$ oc new-project jmx
-Now using project "jmx-monitor" on server "https://api.cluster-8a39.8a39.sandbox135.opentlc.com:6443".
+$ oc new-project user1-jmx-monitor
+Now using project "user1-jmx-monitor" on server "https://api.cluster-8a39.8a39.sandbox135.opentlc.com:6443".
 
 You can add applications to this project with the 'new-app' command. For example, try:
 
@@ -45,15 +45,15 @@ to build a new example application in Ruby. Or use kubectl to deploy a simple Ku
     kubectl create deployment hello-node --image=k8s.gcr.io/serve_hostname
 
 $ oc project
-Using project "jmx-monitor" on server "https://api.cluster-8a39.8a39.sandbox135.opentlc.com:6443".
+Using project "user1-jmx-monitor" on server "https://api.cluster-8a39.8a39.sandbox135.opentlc.com:6443".
 ----
 
 ---
 
 === 1-4-2-2. Prometheus Operatorのインストール
 
-OpenShift4 Webコンソールにログインし、[Operators]>[OperatorHub]から"Prometheus"を検索します。 +
-この際、Projectが**"jmx-monitor"**であることを確認しておきましょう。
+OpenShift Webコンソールにログインし、[Operators]>[OperatorHub]から"Prometheus"を検索します。 +
+この際、Projectが**"userX-jmx-monitor"**であることを確認しておきましょう。
 
 image::images/ocp4ws-ops/operator-hub.png[OperatorHub]
 
@@ -71,7 +71,7 @@ image::images/ocp4ws-ops/prometheus-operator-subscription.png[]
 * Installation Mode +
 **A specific namespace on the cluster**
 * Installed Namespace +
-**jmx-monitor**
+**userX-jmx-monitor**
 * Approval Strategy +
 **Automatic**
 
