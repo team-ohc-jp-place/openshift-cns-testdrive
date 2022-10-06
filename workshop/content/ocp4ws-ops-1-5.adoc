@@ -4,7 +4,7 @@
 
 === 1-5-1-1. Prometheus OperatorのCRDについて
 
-* 今回は「Prometheus Operator 0.47.0 provided by Red Hat」を利用しています。
+* 今回は「Prometheus Operator 0.56 provided by Red Hat」を利用しています。
 * Prometheus OpearatorのCRDはAPIドキュメントを参考にしましょう。 +
 https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md
 
@@ -19,7 +19,7 @@ Serviceの可視化設定をするときは、以下の手順で設定を行い�
 
 * OpenShiftのOperatorCatalogからPrometheus Opearatorをデプロイしておく。
 * 事前にJMX Exporterを用意しておく。 +
-"jmx"Projectに作成されている、JMX Prometheus ExporterのService "jboss-eap-prometheus"に、``app=jboss-eap-prometheus``というlabelが付けられていることを確認しておきましょう。  +
+"userX-jmx"Projectに作成されている、JMX Prometheus ExporterのService "jboss-eap-prometheus"に、``app=jboss-eap-prometheus``というlabelが付けられていることを確認しておきましょう。  +
 Webコンソールで、[Administrator]>[Networking]>[Services]から確認することができます。 +
 image:images/ocp4ws-ops/service_tag.png[JMX Prometheus ExporterのServiceタグ]
 
@@ -96,12 +96,12 @@ image:images/ocp4ws-ops/service_tag.png[JMX Prometheus ExporterのServiceタグ]
 
 '''
 
-Webコンソールで"jmx-monitor"Projectを選択した状態で、[Operators]>[Intalled Operators]>[Prometheus Operator]を選択し、[Prometheus]タブの[Create Prometheus]をクリックします。
+Webコンソールで"userX-jmx-monitor"Projectを選択した状態で、[Operators]>[Intalled Operators]>[Prometheus Operator]を選択し、[Prometheus]タブの[Create Prometheus]をクリックします。
 
 image::images/ocp4ws-ops/create-prometheus.png[Create Prometheus]
 
 "Create Prometheus"の画面で、"Configure via:"に"YAML View"を選択すると、YAMLを記述するエディターが表示されます。 +
-デフォルトで記入されている内容を全て削除し、以下のYAMLを記入してください。(コピー&ペーストで構いません) +
+デフォルトで記入されている内容を全て削除し、以下のYAMLを記入してください。(コピー&ペーストで、userXの箇所だけ変更してください) +
 この"Prometheus" CRでは、``key: k8s-app``のlabelを持つ"Service Monitor" CRを監視する設定をしています。"Service Monitor" CRは後で作成しますので、今は気にしなくて構いません。
 
 [source,role="copypaste"]
@@ -112,7 +112,7 @@ metadata:
   name: monitoring
   labels:
     prometheus: k8s
-  namespace: jmx-monitor
+  namespace: userX-jmx-monitor
 spec:
   replicas: 2
   version: v2.7.1
@@ -130,12 +130,12 @@ spec:
     timeout: 300s
   alerting:
     alertmanagers:
-      - namespace: jmx-monitor
+      - namespace: userX-jmx-monitor
         name: alertmanager-main
         port: web
 ----
 
-Webコンソールのエディターでは次のようになっていることを確認します。ここでも"jmx-monitor"Projectが指定されているか注意して下さい。 +
+Webコンソールのエディターでは次のようになっていることを確認します。ここでも"userX-jmx-monitor"Projectが指定されているか注意して下さい。 +
 確認ができたら、[Create]をクリックします。
 
 "Prometheus" CRを作成すると、Prometheus Operatorが``replicas: 2``の数だけ、PrometheusのPodを起動します。  +
@@ -177,7 +177,7 @@ prometheus-operated   ClusterIP   None         <none>        9090/TCP   5m39s
 
 [source,bash,role="execute"]
 ----
-oc expose service prometheus-operated
+oc expose service prometheus-operated --name=userX-prometheus-operated 
 ----
 [source,bash,role="execute"]
 ----
@@ -187,13 +187,13 @@ oc get route
 実行例)
 
 ----
-$ oc expose service prometheus-operated
+$ oc expose service user1-prometheus-operated
 route.route.openshift.io/prometheus-operated exposed
 
 
 $ oc get route
 NAME                  HOST/PORT                                                                           PATH   SERVICES              PORT   TERMINATION   WILDCARD
-prometheus-operated   prometheus-operated-jmx-monitor.apps.cluster-cc8c.cc8c.example.opentlc.com          prometheus-operated   web                  None
+prometheus-operated   user1-prometheus-operated-user1-jmx-monitor.apps.cluster-cc8c.cc8c.example.opentlc.com          prometheus-operated   web                  None
 ----
 
 Routeが確認できたら、``HOST/PORT``のカラムに表示されるURLにアクセスしてみましょう。 +
@@ -207,7 +207,7 @@ image::images/ocp4ws-ops/non-target-prometheus.jpg[NoTargets]
 
 === 1-5-2-3. Project間通信を許可
 
-Prometheus Operatorを配置した"jmx-monitor"Projectと監視対象のアプリケーションを配置した"jmx"Projectの間で通信ができるよう、ネットワークポリシーを設定します。
+Prometheus Operatorを配置した"userX-jmx-monitor"Projectと監視対象のアプリケーションを配置した"userX-jmx"Projectの間で通信ができるよう、ネットワークポリシーを設定します。
 
 * 参照 +
 https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.6/html-single/authentication_and_authorization/index#using-rbac
@@ -216,28 +216,28 @@ https://access.redhat.com/documentation/ja-jp/openshift_container_platform/4.6/h
 
 [source,bash,role="execute"]
 ----
-oc adm policy add-role-to-user view system:serviceaccount:jmx-monitor:prometheus-k8s -n jmx
+oc adm policy add-role-to-user view system:serviceaccount:jmx-monitor:prometheus-k8s -n userX-jmx
 ----
 
 実行例)
 [source,console]
 ----
-$ oc adm policy add-role-to-user view system:serviceaccount:jmx-monitor:prometheus-k8s -n jmx
+$ oc adm policy add-role-to-user view system:serviceaccount:jmx-monitor:prometheus-k8s -n user1-jmx
 clusterrole.rbac.authorization.k8s.io/view added: "system:serviceaccount:jmx-monitor:prometheus-k8s"
 ----
 
-次に、"jmx-monitor"Projectを、"jmx"Projectの持つPodネットワークに参加させます。これによって、"jmx-monitor"ProjectのPodとサービスが、"jmx"ProjectのPodとサービスと通信できるようになります。
+次に、"userX-jmx-monitor"Projectを、"userX-jmx"Projectの持つPodネットワークに参加させます。これによって、"userX-jmx-monitor"ProjectのPodとサービスが、"userX-jmx"ProjectのPodとサービスと通信できるようになります。
 
 [source,bash,role="execute"]
 ----
-oc adm pod-network join-projects --to=jmx jmx-monitor
+oc adm pod-network join-projects --to=userX-jmx userX-jmx-monitor
 ----
 
 実行例)
 
 [source,console]
 ----
-$ oc adm pod-network join-projects --to=jmx jmx-monitor
+$ oc adm pod-network join-projects --to=user1-jmx user1-jmx-monitor
 using plugin: "redhat/openshift-ovs-networkpolicy", managing pod network is only supported for openshift multitenant network plugin
 ----
 
@@ -285,23 +285,23 @@ using plugin: "redhat/openshift-ovs-networkpolicy", managing pod network is only
 | false
 |===
 
-Webコンソールで"jmx-monitor"Projectを選択した状態で、[Operators]>[Intalled Operators]>[Prometheus Operator]を選択し、[Service Monitor]タブの[Create Service Monitor]をクリックします。 +
-この際、Projectが**"jmx-monitor"**であることを確認します。
+Webコンソールで"userX-jmx-monitor"Projectを選択した状態で、[Operators]>[Intalled Operators]>[Prometheus Operator]を選択し、[Service Monitor]タブの[Create Service Monitor]をクリックします。 +
+この際、Projectが**"userX-jmx-monitor"**であることを確認します。
 
 image::images/ocp4ws-ops/create-servicemonitor.png[Create ServiceMonitor]
 
 "Create Service Monitor"の画面で、"Configure via:"に"YAML View"を選択すると、YAMLを記述するエディターが表示されます。 +
-デフォルトで記入されている内容を全て削除し、以下のYAMLを記入してください。(コピー&ペーストで構いません) +
+デフォルトで記入されている内容を全て削除し、以下のYAMLを記入してください。(コピー&ペーストで、userXの箇所だけ変更してください) +
 
 [source,role="copypaste"]
 ----
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: jmx-monitor
+  name: userX-jmx-monitor
   labels:
     k8s-app: prometheus
-  namespace: jmx-monitor
+  namespace: userX-jmx-monitor
 spec:
   endpoints:
     - interval: 60s
@@ -309,7 +309,7 @@ spec:
       scrapeTimeout: 55s
   namespaceSelector:
     matchNames:
-      - jmx
+      - userX-jmx
   selector:
     matchLabels:
       app: jboss-eap-prometheus
