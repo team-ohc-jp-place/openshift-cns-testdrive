@@ -13,6 +13,8 @@ modules:
     name: ■ MachineSets, Machines, and Nodes
   infra-nodes:
     name: ■ インフラストラクチャノード と Operator
+  logging-with-loki:
+    name: OpenShift Logging with Loki
   ldap-groupsync:
     name: ■ 外部認証プロバイダ(LDAP)の設定
   monitoring-basics:
