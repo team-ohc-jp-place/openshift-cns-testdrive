@@ -38,7 +38,6 @@ openshift.io/cluster-monitoring: "true"
 
 [source,yaml]
 .openshift_logging_namespace.yaml
-
 ----
 apiVersion: v1
 kind: Namespace
@@ -234,7 +233,6 @@ name and try again.
   c. 現在のYAMLを削除し、このYAMLに置き換えます（AWS credsがマッチしていることを確認してください）
   
 [source,yaml]
-
 ----
 apiVersion: v1
 kind: Secret
@@ -275,14 +273,13 @@ lokistack-dev-s3                           Opaque                    5      5s
   
   a. `Loki Operator` を選択します。
   
-  b. 最初のページの `Provided APIs` と `LokiStack` の下で `Create instance` を選択します。
+  b. 最初のページの `Provided APIs` の下にあるカードの `LokiStack` の中の `Create instance` を選択します。
   
   c. `YAML view` オプションにスイッチします。
   
   d. 現在のYAMLを削除し、このYAMLに置き換えます。
   
 [source,yaml]
-
 ----
 apiVersion: loki.grafana.com/v1
 kind: LokiStack
@@ -307,15 +304,12 @@ spec:
 
 d. `Create` をクリックします。
 
-e. `LokiStack` タブに移動し、`lokistack-dev` をクリックします。
+e. 上の`LokiStack` タブに移動し、`lokistack-dev` をクリックします。
 
 起動に1分ほどかかるかもしれませんが、最終的にはこのようになるはずです。
 
 image::images/LokiStack.png[]
 
-_Figure 1: LokiStack +
-
-ルーラーを設定していないので、`The field components.ruler is invalid.` と表示されるはずです。
 
 #### Logging `CustomResource (CR)` インスタンスの作成
 
@@ -323,11 +317,10 @@ _Figure 1: LokiStack +
 
 1. コンソールで `Operators` ->  `Installed Operators` を選択します。
 2. `Red Hat OpenShift Logging` を選択します。
-3. 最初のページの `Provided APIs` と `LokiStack` の下で `Create instance` を選択します。
+3. 最初のページの `Provided APIs` の下にあるカードの `Cluster Logging` の中の `Create instance` を選択します。
 4. 現在のYAMLを削除し、このYAMLに置き換えます。
   
 [source,yaml]
-
 ----
 apiVersion: logging.openshift.io/v1
 kind: ClusterLogging
@@ -358,8 +351,8 @@ Logging が作成されたので、機能していることを確認しましょ
 
 2. `openshift-logging` プロジェクトを選択します。
 
-`cluster logging` 用のpodがあることがわかります(オペレーターそのもの)。
-`collectors`, `logging-view-plugin`, `lokistack` の様々なpodです。
+`cluster logging` 用のpodがあることがわかります。
+`collectors`, `logging-view-plugin`, `lokistack` 等の様々なpodです。
 
 あるいは、以下のコマンドを使ってコマンドラインから検証することもできます。
 
@@ -368,7 +361,7 @@ Logging が作成されたので、機能していることを確認しましょ
 oc get pods -n openshift-logging
 ----
 
-最終的にはこのように表示さ れます。
+最終的にはこのように表示されます。
 
 ----
 cluster-logging-operator-6d94c695db-lpjgd       1/1     Running   0          89m
@@ -403,7 +396,7 @@ image::images/Loki_refresh.png[]
 
 2. 中に入ると、現在 `Applications` に設定されているメニューに気づくでしょう、これを `infrastructure` に変更してください。
 
-これで、`Infrastructure` のすべての `logs` が表示されるはずです。ログは 3つのセクションに分かれています。`application`, `infrastructure` と `audits` です。`audits` と `log forwarder` のセットアップは次のパートで行いますが、様々な部分を見てみましょう。
+これで、`Infrastructure` のすべての `logs` が表示されるはずです。ログは 3つのセクションに分かれています。`application`, `infrastructure` と `audits` です。`audits` と `log forwarder` のセットアップは次のパートで行いますが、その前に、様々な部分を見てみましょう。
 
 image::images/appinfraaudit.png[]
 
@@ -412,12 +405,12 @@ image::images/appinfraaudit.png[]
 
 image::images/filterlogs.png[]
 
-`Severity` の別のドロップダウン メニューを使用して、探しているログをさらに指定できます。このメニューでは、ログが `critical`、
-`error`、`warning`、`debug`、`info`、`trace`、および `unknown` のログ カテゴリに分類されます。
+`Severity` の別のドロップダウンメニューを使用して、探しているログをさらに指定できます。このメニューでは、ログが `critical`、
+`error`、`warning`、`debug`、`info`、`trace`、および `unknown` のログカテゴリに分類されます。
 
 image::images/severity.png[]
 
-最後の部分は `histogram` です。これにより、ユーザーはログをより視覚的に確認できます。(入力には少し時間がかかる場合があります)
+最後に `histogram` です。これにより、ユーザーはログをより視覚的に確認できます。(入力には少し時間がかかる場合があります)
 
 
 image::images/histogram.png[]
@@ -428,12 +421,11 @@ image::images/histogram.png[]
 
 1. 左のナビゲーションバーを使用して `Operators` -> `Installed Operators` にアクセスします。
 2. `Red Hat OpenShift Logging` を選択します。
-3. `Provided APIs` と `Cluster Log Forwarder` の下に `Create instance` というボタンがありますので、それを選択します。
+3. `Provided APIs` の下のカードの `Cluster Log Forwarder` の中に `Create instance` というボタンがありますので、それを選択します。
 
 現在表示されているYAMLを削除し、新しいYAMLに置き換えます。
 
 [source,yaml]
-
 ----
 apiVersion: logging.openshift.io/v1
 kind: ClusterLogForwarder
@@ -458,5 +450,5 @@ spec:
 [start=5]
 5. これで、`Observe` -> `Logs` に戻ると、メニューから `Audit` を選択できるようになります。
 
-#### Congratulations, これでロギングセクションは完了です。
+#### これでロギングセクションは完了です。
 
