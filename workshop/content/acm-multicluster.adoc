@@ -118,7 +118,7 @@ image::images/acm-2-2-2.png[]
 
 image::images/acm-2-3.png[]
 
-* *Release Image* を選択します。 今回は「4.12.42」を選択してください。
+* *Release Image* を選択します。 今回は「4.16.21」を選択してください。
 * *environment=prod* ラベルを付与します。
 * NEXTをクリックします
 
@@ -161,7 +161,7 @@ _このプロセスは、本コース受講時のAWSのトラフィックに応�
 
 * *cluster name* に名前を入力します。名前は適当でかまいません。
 * *Cluster set* は空にしておきます。
-* *Release Image* を選択します。 今回は「4.12.42」を選択してください。
+* *Release Image* を選択します。 今回は「4.16.21」を選択してください。
 * *environment=qa* ラベルを付与します。
 
 * NEXTをクリックします
@@ -357,15 +357,7 @@ image::images/acm-5-1.png[]
 
 image::images/acm-5-2.png[]
 
-* GitHubのページで、すべてのポリシーを含む https://github.com/stolostron/policy-collection/tree/main/stable/CM-Configuration-Management[GitHub Repo] に移動し https://github.com/stolostron/policy-collection/blob/main/stable/SC-System-and-Communications-Protection/policy-etcdencryption.yaml[policy-etcdencryption.yaml] を選択します。
-
-* *policy-etcdencryption.yaml* のページで *RAW* ボタンをクリックします。
-
-image::images/acm-5-3.png[]
-
-* RAW YAMLをコピーします。
-
-* *Create Policy* の画面で、*YAML* を有効にします。GitHub Repoからコピーした *RAW YAML* を貼り付けます。
+YAMLを有効にして、以下に示すETCD Encryption Policy YAMLをコピーして貼り付けます
 
 貼り付ける内容は下記のような内容です。
 ```
@@ -373,6 +365,7 @@ apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
 metadata:
   name: policy-etcdencryption
+  namespace: open-cluster-management
   annotations:
     policy.open-cluster-management.io/standards: NIST SP 800-53
     policy.open-cluster-management.io/categories: SC System and Communications Protection
@@ -416,54 +409,36 @@ spec:
                   name: cluster
                 status:
                   conditions:
-                    - message: 'All resources encrypted: secrets, configmaps'
+                    - message: "All resources encrypted: secrets, configmaps"
                       reason: EncryptionCompleted
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
 metadata:
-  name: binding-policy-etcdencryption
+  name: policy-etcdencryption-placement
+  namespace: open-cluster-management
 placementRef:
-  name: placement-policy-etcdencryption
+  name: policy-etcdencryption-placement
   kind: PlacementRule
   apiGroup: apps.open-cluster-management.io
 subjects:
-- name: policy-etcdencryption
-  kind: Policy
-  apiGroup: policy.open-cluster-management.io
+  - name: policy-etcdencryption
+    kind: Policy
+    apiGroup: policy.open-cluster-management.io
 ---
 apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
 metadata:
-  name: placement-policy-etcdencryption
+  name: policy-etcdencryption-placement
+  namespace: open-cluster-management
 spec:
-  clusterConditions:
-  - status: "True"
-    type: ManagedClusterConditionAvailable
   clusterSelector:
     matchExpressions:
-      - {key: environment, operator: In, values: ["dev"]}
+      - key: environment
+        operator: In
+        values:
+          - dev
 ```
-
-Nameに *policy-etcdencryption* と入力し、
-Namespaceには *default* と入力します。
-
-* *Name*: `policy-etcdencryption`
-* *Namespace*: `default`
-
-入力した上で、コピーしたRAWデータをYAMLの欄に貼り付けます。
-
-image::images/acm6-1.png[]
-
-3箇所、赤いマークが表示されるので、図にある通りの位置に *namespace: default* の行を追加します。
-
-image::images/acm6-2.png[]
-
-正しく追加すると、赤いマークが消えるので、消えたことを確認してください。
-
-image::images/acm6-3.png[]
-
-image::images/acm6-4.png[]
 
 * NEXTをクリックして、*5.Review* ですべてが正しく入力されていることを確認し、*Submit* をクリックします。
 
