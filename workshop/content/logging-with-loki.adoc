@@ -101,11 +101,11 @@ image::images/local-cluster.png[]
 
   a. OpenShift コンソールで、`Operators` → `OperatorHub` をクリックします。
   b. 検索フィールドに `OpenShift Logging` とタイプし、可能なオペレータのリストから `Red Hat OpenShift Logging` のカードをクリックします。その際、Channel `stable-5.9` を選択してください。`stable-6.0` は選択しないでください。そして `Install` をクリックします。
-  c. `Install Operator` ページで、*Update Channel `stable 5.9` と `Version 5.9.7`* を選択します。 `Installation Mode` で `A specific namespace on the cluster` が選択されており、`Installed Namespace` は `Operator recommended Namespace: openshift-logging` です。他はデフォルトのままで `Install` をクリックします。
+  c. `Install Operator` ページで、*Update Channel `stable 5.9` と `Version 5.9.8`* を選択します。 `Installation Mode` で `A specific namespace on the cluster` が選択されており、`Installed Namespace` は `Operator recommended Namespace: openshift-logging` です。他はデフォルトのままで `Install` をクリックします。
 
 2. `Loki Operator` のインストール:
   a. OpenShift コンソールで、`Operators` → `OperatorHub` をクリックします。
-  b. 検索フィールドに `Loki Operator` とタイプし、可能なオペレータのリストから `Loki Operator` のカードをクリックします。その際、Channel `stable-5.9` と Version `5.9.7` を選択してください。`stable-6.0` は選択しないでください。そして `Install` をクリックします。
+  b. 検索フィールドに `Loki Operator` とタイプし、可能なオペレータのリストから `Loki Operator` のカードをクリックします。その際、Channel `stable-5.9` と Version `5.9.8` を選択してください。`stable-6.0` は選択しないでください。そして `Install` をクリックします。
   c. `Create Operator Subscription` ページで、  *Update Channel `stable-5.9`* を選択します。また、`'Enable Operator recommended cluster monitoring on this Namespace'` を選択します、他はデフォルトのままで `Install` をクリックします。
 +
 これにより、このOpenShift Container Platformクラスタを使用するすべてのユーザーとプロジェクトがOperatorを利用できるようになります。
@@ -197,10 +197,10 @@ echo $GUID
 
 このコマンドの出力が、bucket名です。
 
-次に、以下のコマンドを実行して、bucketを作成します。その際、<pg2nw> の部分は自分の `GUID` に置き換えます。
+次に、以下のコマンドを実行して、bucketを作成します。その際、<dashboard-3-fl259> の部分は自分の `GUID` に置き換えます。
  
 [source,bash,role="execute"]
-aws --profile default s3api create-bucket --bucket <pg2nw> --region us-east-1 
+aws --profile default s3api create-bucket --bucket <dashboard-3-fl259> --region us-east-1 
 
 これは先程設定した `default` という `profile` から `aws bucket` を作成しているところです。
 この後、使用するので、bucket名を覚えておいてください。
@@ -218,7 +218,7 @@ name and try again.
 
 ----
 {
-    "Location": "/pg2nw"
+    "Location": "/dashboard-3-fl259"
 }
 ----
  
@@ -242,7 +242,7 @@ metadata:
 stringData:
   access_key_id: w3EDfSERUiLSAEXAMPLE (自分のaws credsに置き換える)
   access_key_secret: mshdyShDTYKWEywajsqpshdNSUWJDA+1+REXAMPLE (自分のaws credsに置き換える)
-  bucketnames: 自分のbucket名に置き換える (この例では pg2nw)
+  bucketnames: 自分のbucket名に置き換える (この例では dashboard-3-fl259)
   endpoint: https://s3.us-east-1.amazonaws.com/
   region: us-east-1
 ----
