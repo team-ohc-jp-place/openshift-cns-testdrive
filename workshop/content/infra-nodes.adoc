@@ -587,7 +587,15 @@ oc get configmap cluster-monitoring-config -n openshift-monitoring
 Error from server (NotFound): configmaps "cluster-monitoring-config" not found
 ```
 
-Operatorは、様々なモニタリングスタックコンポーネントのためにいくつかの `ConfigMap` オブジェクトを作成します。
+
+NOTE: cluster-monitoring-configがある場合は、以下のコマンドを使用してコンフィギュレーションを削除することをお勧めします。
+
+[source,bash,role="execute"]
+----
+oc delete configmap cluster-monitoring-config -n openshift-monitoring
+----
+
+Operatorは、さまざまな監視スタック コンポーネントに対して複数の `ConfigMap` オブジェクトを作成し、それらを表示できます。
 
 [source,bash,role="execute"]
 ----
