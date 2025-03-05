@@ -166,7 +166,7 @@ image::images/ci-ja-2.png[]
 
 image::images/ci-ja-3.png[]
 
-* 次に、*$TUTORIAL_HOME/workshop/demo-apps/pipelines/pipeline/rox-secrets-mad.yml* ファイルを編集してください。vi/vim/nano/などお好みのコマンドラインエディタを使用して、先ほどコピーしたトークンを追加してください。
+* 次に、*$TUTORIAL_HOME/workshop/demo-apps/pipelines/pipeline/rox-secrets.yml* ファイルを編集してください。vi/vim/nano/などお好みのコマンドラインエディタを使用して、先ほどコピーしたトークンを追加してください。
 
 *NOTE* : *rox_api_token: "YOUR_API_TOKEN_HERE"* という行の *YOUR_API_TOKEN_HERE* の部分をコピーしたトークンと置き換えます。
 
@@ -175,7 +175,7 @@ image::images/ci-ja-3.png[]
 
 [source,bash,role="execute"]
 ----
-kubectl apply -f $TUTORIAL_HOME/workshop/demo-apps/pipelines/pipeline/rox-secrets-mad.yml
+kubectl apply -f $TUTORIAL_HOME/workshop/demo-apps/pipelines/pipeline/rox-secrets.yml
 ----
 
 |===
@@ -203,7 +203,7 @@ image::images/pipeline-2.png[]
 
 image::images/pipeline-3.png[]
 
-* スキャンしたいイメージが要求されます。このワークショップではlog4shellの脆弱性があることが分かっているイメージ（quay.io/mfoster/log4shell-demo:0.1.0）を調べます。
+* スキャンしたいイメージが要求されます。このワークショップではlog4shellの脆弱性があることが分かっているイメージ（quay.io/mfoster/log4shell:latest）を調べます。
 
 image::images/pipeline-ja-4.png[]
 
