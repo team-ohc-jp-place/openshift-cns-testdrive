@@ -45,9 +45,9 @@ image::images/acm-1-2.png[]
 
 次の項目をテキストボックスに入力しましす。
 
-* Access Key ID: この情報は、本ワークショップ用のガイダンスページの *rhacm_aws_access_key_id* というフィールドの下にあります。
+* Access Key ID: この情報は、本ワークショップ用のガイダンスページの *AWS_ACCESS_KEY_ID* というフィールドにあります。
 
-* Secret Access Key ID: この情報は、本ワークショップ用のガイダンスページの *rhacm_aws_secret_key* というフィールドの下にあります。
+* Secret Access Key ID: この情報は、本ワークショップ用のガイダンスページの *AWS_SECRET_ACCESS_KEY* というフィールドにあります。
 
 * NEXTをクリックします。 
 
@@ -118,7 +118,7 @@ image::images/acm-2-2-2.png[]
 
 image::images/acm-2-3.png[]
 
-* *Release Image* を選択します。 今回は「4.16.21」を選択してください。
+* *Release Image* を選択します。 今回は4.16を使用するので「4.16.XX」を選択してください。
 * *environment=prod* ラベルを付与します。
 * NEXTをクリックします
 
@@ -161,7 +161,7 @@ _このプロセスは、本コース受講時のAWSのトラフィックに応�
 
 * *cluster name* に名前を入力します。名前は適当でかまいません。
 * *Cluster set* は空にしておきます。
-* *Release Image* を選択します。 今回は「4.16.21」を選択してください。
+* *Release Image* を選択します。今回は4.16を使用するので「4.16.XX」を選択してください。
 * *environment=qa* ラベルを付与します。
 
 * NEXTをクリックします
