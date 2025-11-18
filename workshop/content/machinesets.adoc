@@ -105,6 +105,7 @@ oc get machines -n openshift-machine-api
 ----
 
 おそらく、`PHASE` が `Provisioning` となっている2つの新しいエントリがすでに存在していると思います。しばらくすると、以下のように表示されます。
+※1つのエントリしか存在しない場合もあります
 
 ----
 cluster-q5kr6-w97nj-worker-ap-southeast-1c-h444j   Provisioning   m5a.4xlarge   ap-southeast-1   ap-southeast-1c   4m51s
@@ -119,6 +120,7 @@ oc get nodes
 ----
 
 `age` が非常に若いノードが見つかるはずです。
+※1つのエントリしか存在しない場合もあります
 
 ----
 ip-10-0-207-34.ap-southeast-1.compute.internal    Ready    worker                 79s    v1.25.14+20cda61
@@ -130,7 +132,7 @@ ip-10-0-216-253.ap-southeast-1.compute.internal   Ready    worker               
 `Machine` が準備され、`Node` として追加されるまでには数分かかることがあります。
 ====
 
-続ける前に、先程スケールアップした `MachineSet` を2から1にスケールダウンしてください。
+続ける前に、先程スケールアップした `MachineSet` を2から1にスケールダウンしてください。エントリーがひとつしかない場合は、以下の操作は不要です。
 
 ${CLUSTERNAME}と${ZONENAME}変数が、数ステップ前のスケールアップ時に設定されていることを確認してください。
 
@@ -138,3 +140,4 @@ ${CLUSTERNAME}と${ZONENAME}変数が、数ステップ前のスケールアッ�
 ----
 oc scale machineset ${CLUSTERNAME}-worker-${ZONENAME} -n openshift-machine-api --replicas=1
 ----
+
